@@ -13,8 +13,25 @@ app.get("/", function (req, res) {
 });
 
 app.get("/api/users/:id", middlewares, function (req, res) {
+  const id = req.params.id;
+  //limitar la cantidad de caracteres de los textos configurables por el usuario
+  //min max de health
+  //min = 100; max = infinito
+
+  //tiene limite mana ? o es infinito ?
+  //min = 100; max = infinito
+  //
   res.send({
-    name: "perri",
+    id,
+    name: "John bon jovi",
+    breed: "Vampiro",
+    type: "Asesino de bondiola",
+    level_name: "Siglos",
+    level_value: 666,
+    stats: {
+      health: 100,
+      mana: 100,
+    },
   });
 });
 
