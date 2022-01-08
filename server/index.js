@@ -25,7 +25,7 @@ app.get("/register", function (req, res) {
 });
 
 app.get("/api/users/:id", middlewares, function (req, res) {
-  const id = req.params.id;
+  // const id = req.params.id;
   //limitar la cantidad de caracteres de los textos configurables por el usuario
   //min max de health
   //min = 100; max = infinito
@@ -33,21 +33,22 @@ app.get("/api/users/:id", middlewares, function (req, res) {
   //tiene limite mana ? o es infinito ?
   //min = 100; max = infinito
   //
-  res.send({
-    id,
-    name: "John bon jovi",
-    breed: "Vampiro",
-    type: "Asesino de bondiola",
-    level_name: "Siglos",
-    level_value: 666,
-    stats: {
-      health: 100,
-      mana: 100,
-    },
-  });
+  // res.send({
+  //   id,
+  //   name: "John bon jovi",
+  //   breed: "Vampiro",
+  //   type: "Asesino de bondiola",
+  //   level_name: "Siglos",
+  //   level_value: 666,
+  //   stats: {
+  //     health: 100,
+  //     mana: 100,
+  //   },
+  // });
   // res.status(404).send({
   //   register_link: "https://project-server-x.herokuapp.com/register",
   // });
+  res.status(403).send();
 });
 
 app.listen(PORT, () => {
