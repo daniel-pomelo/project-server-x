@@ -7,8 +7,20 @@ const PORT = process.env.PORT || 3000;
 const middlewares = [logRequest];
 
 app.use(express.static("public"));
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
 
 app.get("/", function (req, res) {
+  res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));
+});
+app.post("/register", function (req, res) {
+  console.log(req.body);
+  res.sendFile(path.resolve(path.join(__dirname, "/../view/register.html")));
+});
+app.get("/register", function (req, res) {
   res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));
 });
 
@@ -33,6 +45,9 @@ app.get("/api/users/:id", middlewares, function (req, res) {
       mana: 100,
     },
   });
+  // res.status(404).send({
+  //   register_link: "https://project-server-x.herokuapp.com/register",
+  // });
 });
 
 app.listen(PORT, () => {
