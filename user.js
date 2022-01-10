@@ -4,10 +4,7 @@ async function findUserById(id) {
   const user = await users.get(id);
 
   function asJSONResponse() {
-    return {
-      ...user,
-      password: undefined,
-    };
+    return user;
   }
   function isRegistered() {
     return !!user;
@@ -24,11 +21,10 @@ async function findUserById(id) {
     getLinkToRegister,
   };
 }
-async function saveUser(id, name, password) {
+async function saveUser(id, name) {
   users.set(id, {
     id,
     name,
-    password,
     breed: "Vampiro",
     type: "Asesino de bondiola",
     level_name: "Siglos",
