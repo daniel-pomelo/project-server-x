@@ -35,8 +35,12 @@ async function saveUser(id, name, breed, type, level_name) {
     },
   });
 }
+async function findAllUser() {
+  return Array.from(users.values());
+}
 
 module.exports = {
   findUserById,
+  findAllUser,
   saveUser,
 };

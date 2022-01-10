@@ -2,7 +2,8 @@ const path = require("path");
 const express = require("express");
 const { logBridgeId } = require("./logBridgeId");
 const { verifyIsValidBridge } = require("./verifyIsValidBridge");
-const { findUserById, saveUser } = require("../user");
+const { verifyUserIdPresence } = require("./verifyUserIdPresence");
+const { findUserById, findAllUser, saveUser } = require("../user");
 const app = express();
 
 const PORT = process.env.PORT || 3000;
@@ -14,10 +15,14 @@ app.use(
   })
 );
 
+app.get("/api/users", function (req, res) {
+  findAllUser().then((users) => res.send(users));
+});
 app.get(
   "/api/users/:id",
   logBridgeId,
   verifyIsValidBridge,
+  verifyUserIdPresence,
   function (req, res) {
     const id = req.params.id;
     findUserById(id).then((user) => {
