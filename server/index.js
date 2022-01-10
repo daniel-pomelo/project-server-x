@@ -1,3 +1,4 @@
+require("dotenv").config();
 const path = require("path");
 const express = require("express");
 const { logBridgeId } = require("./logBridgeId");
@@ -25,13 +26,21 @@ app.get(
   verifyUserIdPresence,
   function (req, res) {
     const id = req.params.id;
-    findUserById(id).then((user) => {
-      if (user.isRegistered()) {
-        res.send(user.asJSONResponse());
-      } else {
-        res.status(404).send(user.getLinkToRegister());
-      }
-    });
+    findUserById(id)
+      .then((user) => {
+        console.log("user is registered: ", user.isRegistered());
+        if (user.isRegistered()) {
+          console.log("user response: ", user.asJSONResponse());
+          res.send(user.asJSONResponse());
+        } else {
+          console.log("user not registered");
+          res.status(404).send(user.getLinkToRegister());
+        }
+      })
+      .catch((err) => {
+        console.log("err: ", err);
+        res.status(500).send(err);
+      });
   }
 );
 app.get("/", function (req, res) {
