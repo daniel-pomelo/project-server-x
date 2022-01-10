@@ -34,9 +34,9 @@ app.get("/", function (req, res) {
 });
 app.post("/register/:id", function (req, res) {
   const id = req.params.id;
-  const { name } = req.body;
+  const { name, breed, type, level_name } = req.body;
 
-  saveUser(id, name);
+  saveUser(id, name, breed, type, level_name);
 
   res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));
 });

@@ -21,14 +21,14 @@ async function findUserById(id) {
     getLinkToRegister,
   };
 }
-async function saveUser(id, name) {
+async function saveUser(id, name, breed, type, level_name) {
   users.set(id, {
     id,
     name,
-    breed: "Vampiro",
-    type: "Asesino de bondiola",
-    level_name: "Siglos",
-    level_value: 666,
+    breed,
+    type,
+    level_name,
+    level_value: 1,
     stats: {
       health: 100,
       mana: 100,
