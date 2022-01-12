@@ -1,5 +1,6 @@
 require("dotenv").config();
 const path = require("path");
+const { sendUserInfoToBridgeUrl } = require("./sendUserInfoToBridgeUrl");
 const express = require("express");
 const { logBridgeId } = require("./logBridgeId");
 const { verifyIsValidBridge } = require("./verifyIsValidBridge");
@@ -31,17 +32,13 @@ app.get(
     const id = req.params.id;
     findUserById(id)
       .then((user) => {
-        console.log("user is registered: ", user.isRegistered());
         if (user.isRegistered()) {
-          console.log("user response: ", user.asJSONResponse());
           res.send(user.asJSONResponse());
         } else {
-          console.log("user not registered");
           res.status(404).send(user.getLinkToRegister());
         }
       })
       .catch((err) => {
-        console.log("err: ", err);
         res.status(500).send(err);
       });
   }
@@ -49,17 +46,20 @@ app.get(
 app.get("/", function (req, res) {
   res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));
 });
-app.post("/register/:id", function (req, res) {
+app.post("/register/:id", async function (req, res) {
   const id = req.params.id;
   const { name, breed, type, level_name } = req.body;
 
-  saveUser(id, name, breed, type, level_name);
+  const user = await saveUser(id, name, breed, type, level_name);
 
   const bridgeId = "ESTE_ES_EL_BRIDGE_ID";
-  const bridgeUrl = bridges.get(bridgeId);
+  const bridge = bridges.get(bridgeId);
 
-  console.log("BridgeId: ", bridgeId);
-  console.log("BridgeURL: ", bridgeUrl);
+  if (bridge) {
+    console.log("BridgeId: ", bridgeId);
+    console.log("BridgeURL: ", bridge.bridge_url);
+    sendUserInfoToBridgeUrl(bridge.bridge_url, user);
+  }
 
   res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));
 });
