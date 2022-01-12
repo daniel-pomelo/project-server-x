@@ -15,6 +15,9 @@ app.use(
     extended: true,
   })
 );
+app.use(express.json());
+
+const bridges = new Map();
 
 app.get("/api/users", function (req, res) {
   findAllUser().then((users) => res.send(users));
@@ -52,10 +55,25 @@ app.post("/register/:id", function (req, res) {
 
   saveUser(id, name, breed, type, level_name);
 
+  const bridgeId = "ESTE_ES_EL_BRIDGE_ID";
+  const bridgeUrl = bridges.get(bridgeId);
+
+  console.log("BridgeId: ", bridgeId);
+  console.log("BridgeURL: ", bridgeUrl);
+
   res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));
 });
 app.get("/register/:id", function (req, res) {
   res.sendFile(path.resolve(path.join(__dirname, "/../view/register.html")));
+});
+
+app.post("/api/bridge", [verifyIsValidBridge], function (req, res) {
+  const bridge_id = req.headers["bridge-id"];
+  const { bridge_url } = req.body;
+  bridges.set(bridge_id, { bridge_id, bridge_url });
+  console.log("Body: ", req.body);
+  console.log("Bridges: ", Array.from(bridges.values()));
+  res.send();
 });
 
 app.listen(PORT, () => {
