@@ -1,6 +1,5 @@
 require("dotenv").config();
 const path = require("path");
-const { sendUserInfoToBridgeUrl } = require("./sendUserInfoToBridgeUrl");
 const express = require("express");
 const { logBridgeId } = require("./logBridgeId");
 const { verifyIsValidBridge } = require("./verifyIsValidBridge");
