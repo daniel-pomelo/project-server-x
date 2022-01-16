@@ -12,6 +12,8 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
+const bridges = new Map();
+
 app.use(express.static("public"));
 app.use(
   express.urlencoded({
@@ -31,12 +33,12 @@ app.get(
 app.get("/", function (req, res) {
   res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));
 });
-app.post("/register/:id", saveUser);
+app.post("/register/:id", saveUser(bridges));
 app.get("/register/:id", function (req, res) {
   res.sendFile(path.resolve(path.join(__dirname, "/../view/register.html")));
 });
 
-app.post("/api/bridge", verifyIsValidBridge, saveBridge);
+app.post("/api/bridge", verifyIsValidBridge, saveBridge(bridges));
 
 app.listen(PORT, () => {
   console.log("Server is running at port " + PORT);

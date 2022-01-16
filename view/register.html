@@ -13,6 +13,7 @@
         padding: 0;
         box-sizing: border-box;
         text-decoration: none;
+        font-family: "Poppins", sans-serif;
       }
 
       body {
@@ -27,7 +28,6 @@
 
       .form {
         z-index: 1;
-        font-family: "Poppins", sans-serif;
         position: absolute;
         width: 320px;
         text-align: center;
@@ -61,7 +61,7 @@
       .form .user-input::placeholder {
         color: #fff;
       }
-      
+
       .form .options-01 {
         margin-bottom: 50px;
       }
@@ -130,11 +130,44 @@
           width: 100%;
         }
       }
+
+      .snackbar {
+        position: absolute;
+        bottom: 0px;
+        right: 0px;
+        color: #fff;
+        background-color: red;
+        padding: 10px;
+        animation: snackbar 4s forwards;
+      }
+      .snackbar.success {
+        position: absolute;
+        bottom: 0px;
+        right: 0px;
+        color: #fff;
+        background-color: green;
+        padding: 10px;
+        animation: snackbar 4s forwards;
+      }
+      @keyframes snackbar {
+        0% {
+          opacity: 1;
+          transform: translateY(0px);
+        }
+        90% {
+          opacity: 1;
+          transform: translateY(-10px);
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+      }
     </style>
   </head>
   <body>
     <div class="form">
-      <form class="login-form" action="" method="post">
+      <form id="register" class="login-form" action="" method="post">
         <i class="fas fa-user-circle"></i>
         <input
           class="user-input"
@@ -162,5 +195,55 @@
         />
         <input class="btn" type="submit" value="Comenzar" />
       </form>
+    </div>
   </body>
+  <script>
+    const form = document.querySelector("form#register");
+
+    const snackbar = {
+      show(message, type) {
+        const snackbar = document.createElement("div");
+        snackbar.classList = type === "error" ? "snackbar" : "snackbar success";
+        snackbar.innerText = message;
+        document.body.appendChild(snackbar);
+      },
+    };
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = e.target.elements.name.value;
+      const breed = e.target.elements.breed.value;
+      const type = e.target.elements.type.value;
+      const level_name = e.target.elements.level_name.value;
+      if ([name, breed, type, level_name].some((value) => !value)) {
+        snackbar.show("El formulario está incompleto.", "error");
+      } else {
+        const data = {
+          name: e.target.elements.name.value,
+          breed: e.target.elements.breed.value,
+          type: e.target.elements.type.value,
+          level_name: e.target.elements.level_name.value,
+        };
+        fetch(location.href, {
+          method: "POST",
+          mode: "cors",
+          cache: "no-cache",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          redirect: "follow",
+          referrerPolicy: "no-referrer",
+          body: JSON.stringify(data),
+        })
+          .then((response) => {
+            snackbar.show(
+              "Registro con éxito ! Tus datos deberian estar ya en el meter",
+              "success"
+            );
+          })
+          .catch((err) => console.log(err));
+      }
+    });
+  </script>
 </html>

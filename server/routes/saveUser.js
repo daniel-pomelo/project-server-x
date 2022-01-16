@@ -1,7 +1,7 @@
 const { saveUser } = require("../../user");
 const { sendUserInfoToBridgeUrl } = require("../sendUserInfoToBridgeUrl");
 
-module.exports = async (req, res) => {
+module.exports = (bridges) => async (req, res) => {
   const id = req.params.id;
   const { name, breed, type, level_name } = req.body;
 
@@ -16,5 +16,5 @@ module.exports = async (req, res) => {
     sendUserInfoToBridgeUrl(bridge.bridge_url, user);
   }
 
-  res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));
+  res.send();
 };
