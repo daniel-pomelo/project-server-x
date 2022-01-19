@@ -67,8 +67,31 @@ function findAllUser() {
   });
 }
 
+function getUserProps(id) {
+  const props = {
+    strength: 0,
+    fortitude: 0,
+    health: 0,
+    intelligence: 0,
+    will: 0,
+    perception: 0,
+    agility: 0,
+    endurance: 0,
+  };
+  return getCollection("UsersProps", async (usersPropsCollection) => {
+    const userProps = await usersPropsCollection.findOne({ user_id: id });
+    userProps && delete userProps.user_id;
+    userProps && delete userProps._id;
+    return {
+      ...props,
+      ...userProps,
+    };
+  });
+}
+
 module.exports = {
   findUserById,
   findAllUser,
   saveUser,
+  getUserProps,
 };

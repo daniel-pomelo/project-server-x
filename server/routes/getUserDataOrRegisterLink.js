@@ -1,11 +1,15 @@
-const { findUserById } = require("../../user");
+const { findUserById, getUserProps } = require("../../user");
 
 module.exports = (req, res) => {
   const id = req.params.id;
   findUserById(id)
-    .then((user) => {
+    .then(async (user) => {
       if (user.isRegistered()) {
-        res.send(user.asJSONResponse());
+        const props = await getUserProps(id);
+        res.send({
+          ...user.asJSONResponse(),
+          ...props,
+        });
       } else {
         res.status(404).send(user.getLinkToRegister());
       }
