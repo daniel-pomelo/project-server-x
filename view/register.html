@@ -237,10 +237,14 @@
           body: JSON.stringify(data),
         })
           .then((response) => {
-            snackbar.show(
-              "Registro con éxito ! Tus datos deberian estar ya en el meter",
-              "success"
-            );
+            if (response.status !== 200) {
+              snackbar.show(
+                "Registro con éxito ! Tus datos deberian estar ya en el meter",
+                "success"
+              );
+            } else {
+              snackbar.show("Hubo un error al guardar", "error");
+            }
           })
           .catch((err) => console.log(err));
       }
