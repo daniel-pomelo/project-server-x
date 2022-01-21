@@ -67,7 +67,7 @@ function findAllUser() {
   });
 }
 
-function getUserProps(id) {
+function getUserStats(id) {
   const props = {
     strength: 0,
     fortitude: 0,
@@ -93,5 +93,5 @@ module.exports = {
   findUserById,
   findAllUser,
   saveUser,
-  getUserProps,
+  getUserStats,
 };
