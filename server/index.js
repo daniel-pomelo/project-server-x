@@ -33,12 +33,12 @@ app.get(
 app.get("/", function (req, res) {
   res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));
 });
-app.post("/register/:id", saveUser(bridges));
+app.post("/register/:id", saveUser);
 app.get("/register/:id", function (req, res) {
   res.sendFile(path.resolve(path.join(__dirname, "/../view/register.html")));
 });
 
-app.post("/api/bridge", verifyIsValidBridge, saveBridge(bridges));
+app.post("/api/bridge", verifyIsValidBridge, saveBridge);
 
 app.listen(PORT, () => {
   console.log("Server is running at port " + PORT);

@@ -1,8 +1,8 @@
-module.exports = (bridges) => (req, res) => {
+const { saveBridge } = require("../../bridge");
+
+module.exports = (req, res) => {
   const bridge_id = req.headers["bridge-id"];
   const { bridge_url } = req.body;
-  bridges.set(bridge_id, { bridge_id, bridge_url });
-  console.log("Body: ", req.body);
-  console.log("Bridges: ", Array.from(bridges.values()));
+  saveBridge(bridge_id, bridge_url);
   res.send();
 };
