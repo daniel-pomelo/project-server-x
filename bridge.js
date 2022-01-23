@@ -13,7 +13,11 @@ async function saveBridge(id, url) {
       id,
       url,
     };
-    await bridgesCollection.insertOne(bridge);
+    await bridgesCollection.updateOne(
+      { id },
+      { $set: bridge },
+      { upsert: true }
+    );
   });
 }
 
