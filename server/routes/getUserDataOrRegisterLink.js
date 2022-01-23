@@ -1,4 +1,6 @@
 const { findUserById, getUserStats } = require("../../user");
+const InMemoryDataBase = require("../../InMemoryDataBase");
+const MongoDataBase = require("../../MongoDataBase");
 
 module.exports = (req, res) => {
   const id = req.params.id;
@@ -15,6 +17,15 @@ module.exports = (req, res) => {
           stats: userStats,
         });
       } else {
+        const db =
+          process.env.ENV_NAME === "dev"
+            ? InMemoryDataBase.init()
+            : MongoDataBase.init();
+        const bridgeId = req.headers["bridge-id"];
+        await db.save("RegisterAttempts", {
+          userId: id,
+          bridgeId,
+        });
         res.status(404).send(getLinkToRegister(id));
       }
     })

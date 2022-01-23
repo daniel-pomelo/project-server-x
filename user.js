@@ -25,10 +25,11 @@ function findUserById(id) {
       : MongoDataBase.init();
   return db.findOne("Users", { id });
 }
-function saveUser(id, name, breed, type, level_name) {
+async function saveUser(id, name, breed, type, level_name) {
   const db = MongoDataBase.init();
   const user = User.from(id, name, breed, type, level_name);
-  return db.save("Users", user);
+  await db.save("Users", user);
+  return user;
 }
 function findAllUser() {
   const db = MongoDataBase.init();
