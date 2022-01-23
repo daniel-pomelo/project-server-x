@@ -169,31 +169,21 @@
     <div class="form">
       <form id="register" class="login-form" action="" method="post">
         <i class="fas fa-user-circle"></i>
-        <input
-          class="user-input"
-          type="text"
-          name="name"
-          placeholder="Cuál es tu nombre ?"
-        />
+        <input class="user-input" type="text" name="name" placeholder="Name" />
         <input
           class="user-input"
           type="text"
           name="breed"
-          placeholder="Cuál es tu raza ?"
+          placeholder="Breed"
         />
-        <input
-          class="user-input"
-          type="text"
-          name="type"
-          placeholder="Cuál es tu clase ?"
-        />
+        <input class="user-input" type="text" name="type" placeholder="Class" />
         <input
           class="user-input"
           type="text"
           name="level_name"
-          placeholder="Cómo llamas a tu nivel ?"
+          placeholder="Level name"
         />
-        <input class="btn" type="submit" value="Comenzar" />
+        <input class="btn" type="submit" value="Get Started" />
       </form>
     </div>
   </body>
@@ -238,12 +228,12 @@
         })
           .then((response) => {
             if (response.status === 200) {
-              snackbar.show(
-                "Registro con éxito ! Tus datos deberian estar ya en el meter",
-                "success"
-              );
+              snackbar.show("Success!! You're registered", "success");
             } else {
-              snackbar.show("Hubo un error al guardar", "error");
+              snackbar.show(
+                "There has been an error, try again later",
+                "error"
+              );
             }
           })
           .catch((err) => console.log(err));
