@@ -4,9 +4,9 @@ module.exports = (req, res) => {
   const id = req.params.id;
   findUserById(id)
     .then(async (user) => {
-      if (user.isRegistered()) {
+      if (isRegistered(user)) {
         const userStats = await getUserStats(id);
-        const userResponse = user.asJSONResponse();
+        const userResponse = asJSONResponse(user);
         const { stats } = userResponse;
         res.send({
           ...userResponse,
@@ -15,10 +15,24 @@ module.exports = (req, res) => {
           stats: userStats,
         });
       } else {
-        res.status(404).send(user.getLinkToRegister());
+        res.status(404).send(getLinkToRegister(id));
       }
     })
     .catch((err) => {
-      res.status(500).send(err);
+      res.status(500).send({
+        message: err.message,
+      });
     });
 };
+
+function asJSONResponse(user) {
+  return user;
+}
+function isRegistered(user) {
+  return !!user;
+}
+function getLinkToRegister(id) {
+  return {
+    register_link: "https://project-server-x.herokuapp.com/register/" + id,
+  };
+}

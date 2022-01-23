@@ -12,8 +12,6 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-const bridges = new Map();
-
 app.use(express.static("public"));
 app.use(
   express.urlencoded({
@@ -43,3 +41,7 @@ app.post("/api/bridge", verifyIsValidBridge, saveBridge);
 app.listen(PORT, () => {
   console.log("Server is running at port " + PORT);
 });
+
+module.exports = {
+  server: app,
+};

@@ -1,8 +1,18 @@
 {
+  "scripts": {
+    "test": "ENV_NAME=dev nyc mocha",
+    "start": "node server/index.js"
+  },
   "dependencies": {
     "axios": "^0.24.0",
     "dotenv": "^10.0.0",
     "express": "^4.17.2",
     "mongodb": "^4.3.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "mocha": "^9.1.4",
+    "nyc": "^15.1.0",
+    "supertest": "^6.2.2"
   }
 }
