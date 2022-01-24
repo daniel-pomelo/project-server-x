@@ -34,7 +34,7 @@ app.get(
   logBridgeId,
   verifyIsValidBridge,
   verifyUserIdPresence,
-  getUserDataOrRegisterLink
+  getUserDataOrRegisterLink(db)
 );
 app.get("/", function (req, res) {
   res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));

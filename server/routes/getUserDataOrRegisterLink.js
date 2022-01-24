@@ -1,13 +1,11 @@
 const { findUserById, getUserStats } = require("../../user");
-const InMemoryDataBase = require("../../InMemoryDataBase");
-const MongoDataBase = require("../../MongoDataBase");
 
-module.exports = (req, res) => {
-  const id = req.params.id;
-  findUserById(id)
+module.exports = (db) => (req, res) => {
+  const userId = req.params.id;
+  findUserById(db, userId)
     .then(async (user) => {
       if (isRegistered(user)) {
-        const userStats = await getUserStats(id);
+        const userStats = await getUserStats(db, userId);
         const userResponse = asJSONResponse(user);
         const { stats } = userResponse;
         res.send({
@@ -17,13 +15,9 @@ module.exports = (req, res) => {
           stats: userStats,
         });
       } else {
-        const db =
-          process.env.ENV_NAME === "dev"
-            ? InMemoryDataBase.init()
-            : MongoDataBase.init();
         const bridgeId = req.headers["bridge-id"];
         await db.save("RegisterAttempts", {
-          userId: id,
+          userId,
           bridgeId,
         });
         res.status(404).send(getLinkToRegister(id));

@@ -18,11 +18,7 @@ class User {
   }
 }
 
-function findUserById(id) {
-  const db =
-    process.env.ENV_NAME === "dev"
-      ? InMemoryDataBase.init()
-      : MongoDataBase.init();
+function findUserById(db, id) {
   return db.findOne("Users", { id });
 }
 async function saveUser(id, name, breed, type, level_name) {
@@ -34,7 +30,7 @@ async function saveUser(id, name, breed, type, level_name) {
 function findAllUser(db) {
   return db.findAll("Users");
 }
-async function getUserStats(id) {
+async function getUserStats(db, id) {
   const props = {
     strength: 0,
     fortitude: 0,
@@ -48,7 +44,6 @@ async function getUserStats(id) {
   if (process.env.ENV_NAME === "dev") {
     return props;
   }
-  const db = MongoDataBase.init();
   const userProps = await db.findOne("UsersProps", { user_id: id });
   userProps && delete userProps.user_id;
   userProps && delete userProps._id;
