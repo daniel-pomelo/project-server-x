@@ -1,3 +1,4 @@
 const { findAllUser } = require("../../user");
 
-module.exports = (req, res) => findAllUser().then((users) => res.send(users));
+module.exports = (db) => (req, res) =>
+  findAllUser(db).then((users) => res.send(users));

@@ -8,6 +8,9 @@ const findUsers = require("./routes/findUsers");
 const getUserDataOrRegisterLink = require("./routes/getUserDataOrRegisterLink");
 const saveUser = require("./routes/saveUser");
 const saveBridge = require("./routes/saveBridge");
+const InMemoryDataBase = require("../InMemoryDataBase");
+const MongoDataBase = require("../MongoDataBase");
+
 const app = express();
 
 const PORT = process.env.PORT || 3000;
@@ -20,7 +23,12 @@ app.use(
 );
 app.use(express.json());
 
-app.get("/api/users", findUsers);
+const db =
+  process.env.ENV_NAME === "dev"
+    ? InMemoryDataBase.init()
+    : MongoDataBase.init();
+
+app.get("/api/users", findUsers(db));
 app.get(
   "/api/users/:id",
   logBridgeId,

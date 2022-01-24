@@ -31,8 +31,7 @@ async function saveUser(id, name, breed, type, level_name) {
   await db.save("Users", user);
   return user;
 }
-function findAllUser() {
-  const db = MongoDataBase.init();
+function findAllUser(db) {
   return db.findAll("Users");
 }
 async function getUserStats(id) {
