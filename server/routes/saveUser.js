@@ -16,6 +16,12 @@ module.exports = async (req, res) => {
     const bridgeId = attempt.bridgeId;
     const { name, breed, type, level_name } = req.body;
 
+    const foundUser = await db.findOne("Users", { id });
+
+    if (foundUser) {
+      return res.status(400).send({ message: "User already exists" });
+    }
+
     const user = await saveUser(id, name, breed, type, level_name);
 
     const bridge = await findBridgeById(bridgeId);
@@ -24,11 +30,10 @@ module.exports = async (req, res) => {
       sendUserInfoToBridgeUrl(bridge.url, user);
     } else {
       console.log("Bridge not found: " + bridgeId);
-      res.status(500).send({ message: "Bridge not found: " + bridgeId });
+      return res.status(500).send({ message: "Bridge not found: " + bridgeId });
     }
-
     res.send();
   } catch (error) {
-    console.log(error);
+    return res.status(500).send({ message: error.message });
   }
 };
