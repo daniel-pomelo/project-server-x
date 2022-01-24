@@ -1,23 +1,3 @@
-const MongoDataBase = require("./MongoDataBase");
-const InMemoryDataBase = require("./InMemoryDataBase");
-
-class User {
-  static from(id, name, breed, type, level_name) {
-    return {
-      id,
-      name,
-      breed,
-      type,
-      level_name,
-      level_value: 1,
-      stats: {
-        health: 100,
-        mana: 100,
-      },
-    };
-  }
-}
-
 async function findUserById(db, id) {
   const user = await db.findOne("Users", { id });
   if (!user) {
@@ -32,12 +12,6 @@ async function findUserById(db, id) {
   };
 }
 
-async function saveUser(id, name, breed, type, level_name) {
-  const db = MongoDataBase.init();
-  const user = User.from(id, name, breed, type, level_name);
-  await db.save("Users", user);
-  return user;
-}
 function findAllUser(db) {
   return db.findAll("Users");
 }
@@ -67,6 +41,5 @@ async function getUserStats(db, id) {
 module.exports = {
   findUserById,
   findAllUser,
-  saveUser,
   getUserStats,
 };

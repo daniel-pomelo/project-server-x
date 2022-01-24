@@ -39,7 +39,7 @@ app.get(
 app.get("/", function (req, res) {
   res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));
 });
-app.post("/register/:id", saveUser);
+app.post("/register/:id", saveUser(db));
 app.get("/register/:id", function (req, res) {
   res.sendFile(path.resolve(path.join(__dirname, "/../view/register.html")));
 });

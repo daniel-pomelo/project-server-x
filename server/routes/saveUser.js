@@ -1,39 +1,76 @@
-const { saveUser } = require("../../user");
-const { findBridgeById } = require("../../bridge");
 const { sendUserInfoToBridgeUrl } = require("../sendUserInfoToBridgeUrl");
-const InMemoryDataBase = require("../../InMemoryDataBase");
-const MongoDataBase = require("../../MongoDataBase");
+class User {
+  static from(id, name, breed, type, level_name) {
+    return {
+      id,
+      name,
+      breed,
+      type,
+      level_name,
+      level_value: 1,
+      stats: {
+        health: 100,
+        mana: 100,
+      },
+    };
+  }
+}
 
-module.exports = async (req, res) => {
+const responses = {
+  USER_ALREADY_EXISTS: {
+    status: 400,
+    message: "User already exists",
+  },
+  BRIDGE_NOT_FOUND: {
+    status: 400,
+    message: "Bridge not found",
+  },
+  ATTEMPT_NOT_FOUND: {
+    status: 400,
+    message: "Attempt not found",
+  },
+};
+
+async function verifyUserAlreadyExists(db, userId) {
+  const user = await db.findOne("Users", { id: userId });
+  if (user) {
+    throw new Error("USER_ALREADY_EXISTS");
+  }
+}
+
+async function getBridgeFromRegisterAttempt(db, userId) {
+  const registerAttempt = await db.findOne("RegisterAttempts", { userId });
+  if (!registerAttempt) {
+    throw new Error("ATTEMPT_NOT_FOUND");
+  }
+  const { bridgeId } = registerAttempt;
+  const bridge = await db.findOne("Bridges", { id: bridgeId });
+  if (!bridge) {
+    throw new Error("BRIDGE_NOT_FOUND");
+  }
+  return bridge;
+}
+
+module.exports = (db) => async (req, res) => {
   try {
-    const id = req.params.id;
-    const db =
-      process.env.ENV_NAME === "dev"
-        ? InMemoryDataBase.init()
-        : MongoDataBase.init();
-    const attempt = await db.findOne("RegisterAttempts", { userId: id });
-    console.log("attempt: ", attempt);
-    const bridgeId = attempt.bridgeId;
+    const userId = req.params.id;
+
+    await verifyUserAlreadyExists(db, userId);
+
+    const bridge = await getBridgeFromRegisterAttempt(db, userId);
+
     const { name, breed, type, level_name } = req.body;
+    const user = User.from(userId, name, breed, type, level_name);
+    await db.save("Users", user);
 
-    const foundUser = await db.findOne("Users", { id });
+    sendUserInfoToBridgeUrl(bridge, user);
 
-    if (foundUser) {
-      return res.status(400).send({ message: "User already exists" });
-    }
-
-    const user = await saveUser(id, name, breed, type, level_name);
-
-    const bridge = await findBridgeById(bridgeId);
-
-    if (bridge) {
-      sendUserInfoToBridgeUrl(bridge.url, user);
-    } else {
-      console.log("Bridge not found: " + bridgeId);
-      return res.status(500).send({ message: "Bridge not found: " + bridgeId });
-    }
     res.send();
   } catch (error) {
-    return res.status(500).send({ message: error.message });
+    console.log(error);
+    const custom = responses[error.message];
+    return res
+      .status(custom.status || 500)
+      .send({ message: custom.message || error.message });
   }
 };

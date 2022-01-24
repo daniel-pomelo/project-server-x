@@ -1,9 +1,10 @@
 const axios = require("axios").default;
 
-function sendUserInfoToBridgeUrl(bridgeUrl, user) {
+function sendUserInfoToBridgeUrl(bridge, user) {
   if (process.env.ENV_NAME === "dev") {
     return Promise.resolve();
   }
+  const { url } = bridge;
   const userStats = user.stats;
   const data = {
     ...user,
@@ -11,10 +12,8 @@ function sendUserInfoToBridgeUrl(bridgeUrl, user) {
     mana: userStats.mana,
     stats: userStats,
   };
-  console.log(JSON.stringify(user, null, 2));
-  console.log(JSON.stringify(data, null, 2));
   return axios
-    .post(bridgeUrl, data)
+    .post(url, data)
     .then(function (response) {
       console.log(response);
     })
