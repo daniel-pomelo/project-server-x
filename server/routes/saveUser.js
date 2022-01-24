@@ -67,7 +67,6 @@ module.exports = (db) => async (req, res) => {
 
     res.send();
   } catch (error) {
-    console.log(error);
     const custom = responses[error.message];
     return res
       .status(custom.status || 500)

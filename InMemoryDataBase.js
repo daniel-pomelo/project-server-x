@@ -1,21 +1,21 @@
-const registerAttemps = new Map();
-const users = new Map();
-
 class InMemoryDataBase {
   static init() {
-    return new InMemoryDataBase();
+    const db = new InMemoryDataBase();
+    db.registerAttemps = new Map();
+    db.users = new Map();
+    return db;
   }
   async save(collectionName, data) {
     if (collectionName === "Users") {
-      users.set(data.id, data);
+      this.users.set(data.id, data);
     } else {
       const { userId } = data;
-      registerAttemps.set(userId, data);
+      this.registerAttemps.set(userId, data);
     }
   }
   async findAll(collectionName) {
     if (collectionName === "Users") {
-      return Array.from(users.values());
+      return Array.from(this.users.values());
     } else {
       throw new Error(collectionName, " not implemented for findAll");
     }
@@ -40,7 +40,7 @@ class InMemoryDataBase {
       } else if (criteria.id === "abc78910") {
         return Promise.reject(new Error("Some error message"));
       } else {
-        return users.get(criteria.id);
+        return this.users.get(criteria.id);
       }
     }
     if (collectionName === "Bridges") {
@@ -51,7 +51,7 @@ class InMemoryDataBase {
     }
     if (collectionName === "RegisterAttempts") {
       const { userId } = criteria;
-      return registerAttemps.get(userId);
+      return this.registerAttemps.get(userId);
     }
   }
 }

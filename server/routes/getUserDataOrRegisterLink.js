@@ -15,6 +15,7 @@ module.exports = (db) => async (req, res) => {
       res.status(404).send(getLinkToRegister(userId));
     }
   } catch (error) {
+    console.log(error);
     res.status(500).send({
       message: error.message,
     });
