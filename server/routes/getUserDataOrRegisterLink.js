@@ -1,41 +1,26 @@
 const { findUserById, getUserStats } = require("../../user");
 
-module.exports = (db) => (req, res) => {
-  const userId = req.params.id;
-  findUserById(db, userId)
-    .then(async (user) => {
-      if (isRegistered(user)) {
-        const userStats = await getUserStats(db, userId);
-        const userResponse = asJSONResponse(user);
-        const { stats } = userResponse;
-        res.send({
-          ...userResponse,
-          health: stats.health,
-          mana: stats.mana,
-          stats: userStats,
-        });
-      } else {
-        const bridgeId = req.headers["bridge-id"];
-        await db.save("RegisterAttempts", {
-          userId,
-          bridgeId,
-        });
-        res.status(404).send(getLinkToRegister(id));
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message,
+module.exports = (db) => async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const bridgeId = req.headers["bridge-id"];
+    const user = await findUserById(db, userId);
+    if (user) {
+      res.send(user);
+    } else {
+      db.save("RegisterAttempts", {
+        userId,
+        bridgeId,
       });
+      res.status(404).send(getLinkToRegister(userId));
+    }
+  } catch (error) {
+    res.status(500).send({
+      message: error.message,
     });
+  }
 };
 
-function asJSONResponse(user) {
-  return user;
-}
-function isRegistered(user) {
-  return !!user;
-}
 function getLinkToRegister(id) {
   return {
     register_link: "https://project-server-x.herokuapp.com/register/" + id,

@@ -18,9 +18,20 @@ class User {
   }
 }
 
-function findUserById(db, id) {
-  return db.findOne("Users", { id });
+async function findUserById(db, id) {
+  const user = await db.findOne("Users", { id });
+  if (!user) {
+    return null;
+  }
+  const stats = await getUserStats(db, id);
+  return {
+    ...user,
+    health: user.stats.health,
+    mana: user.stats.mana,
+    stats,
+  };
 }
+
 async function saveUser(id, name, breed, type, level_name) {
   const db = MongoDataBase.init();
   const user = User.from(id, name, breed, type, level_name);
