@@ -1,4 +1,4 @@
-const { findUserById, getUserStats } = require("../../user");
+const { findUserById } = require("../../user");
 
 module.exports = (db) => async (req, res) => {
   try {
