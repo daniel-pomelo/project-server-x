@@ -3,11 +3,15 @@ class InMemoryDataBase {
     const db = new InMemoryDataBase();
     db.registerAttemps = new Map();
     db.users = new Map();
+    db.bridges = new Map();
     return db;
   }
   async save(collectionName, data) {
     if (collectionName === "Users") {
       this.users.set(data.id, data);
+    }
+    if (collectionName === "Bridges") {
+      this.bridges.set(data.id, data);
     } else {
       const { userId } = data;
       this.registerAttemps.set(userId, data);
@@ -16,6 +20,8 @@ class InMemoryDataBase {
   async findAll(collectionName) {
     if (collectionName === "Users") {
       return Array.from(this.users.values());
+    } else if (collectionName === "UsersProps") {
+      return [];
     } else {
       throw new Error(collectionName, " not implemented for findAll");
     }
@@ -35,14 +41,16 @@ class InMemoryDataBase {
       }
     }
     if (collectionName === "Bridges") {
-      return {
-        id: criteria.id,
-        url: "http://sarasa.com",
-      };
+      return this.bridges.get(criteria.id);
     }
     if (collectionName === "RegisterAttempts") {
       const { userId } = criteria;
       return this.registerAttemps.get(userId);
+    }
+  }
+  updateOne(collectionName, criteria, data) {
+    if (collectionName === "Bridges") {
+      this.bridges.set(criteria.id, data);
     }
   }
 }

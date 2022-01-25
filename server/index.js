@@ -9,13 +9,14 @@ const getUserDataOrRegisterLink = require("./routes/getUserDataOrRegisterLink");
 const saveUser = require("./routes/saveUser");
 const saveBridge = require("./routes/saveBridge");
 const InMemoryDataBase = require("../InMemoryDataBase");
+const MongoDataBase = require("../MongoDataBase");
 
 const PORT = process.env.PORT || 3000;
 class MyServer {
   constructor(app) {
     this.app = app;
   }
-  static async start() {
+  static start() {
     const app = express();
 
     app.use(express.static("public"));
@@ -25,11 +26,10 @@ class MyServer {
       })
     );
     app.use(express.json());
-    const db = InMemoryDataBase.init();
-    // const db =
-    //   process.env.ENV_NAME === "dev"
-    //     ? InMemoryDataBase.init()
-    //     : MongoDataBase.init();
+    const db =
+      process.env.ENV_NAME === "dev"
+        ? InMemoryDataBase.init()
+        : MongoDataBase.init();
 
     app.get("/api/users", findUsers(db));
     app.get(
@@ -56,7 +56,6 @@ class MyServer {
   listen() {
     this.server = this.app.listen(PORT, () => {
       console.log("Server is running at port " + PORT);
-      r(server);
     });
   }
   async close() {

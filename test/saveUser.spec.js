@@ -46,7 +46,7 @@ describe("Given users are registered", () => {
 
     await api.AssertUserExist(USER_ID, EXPECTED_USER);
   });
-  it("test 1222", async () => {
+  it("when getting all users should then return registered users", async () => {
     const api = new ServerInterface(server);
     const USER_ID = "12f6538d-fea7-421c-97f0-8f86b763ce75";
     await api.GivenTheresABridge({ id: "BRIDGE_ID", url: "http://sarasa.com" });
@@ -84,6 +84,31 @@ describe("Given users are registered", () => {
     const res = await api.findAllUsers();
 
     res.equals(200, [EXPECTED_USER]);
+  });
+  it("when there's not attempt then register should fail", async () => {
+    const api = new ServerInterface(server);
+    const USER_ID = "12f6538d-fea7-421c-97f0-8f86b763ce75";
+    const formValues = {
+      name: "Daniel",
+      breed: "Dragon",
+      type: "Ice",
+      level_name: "Milleniums",
+    };
+    const res = await api.RegisterUser(USER_ID, formValues);
+    res.equals(400, "Attempt not found");
+  });
+  it("when there's not bridge then register should fail", async () => {
+    const api = new ServerInterface(server);
+    const USER_ID = "12f6538d-fea7-421c-97f0-8f86b763ce75";
+    await api.AssertUserNotRegistered(USER_ID);
+    const formValues = {
+      name: "Daniel",
+      breed: "Dragon",
+      type: "Ice",
+      level_name: "Milleniums",
+    };
+    const res = await api.RegisterUser(USER_ID, formValues);
+    res.equals(400, "Bridge not found");
   });
   it("when user is not registered, api return 404 ", async () => {
     const api = new ServerInterface(server);

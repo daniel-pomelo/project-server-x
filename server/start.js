@@ -1,3 +1,5 @@
 const { MyServer } = require("./index");
 
-MyServer.start();
+const server = MyServer.start();
+
+server.listen();
