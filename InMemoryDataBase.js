@@ -22,19 +22,10 @@ class InMemoryDataBase {
   }
   async findOne(collectionName, criteria) {
     if (collectionName === "Users") {
-      if (criteria.id === "abc123") {
-        return Promise.resolve({
-          id: "abc123",
-          name: "Daniel",
-          breed: "Dragon",
-          type: "Hielo",
-          level_name: "Milenios",
-          level_value: 1,
-          stats: {
-            health: 100,
-            mana: 100,
-          },
-        });
+      if (criteria.id === "USER_ID_THAT_WILL_CAUSE_ERROR") {
+        return Promise.reject(
+          new Error("Error de base de datos para este user id")
+        );
       } else if (criteria.id === "abc789") {
         return null;
       } else if (criteria.id === "abc78910") {

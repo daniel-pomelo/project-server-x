@@ -56,6 +56,21 @@ class MongoDataBase {
       this.client.close();
     });
   }
+  updateOne(collectionName, criteria, document) {
+    return this.client.connect(async (err) => {
+      if (err) {
+        return reject(err);
+      }
+      await this.client.db("ProjectX").collection(collectionName).updateOne(
+        criteria,
+        {
+          $set: document,
+        },
+        { upsert: true }
+      );
+      this.client.close();
+    });
+  }
 }
 
 module.exports = MongoDataBase;

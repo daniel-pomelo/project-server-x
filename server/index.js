@@ -9,15 +9,13 @@ const getUserDataOrRegisterLink = require("./routes/getUserDataOrRegisterLink");
 const saveUser = require("./routes/saveUser");
 const saveBridge = require("./routes/saveBridge");
 const InMemoryDataBase = require("../InMemoryDataBase");
-const MongoDataBase = require("../MongoDataBase");
 
 const PORT = process.env.PORT || 3000;
 class MyServer {
-  constructor(server, app) {
-    this.server = server;
+  constructor(app) {
     this.app = app;
   }
-  static start() {
+  static async start() {
     const app = express();
 
     app.use(express.static("public"));
@@ -27,11 +25,11 @@ class MyServer {
       })
     );
     app.use(express.json());
-
-    const db =
-      process.env.ENV_NAME === "dev"
-        ? InMemoryDataBase.init()
-        : MongoDataBase.init();
+    const db = InMemoryDataBase.init();
+    // const db =
+    //   process.env.ENV_NAME === "dev"
+    //     ? InMemoryDataBase.init()
+    //     : MongoDataBase.init();
 
     app.get("/api/users", findUsers(db));
     app.get(
@@ -51,20 +49,25 @@ class MyServer {
       );
     });
 
-    app.post("/api/bridge", verifyIsValidBridge, saveBridge);
+    app.post("/api/bridge", verifyIsValidBridge, saveBridge(db));
 
-    const server = app.listen(PORT, () => {
+    return new MyServer(app);
+  }
+  listen() {
+    this.server = this.app.listen(PORT, () => {
       console.log("Server is running at port " + PORT);
+      r(server);
     });
-    return new MyServer(server, app);
   }
   async close() {
-    await new Promise((r) => {
-      this.server.close(() => {
-        console.log("Server closed at port " + PORT);
-        r();
+    if (this.server) {
+      await new Promise((r) => {
+        this.server.close(() => {
+          console.log("Server closed at port " + PORT);
+          r();
+        });
       });
-    });
+    }
   }
 }
 

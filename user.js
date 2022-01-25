@@ -13,7 +13,19 @@ async function findUserById(db, id) {
 }
 
 function findAllUser(db) {
-  return db.findAll("Users");
+  return db.findAll("Users").then((users) => {
+    return Promise.all(
+      users.map(async (user) => {
+        const stats = await getUserStats(db, user.id);
+        return {
+          ...user,
+          health: user.stats.health,
+          mana: user.stats.mana,
+          stats,
+        };
+      })
+    );
+  });
 }
 async function getUserStats(db, id) {
   const props = {

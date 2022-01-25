@@ -1,4 +1,5 @@
 const { sendUserInfoToBridgeUrl } = require("../sendUserInfoToBridgeUrl");
+const { findBridgeById } = require("../../bridge");
 class User {
   static from(id, name, breed, type, level_name) {
     return {
@@ -44,7 +45,7 @@ async function getBridgeFromRegisterAttempt(db, userId) {
     throw new Error("ATTEMPT_NOT_FOUND");
   }
   const { bridgeId } = registerAttempt;
-  const bridge = await db.findOne("Bridges", { id: bridgeId });
+  const bridge = await findBridgeById(db, bridgeId);
   if (!bridge) {
     throw new Error("BRIDGE_NOT_FOUND");
   }
