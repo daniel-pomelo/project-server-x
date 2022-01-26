@@ -2,7 +2,7 @@ const InMemoryDataBase = require("../InMemoryDataBase");
 const { MyServer } = require("../server");
 const { ServerInterface } = require("./ServerInterface.js");
 
-describe("Given users are registered", () => {
+describe("Given a application to manage users in a second life game", () => {
   let server;
   beforeEach(async () => {
     server = await MyServer.start(InMemoryDataBase.init());

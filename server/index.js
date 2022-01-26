@@ -2,8 +2,6 @@ require("dotenv").config();
 const path = require("path");
 const express = require("express");
 const { logBridgeId } = require("./logBridgeId");
-const { verifyIsValidBridge } = require("./verifyIsValidBridge");
-const { verifyUserIdPresence } = require("./verifyUserIdPresence");
 const findUsers = require("./routes/findUsers");
 const getUserDataOrRegisterLink = require("./routes/getUserDataOrRegisterLink");
 const saveUser = require("./routes/saveUser");
@@ -25,13 +23,7 @@ class MyServer {
     );
     app.use(express.json());
     app.get("/api/users", findUsers(db));
-    app.get(
-      "/api/users/:id",
-      logBridgeId,
-      verifyIsValidBridge,
-      verifyUserIdPresence,
-      getUserDataOrRegisterLink(db)
-    );
+    app.get("/api/users/:id", logBridgeId, getUserDataOrRegisterLink(db));
     app.get("/", function (req, res) {
       res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));
     });
@@ -42,7 +34,7 @@ class MyServer {
       );
     });
 
-    app.post("/api/bridge", verifyIsValidBridge, saveBridge(db));
+    app.post("/api/bridge", saveBridge(db));
 
     return new MyServer(app);
   }
