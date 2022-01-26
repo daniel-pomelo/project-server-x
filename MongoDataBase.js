@@ -44,16 +44,19 @@ class MongoDataBase {
       });
     });
   }
-  save(collectionName, data) {
-    return this.client.connect(async (err) => {
-      if (err) {
-        return reject(err);
-      }
-      await this.client
-        .db("ProjectX")
-        .collection(collectionName)
-        .insertOne(data);
-      this.client.close();
+  async save(collectionName, data) {
+    await new Promise((r) => {
+      this.client.connect(async (err) => {
+        if (err) {
+          return reject(err);
+        }
+        await this.client
+          .db("ProjectX")
+          .collection(collectionName)
+          .insertOne(data);
+        this.client.close();
+        r();
+      });
     });
   }
   updateOne(collectionName, criteria, document) {

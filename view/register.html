@@ -227,7 +227,7 @@
           body: JSON.stringify(data),
         })
           .then((response) => {
-            if (response.status === 200) {
+            if (response.status === 201) {
               snackbar.show("Success!! You're registered", "success");
             } else {
               snackbar.show(

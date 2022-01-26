@@ -11,7 +11,6 @@ async function findUserById(db, id) {
     stats,
   };
 }
-
 async function findAllUser(db) {
   const stats = await db.findAll("UsersProps");
   return db.findAll("Users").then((users) => {

@@ -1,11 +1,26 @@
+const { expect } = require("chai");
 const InMemoryDataBase = require("../InMemoryDataBase");
 const { MyServer } = require("../server");
 const { ServerInterface } = require("./ServerInterface.js");
 
+class Sorombombom {
+  constructor() {
+    this.user = null;
+  }
+  contains(expected) {
+    expect(expected).to.eqls(this.user);
+  }
+  notify(user, bridge) {
+    this.user = user;
+  }
+}
+
 describe("Given a application to manage users in a second life game", () => {
   let server;
+  let sorombombom;
   beforeEach(async () => {
-    server = await MyServer.start(InMemoryDataBase.init());
+    sorombombom = new Sorombombom();
+    server = await MyServer.start(InMemoryDataBase.init(), sorombombom);
   });
   afterEach(async () => {
     server.close();
@@ -145,5 +160,44 @@ describe("Given a application to manage users in a second life game", () => {
     await api.GivenTheresABridge({ id: "BRIDGE_ID", url: "http://sarasa.com" });
     const res = await api.findUser(USER_ID);
     res.equals(500, "Error de base de datos para este user id");
+  });
+  it("should call sorombombom with new user", async () => {
+    const api = new ServerInterface(server);
+    const USER_ID = "12f6538d-fea7-421c-97f0-8f86b763ce75";
+    await api.GivenTheresABridge({ id: "BRIDGE_ID", url: "http://sarasa.com" });
+    await api.AssertUserNotRegistered(USER_ID);
+
+    const formValues = {
+      name: "Daniel",
+      breed: "Dragon",
+      type: "Ice",
+      level_name: "Milleniums",
+    };
+    const res = await api.RegisterUser(USER_ID, formValues);
+
+    const EXPECTED_USER = {
+      id: "12f6538d-fea7-421c-97f0-8f86b763ce75",
+      name: "Daniel",
+      breed: "Dragon",
+      type: "Ice",
+      level_name: "Milleniums",
+      level_value: 1,
+      health: 100,
+      mana: 100,
+      stats: {
+        agility: 0,
+        endurance: 0,
+        fortitude: 0,
+        health: 0,
+        intelligence: 0,
+        perception: 0,
+        strength: 0,
+        will: 0,
+      },
+    };
+
+    res.statusEquals(201);
+
+    sorombombom.contains(EXPECTED_USER);
   });
 });

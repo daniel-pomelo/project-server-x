@@ -1,5 +1,6 @@
-const { sendUserInfoToBridgeUrl } = require("../sendUserInfoToBridgeUrl");
 const { findBridgeById } = require("../../bridge");
+const { findUserById } = require("../../user");
+
 class User {
   static from(id, name, breed, type, level_name) {
     return {
@@ -52,7 +53,7 @@ async function getBridgeFromRegisterAttempt(db, userId) {
   return bridge;
 }
 
-module.exports = (db) => async (req, res) => {
+module.exports = (db, sorombombom) => async (req, res) => {
   try {
     const userId = req.params.id;
 
@@ -64,13 +65,15 @@ module.exports = (db) => async (req, res) => {
     const user = User.from(userId, name, breed, type, level_name);
     await db.save("Users", user);
 
-    sendUserInfoToBridgeUrl(bridge, user);
+    const asd = await findUserById(db, userId);
 
-    res.send();
+    sorombombom.notify(asd, bridge);
+
+    res.status(201).send();
   } catch (error) {
     const custom = responses[error.message];
     return res
-      .status(custom.status || 500)
-      .send({ message: custom.message || error.message });
+      .status((custom && custom.status) || 500)
+      .send({ message: (custom && custom.message) || error.message });
   }
 };

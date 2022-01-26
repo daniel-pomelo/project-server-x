@@ -12,7 +12,7 @@ class MyServer {
   constructor(app) {
     this.app = app;
   }
-  static start(db) {
+  static start(db, sorombombom) {
     const app = express();
 
     app.use(express.static("public"));
@@ -27,7 +27,7 @@ class MyServer {
     app.get("/", function (req, res) {
       res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));
     });
-    app.post("/register/:id", saveUser(db));
+    app.post("/register/:id", saveUser(db, sorombombom));
     app.get("/register/:id", function (req, res) {
       res.sendFile(
         path.resolve(path.join(__dirname, "/../view/register.html"))
