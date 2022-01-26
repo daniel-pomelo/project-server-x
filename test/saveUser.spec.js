@@ -1,10 +1,11 @@
+const InMemoryDataBase = require("../InMemoryDataBase");
 const { MyServer } = require("../server");
 const { ServerInterface } = require("./ServerInterface.js");
 
 describe("Given users are registered", () => {
   let server;
   beforeEach(async () => {
-    server = await MyServer.start();
+    server = await MyServer.start(InMemoryDataBase.init());
   });
   afterEach(async () => {
     server.close();
