@@ -3,7 +3,7 @@ const InMemoryDataBase = require("../InMemoryDataBase");
 const { MyServer } = require("../server");
 const { ServerInterface } = require("./ServerInterface.js");
 
-class Sorombombom {
+class SystemEventsMock {
   constructor() {
     this.user = null;
   }
@@ -17,10 +17,10 @@ class Sorombombom {
 
 describe("Given a application to manage users in a second life game", () => {
   let server;
-  let sorombombom;
+  let systemEvents;
   beforeEach(async () => {
-    sorombombom = new Sorombombom();
-    server = await MyServer.start(InMemoryDataBase.init(), sorombombom);
+    systemEvents = new SystemEventsMock();
+    server = await MyServer.start(InMemoryDataBase.init(), systemEvents);
   });
   afterEach(async () => {
     server.close();
@@ -161,7 +161,7 @@ describe("Given a application to manage users in a second life game", () => {
     const res = await api.findUser(USER_ID);
     res.equals(500, "Error de base de datos para este user id");
   });
-  it("should call sorombombom with new user", async () => {
+  it("should call system events with new user", async () => {
     const api = new ServerInterface(server);
     const USER_ID = "12f6538d-fea7-421c-97f0-8f86b763ce75";
     await api.GivenTheresABridge({ id: "BRIDGE_ID", url: "http://sarasa.com" });
@@ -198,6 +198,6 @@ describe("Given a application to manage users in a second life game", () => {
 
     res.statusEquals(201);
 
-    sorombombom.contains(EXPECTED_USER);
+    systemEvents.contains(EXPECTED_USER);
   });
 });

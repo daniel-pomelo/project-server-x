@@ -8,11 +8,27 @@ const saveUser = require("./routes/saveUser");
 const saveBridge = require("./routes/saveBridge");
 
 const PORT = process.env.PORT || 3000;
+
+const responses = {
+  USER_ALREADY_EXISTS: {
+    status: 400,
+    message: "User already exists",
+  },
+  BRIDGE_NOT_FOUND: {
+    status: 400,
+    message: "Bridge not found",
+  },
+  ATTEMPT_NOT_FOUND: {
+    status: 400,
+    message: "Attempt not found",
+  },
+};
+
 class MyServer {
   constructor(app) {
     this.app = app;
   }
-  static start(db, sorombombom) {
+  static start(db, systemEvents) {
     const app = express();
 
     app.use(express.static("public"));
@@ -23,19 +39,35 @@ class MyServer {
     );
     app.use(express.json());
     app.get("/api/users", findUsers(db));
-    app.get("/api/users/:id", logBridgeId, getUserDataOrRegisterLink(db));
+    app.get("/api/users/:id", logBridgeId, async (req, res, next) => {
+      try {
+        await getUserDataOrRegisterLink(db)(req, res);
+      } catch (error) {
+        next(error);
+      }
+    });
     app.get("/", function (req, res) {
       res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));
     });
-    app.post("/register/:id", saveUser(db, sorombombom));
+    app.post("/register/:id", async (req, res, next) => {
+      try {
+        await saveUser(db, systemEvents)(req, res);
+      } catch (error) {
+        next(error);
+      }
+    });
     app.get("/register/:id", function (req, res) {
       res.sendFile(
         path.resolve(path.join(__dirname, "/../view/register.html"))
       );
     });
-
     app.post("/api/bridge", saveBridge(db));
-
+    app.use((error, req, res, next) => {
+      const custom = responses[error.message];
+      res
+        .status((custom && custom.status) || 500)
+        .send({ message: (custom && custom.message) || error.message });
+    });
     return new MyServer(app);
   }
   listen() {

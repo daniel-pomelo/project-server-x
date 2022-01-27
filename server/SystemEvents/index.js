@@ -1,10 +1,13 @@
 const axios = require("axios").default;
 
-const notifySecondLife = {
+class SystemEvents {
+  static init() {
+    return new SystemEvents();
+  }
   notify(user, bridge) {
     const { url } = bridge;
     return axios.post(url, user);
-  },
-};
+  }
+}
 
-module.exports = notifySecondLife;
+module.exports = SystemEvents;

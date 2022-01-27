@@ -18,21 +18,6 @@ class User {
   }
 }
 
-const responses = {
-  USER_ALREADY_EXISTS: {
-    status: 400,
-    message: "User already exists",
-  },
-  BRIDGE_NOT_FOUND: {
-    status: 400,
-    message: "Bridge not found",
-  },
-  ATTEMPT_NOT_FOUND: {
-    status: 400,
-    message: "Attempt not found",
-  },
-};
-
 async function verifyUserAlreadyExists(db, userId) {
   const user = await db.findOne("Users", { id: userId });
   if (user) {
@@ -53,27 +38,20 @@ async function getBridgeFromRegisterAttempt(db, userId) {
   return bridge;
 }
 
-module.exports = (db, sorombombom) => async (req, res) => {
-  try {
-    const userId = req.params.id;
+module.exports = (db, systemEvents) => async (req, res) => {
+  const userId = req.params.id;
 
-    await verifyUserAlreadyExists(db, userId);
+  await verifyUserAlreadyExists(db, userId);
 
-    const bridge = await getBridgeFromRegisterAttempt(db, userId);
+  const bridge = await getBridgeFromRegisterAttempt(db, userId);
 
-    const { name, breed, type, level_name } = req.body;
-    const user = User.from(userId, name, breed, type, level_name);
-    await db.save("Users", user);
+  const { name, breed, type, level_name } = req.body;
 
-    const asd = await findUserById(db, userId);
+  await db.save("Users", User.from(userId, name, breed, type, level_name));
 
-    sorombombom.notify(asd, bridge);
+  const user = await findUserById(db, userId);
 
-    res.status(201).send();
-  } catch (error) {
-    const custom = responses[error.message];
-    return res
-      .status((custom && custom.status) || 500)
-      .send({ message: (custom && custom.message) || error.message });
-  }
+  systemEvents.notify(user, bridge);
+
+  res.status(201).send();
 };
