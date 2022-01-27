@@ -25,28 +25,14 @@ async function findAllUser(db) {
   });
 }
 async function getUserStats(db, id) {
-  const props = {
-    strength: 0,
-    fortitude: 0,
-    health: 0,
-    intelligence: 0,
-    will: 0,
-    perception: 0,
-    agility: 0,
-    endurance: 0,
-  };
-  if (process.env.ENV_NAME === "dev") {
-    return props;
-  }
-  const userProps = await db.findOne("UsersProps", { user_id: id });
-  userProps && delete userProps.user_id;
-  userProps && delete userProps._id;
-  return {
-    ...props,
-    ...userProps,
-  };
+  const stats = await db.find("UsersProps", { user_id: id });
+  return reduce(stats);
 }
 function buildUserStats(stats, user) {
+  return reduce(stats.filter((stat) => stat.user_id === user.id));
+}
+
+function reduce(stats) {
   const props = {
     strength: 0,
     fortitude: 0,
@@ -57,16 +43,18 @@ function buildUserStats(stats, user) {
     agility: 0,
     endurance: 0,
   };
-  if (process.env.ENV_NAME === "dev") {
-    return props;
-  }
-  const userProps = stats.filter((stat) => stat.user_id === user.id)[0] || {};
-  userProps && delete userProps.user_id;
-  userProps && delete userProps._id;
-  return {
-    ...props,
-    ...userProps,
-  };
+  return stats.reduce((acc, stat) => {
+    return Object.entries(stat).reduce((initial, [name, value]) => {
+      if (initial[name] !== undefined && initial[name] !== null) {
+        return {
+          ...initial,
+          [name]: initial[name] + value,
+        };
+      } else {
+        return initial;
+      }
+    }, acc);
+  }, props);
 }
 
 module.exports = {

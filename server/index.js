@@ -46,6 +46,11 @@ class MyServer {
         next(error);
       }
     });
+    app.post("/api/users/:id/stats", async (req, res) => {
+      const stats = { user_id: req.params.id, ...req.body };
+      await db.save("UsersProps", stats);
+      res.send();
+    });
     app.get("/", function (req, res) {
       res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));
     });

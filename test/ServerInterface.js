@@ -40,6 +40,16 @@ class ServerInterface {
       },
     };
   }
+  async RegisterUserStats(userId, formValues) {
+    const res = await supertest(this.server.app)
+      .post("/api/users/" + userId + "/stats")
+      .send(formValues);
+    return {
+      statusEquals(status) {
+        expect(res.status).to.eqls(status);
+      },
+    };
+  }
   async AssertUserExist(userId, user) {
     const { body } = await supertest(this.server.app)
       .get("/api/users/" + userId)

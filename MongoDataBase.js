@@ -74,6 +74,22 @@ class MongoDataBase {
       this.client.close();
     });
   }
+  async find(collectionName, criteria) {
+    return new Promise((resolve) => {
+      this.client.connect(async (err) => {
+        if (err) {
+          return reject(err);
+        }
+        const cursor = this.client
+          .db("ProjectX")
+          .collection(collectionName)
+          .find(criteria);
+        const results = await cursor.toArray();
+        resolve(results);
+        this.client.close();
+      });
+    });
+  }
 }
 
 module.exports = MongoDataBase;
