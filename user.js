@@ -1,26 +1,45 @@
+const firstLevelMaxXP = 240;
+
+function calculateNextLevelXP(level) {
+  let nextLevelXP = firstLevelMaxXP;
+  for (i = 1; i < level; i++) {
+    nextLevelXP += firstLevelMaxXP * 0.2;
+  }
+  return Math.round(nextLevelXP);
+}
+
+function addXPProps(db, user) {
+  return {
+    ...user,
+    xp_current: 0,
+    xp_max: calculateNextLevelXP(user.level_value),
+    xp_level: 0,
+  };
+}
+
 async function findUserById(db, id) {
   const user = await db.findOne("Users", { id });
   if (!user) {
     return null;
   }
   const stats = await getUserStats(db, id);
-  return {
+  return addXPProps(db, {
     ...user,
     health: user.stats.health,
     mana: user.stats.mana,
     stats,
-  };
+  });
 }
 async function findAllUser(db) {
   const stats = await db.findAll("UsersProps");
   return db.findAll("Users").then((users) => {
     return users.map((user) => {
-      return {
+      return addXPProps(db, {
         ...user,
         health: user.stats.health,
         mana: user.stats.mana,
         stats: buildUserStats(stats, user),
-      };
+      });
     });
   });
 }
