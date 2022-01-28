@@ -25,7 +25,7 @@ describe("Given a application to manage users in a second life game", () => {
   afterEach(async () => {
     server.close();
   });
-  it("test 1", async () => {
+  it("should allow user to register", async () => {
     const api = new ServerInterface(server);
     const USER_ID = "12f6538d-fea7-421c-97f0-8f86b763ce75";
     await api.GivenTheresABridge({ id: "BRIDGE_ID", url: "http://sarasa.com" });
@@ -62,6 +62,69 @@ describe("Given a application to manage users in a second life game", () => {
 
     await api.AssertUserExist(USER_ID, EXPECTED_USER);
   });
+  it("should return user stats", async () => {
+    const api = new ServerInterface(server);
+    const USER_ID = "12f6538d-fea7-421c-97f0-8f86b763ce75";
+    await api.GivenTheresABridge({ id: "BRIDGE_ID", url: "http://sarasa.com" });
+    await api.AssertUserNotRegistered(USER_ID);
+
+    const formValues = {
+      name: "Daniel",
+      breed: "Dragon",
+      type: "Ice",
+      level_name: "Milleniums",
+    };
+    await api.RegisterUser(USER_ID, formValues);
+
+    const formStatsValues1 = {
+      fortitude: 40,
+      intelligence: 30,
+      perception: 20,
+      strength: 10,
+    };
+    const registerUserStatsResponse1 = await api.RegisterUserStats(
+      USER_ID,
+      formStatsValues1
+    );
+
+    registerUserStatsResponse1.statusEquals(200);
+
+    const formStatsValues2 = {
+      fortitude: 10,
+      intelligence: 20,
+      perception: 15,
+      strength: 22,
+    };
+    const registerUserStatsResponse2 = await api.RegisterUserStats(
+      USER_ID,
+      formStatsValues2
+    );
+
+    registerUserStatsResponse2.statusEquals(200);
+
+    const EXPECTED_USER = {
+      id: "12f6538d-fea7-421c-97f0-8f86b763ce75",
+      name: "Daniel",
+      breed: "Dragon",
+      type: "Ice",
+      level_name: "Milleniums",
+      level_value: 1,
+      health: 100,
+      mana: 100,
+      stats: {
+        agility: 0,
+        endurance: 0,
+        fortitude: 50,
+        health: 0,
+        intelligence: 50,
+        perception: 35,
+        strength: 32,
+        will: 0,
+      },
+    };
+
+    await api.AssertUserExist(USER_ID, EXPECTED_USER);
+  });
   it("when getting all users should then return registered users", async () => {
     const api = new ServerInterface(server);
     const USER_ID = "12f6538d-fea7-421c-97f0-8f86b763ce75";
@@ -76,6 +139,19 @@ describe("Given a application to manage users in a second life game", () => {
     };
     await api.RegisterUser(USER_ID, formValues);
 
+    const formStatsValues = {
+      fortitude: 40,
+      intelligence: 30,
+      perception: 20,
+      strength: 10,
+    };
+    const registerUserStatsResponse = await api.RegisterUserStats(
+      USER_ID,
+      formStatsValues
+    );
+
+    registerUserStatsResponse.statusEquals(200);
+
     const EXPECTED_USER = {
       id: "12f6538d-fea7-421c-97f0-8f86b763ce75",
       name: "Daniel",
@@ -88,18 +164,18 @@ describe("Given a application to manage users in a second life game", () => {
       stats: {
         agility: 0,
         endurance: 0,
-        fortitude: 0,
+        fortitude: 40,
         health: 0,
-        intelligence: 0,
-        perception: 0,
-        strength: 0,
+        intelligence: 30,
+        perception: 20,
+        strength: 10,
         will: 0,
       },
     };
 
-    const res = await api.findAllUsers();
+    const findAllUsersResponse = await api.findAllUsers();
 
-    res.equals(200, [EXPECTED_USER]);
+    findAllUsersResponse.equals(200, [EXPECTED_USER]);
   });
   it("when there's not attempt then register should fail", async () => {
     const api = new ServerInterface(server);

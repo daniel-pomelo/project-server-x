@@ -4,14 +4,15 @@ class InMemoryDataBase {
     db.registerAttemps = new Map();
     db.users = new Map();
     db.bridges = new Map();
+    db.stats = new Set();
     return db;
   }
   async save(collectionName, data) {
     if (collectionName === "Users") {
       this.users.set(data.id, data);
     }
-    if (collectionName === "Bridges") {
-      this.bridges.set(data.id, data);
+    if (collectionName === "UsersProps") {
+      this.stats.add(data);
     } else {
       const { userId } = data;
       this.registerAttemps.set(userId, data);
@@ -20,10 +21,9 @@ class InMemoryDataBase {
   async findAll(collectionName) {
     if (collectionName === "Users") {
       return Array.from(this.users.values());
-    } else if (collectionName === "UsersProps") {
-      return [];
-    } else {
-      throw new Error(collectionName, " not implemented for findAll");
+    }
+    if (collectionName === "UsersProps") {
+      return Array.from(this.stats.values());
     }
   }
   async findOne(collectionName, criteria) {
@@ -32,10 +32,6 @@ class InMemoryDataBase {
         return Promise.reject(
           new Error("Error de base de datos para este user id")
         );
-      } else if (criteria.id === "abc789") {
-        return null;
-      } else if (criteria.id === "abc78910") {
-        return Promise.reject(new Error("Some error message"));
       } else {
         return this.users.get(criteria.id);
       }
@@ -52,6 +48,9 @@ class InMemoryDataBase {
     if (collectionName === "Bridges") {
       this.bridges.set(criteria.id, data);
     }
+  }
+  async find(collectionName, criteria) {
+    return Array.from(this.stats.values());
   }
 }
 
