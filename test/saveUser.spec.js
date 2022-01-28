@@ -8,7 +8,7 @@ class SystemEventsMock {
     this.user = null;
   }
   contains(expected) {
-    expect(expected).to.eqls(this.user);
+    expect(this.user).to.eqls(expected);
   }
   notify(user, bridge) {
     this.user = user;
@@ -48,6 +48,9 @@ describe("Given a application to manage users in a second life game", () => {
       level_value: 1,
       health: 100,
       mana: 100,
+      xp_current: 0,
+      xp_max: 240,
+      xp_level: 0,
       stats: {
         agility: 0,
         endurance: 0,
@@ -111,6 +114,9 @@ describe("Given a application to manage users in a second life game", () => {
       level_value: 1,
       health: 100,
       mana: 100,
+      xp_current: 0,
+      xp_max: 240,
+      xp_level: 0,
       stats: {
         agility: 0,
         endurance: 0,
@@ -161,6 +167,9 @@ describe("Given a application to manage users in a second life game", () => {
       level_value: 1,
       health: 100,
       mana: 100,
+      xp_current: 0,
+      xp_max: 240,
+      xp_level: 0,
       stats: {
         agility: 0,
         endurance: 0,
@@ -260,6 +269,9 @@ describe("Given a application to manage users in a second life game", () => {
       level_value: 1,
       health: 100,
       mana: 100,
+      xp_current: 0,
+      xp_max: 240,
+      xp_level: 0,
       stats: {
         agility: 0,
         endurance: 0,
