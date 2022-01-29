@@ -1,19 +1,18 @@
-const firstLevelMaxXP = 240;
+const DEFAULT_USER_EXPERIENCE = {
+  level_value: 1,
+  xp_current: 0,
+  xp_level: 0,
+  xp_max: 240,
+};
 
-function calculateNextLevelXP(level) {
-  let nextLevelXP = firstLevelMaxXP;
-  for (i = 1; i < level; i++) {
-    nextLevelXP += firstLevelMaxXP * 0.2;
-  }
-  return Math.round(nextLevelXP);
-}
-
-function addXPProps(db, user) {
+function addXPProps(experience = DEFAULT_USER_EXPERIENCE, user) {
+  experience = experience || DEFAULT_USER_EXPERIENCE;
   return {
     ...user,
-    xp_current: 0,
-    xp_max: calculateNextLevelXP(user.level_value),
-    xp_level: 0,
+    xp_current: experience.xp_current,
+    xp_max: experience.xp_max,
+    xp_level: experience.xp_level,
+    level_value: experience.level_value,
   };
 }
 
@@ -23,7 +22,8 @@ async function findUserById(db, id) {
     return null;
   }
   const stats = await getUserStats(db, id);
-  return addXPProps(db, {
+  const experience = await db.findOne("UserExperience", { user_id: id });
+  return addXPProps(experience, {
     ...user,
     health: user.stats.health,
     mana: user.stats.mana,
@@ -32,14 +32,18 @@ async function findUserById(db, id) {
 }
 async function findAllUser(db) {
   const stats = await db.findAll("UsersProps");
+  const experiences = await db.findAll("UserExperience");
   return db.findAll("Users").then((users) => {
     return users.map((user) => {
-      return addXPProps(db, {
-        ...user,
-        health: user.stats.health,
-        mana: user.stats.mana,
-        stats: buildUserStats(stats, user),
-      });
+      return addXPProps(
+        experiences.find((experience) => experience.user_id === user.id),
+        {
+          ...user,
+          health: user.stats.health,
+          mana: user.stats.mana,
+          stats: buildUserStats(stats, user),
+        }
+      );
     });
   });
 }
