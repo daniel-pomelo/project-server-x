@@ -40,10 +40,6 @@ class MyServer {
     );
     app.use(express.json());
     app.get("/api/users", findUsers(db));
-    app.post("/api/xp", (req, res) => {
-      console.log(JSON.stringify(req.body));
-      res.status(404).send();
-    });
     app.get("/api/users/:id", logBridgeId, async (req, res, next) => {
       try {
         await getUserDataOrRegisterLink(db)(req, res);
