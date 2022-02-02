@@ -14,7 +14,7 @@ class MongoDataBase {
     return new MongoDataBase(client);
   }
   findOne(collectionName, criteria) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       this.client.connect(async (err) => {
         if (err) {
           return reject(err);
@@ -29,7 +29,7 @@ class MongoDataBase {
     });
   }
   findAll(collectionName) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       this.client.connect(async (err) => {
         if (err) {
           return reject(err);
@@ -45,7 +45,7 @@ class MongoDataBase {
     });
   }
   async save(collectionName, data) {
-    await new Promise((r) => {
+    await new Promise((resolve, reject) => {
       this.client.connect(async (err) => {
         if (err) {
           return reject(err);
@@ -55,7 +55,7 @@ class MongoDataBase {
           .collection(collectionName)
           .insertOne(data);
         this.client.close();
-        r();
+        resolve();
       });
     });
   }
@@ -75,7 +75,7 @@ class MongoDataBase {
     });
   }
   async find(collectionName, criteria) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       this.client.connect(async (err) => {
         if (err) {
           return reject(err);
@@ -100,7 +100,7 @@ class MongoDataBase {
     }, {});
   }
   async bulkWrite(collectionName, operations) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       this.client.connect(async (err) => {
         if (err) {
           return reject(err);
