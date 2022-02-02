@@ -1,3 +1,6 @@
+const { findBridgeById } = require("../../bridge");
+const { findAllUser } = require("../../user");
+
 const firstLevelMaxXP = 240;
 
 function calculateNextLevelXP(level) {
@@ -8,7 +11,11 @@ function calculateNextLevelXP(level) {
   return Math.round(nextLevelXP);
 }
 
-const assignExperience = (db) => async (req, res) => {
+const assignExperience = (db, systemEvents) => async (req, res) => {
+  const bridgeId = req.headers["bridge-id"];
+  console.log(bridgeId);
+  const bridge = await findBridgeById(db, bridgeId);
+
   const experienceToAssign = [...req.body];
 
   const userIds = experienceToAssign.map(({ user_id }) => user_id);
@@ -54,6 +61,12 @@ const assignExperience = (db) => async (req, res) => {
   console.log(operations);
 
   await db.bulkWrite("UserExperience", operations);
+
+  const usersToSync = await findAllUser(db, userIds);
+
+  usersToSync.forEach((user) => {
+    systemEvents.notify(user, bridge);
+  });
 
   res.send();
 };

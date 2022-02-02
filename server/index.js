@@ -70,7 +70,7 @@ class MyServer {
     app.post("/api/bridge", saveBridge(db));
     app.post("/api/xp", async (req, res, next) => {
       try {
-        await assignExperience(db)(req, res);
+        await assignExperience(db, systemEvents)(req, res);
       } catch (error) {
         next(error);
       }

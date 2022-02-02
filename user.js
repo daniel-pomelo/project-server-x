@@ -30,10 +30,13 @@ async function findUserById(db, id) {
     stats,
   });
 }
-async function findAllUser(db) {
+async function findAllUser(db, userIds) {
   const stats = await db.findAll("UsersProps");
   const experiences = await db.findAll("UserExperience");
-  return db.findAll("Users").then((users) => {
+  const criteria = {
+    id: { $in: userIds },
+  };
+  return db.find("Users", criteria).then((users) => {
     return users.map((user) => {
       return addXPProps(
         experiences.find((experience) => experience.user_id === user.id),
