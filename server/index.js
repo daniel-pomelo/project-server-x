@@ -6,6 +6,7 @@ const findUsers = require("./routes/findUsers");
 const getUserDataOrRegisterLink = require("./routes/getUserDataOrRegisterLink");
 const saveUser = require("./routes/saveUser");
 const saveBridge = require("./routes/saveBridge");
+const assignExperience = require("./routes/assignExperience");
 
 const PORT = process.env.PORT || 3000;
 
@@ -71,6 +72,13 @@ class MyServer {
       );
     });
     app.post("/api/bridge", saveBridge(db));
+    app.post("/api/xp", async (req, res, next) => {
+      try {
+        await assignExperience(db)(req, res);
+      } catch (error) {
+        next(error);
+      }
+    });
     app.use((error, req, res, next) => {
       const custom = responses[error.message];
       res

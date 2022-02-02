@@ -84,6 +84,18 @@ class ServerInterface {
       },
     };
   }
+  async assignExperience(experienceToAssign) {
+    const res = await supertest(this.server.app)
+      .post("/api/xp")
+      .send(experienceToAssign)
+      .set("bridge-id", "BRIDGE_ID");
+    expect(res.status).to.eqls(200);
+    return {
+      statusEquals(status) {
+        expect(res.status).to.eqls(status);
+      },
+    };
+  }
 }
 
 module.exports = {

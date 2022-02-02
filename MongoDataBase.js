@@ -90,6 +90,44 @@ class MongoDataBase {
       });
     });
   }
+  async groupByUserId(collectionName, userIds) {
+    const documents = await this.find(collectionName, {
+      user_id: { $in: userIds },
+    });
+    return documents.reduce((acc, document) => {
+      acc[document.user_id] = document;
+      return acc;
+    }, {});
+  }
+  async bulkWrite(collectionName, operations) {
+    return new Promise((resolve) => {
+      this.client.connect(async (err) => {
+        if (err) {
+          return reject(err);
+        }
+        operations = operations.map(({ operation, document }) => {
+          if (operation === "insert") {
+            return { insertOne: { document } };
+          } else {
+            return {
+              updateOne: {
+                filter: { user_id: document.user_id },
+                update: { $set: document },
+                upsert: true,
+              },
+            };
+          }
+        });
+        const res = await this.client
+          .db("ProjectX")
+          .collection(collectionName)
+          .bulkWrite(operations);
+        console.log(res);
+        resolve();
+        this.client.close();
+      });
+    });
+  }
 }
 
 module.exports = MongoDataBase;
