@@ -11,9 +11,10 @@ function calculateNextLevelXP(level) {
   return Math.round(nextLevelXP);
 }
 
+const timestamp = () => new Date().toISOString();
+
 const assignExperience = (db, systemEvents) => async (req, res) => {
   const bridgeId = req.headers["bridge-id"];
-
   const bridge = await findBridgeById(db, bridgeId);
 
   const experienceToAssign = [...req.body];
@@ -67,6 +68,8 @@ const assignExperience = (db, systemEvents) => async (req, res) => {
   });
 
   res.send();
+
+  await db.registerAssignExperience(experienceToAssign, timestamp());
 };
 
 module.exports = assignExperience;

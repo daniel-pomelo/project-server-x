@@ -128,6 +128,12 @@ class MongoDataBase {
       });
     });
   }
+  registerAssignExperience(experienceToAssign, timestamp) {
+    return this.save("UserExperienceRecords", {
+      experiences: experienceToAssign,
+      timestamp,
+    });
+  }
 }
 
 module.exports = MongoDataBase;
