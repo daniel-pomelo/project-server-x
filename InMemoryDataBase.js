@@ -98,6 +98,7 @@ class InMemoryDataBase {
       }
     });
   }
+  registerAssignExperience(experienceToAssign, timestamp) {}
 }
 
 module.exports = InMemoryDataBase;
