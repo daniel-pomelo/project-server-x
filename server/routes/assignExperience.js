@@ -13,7 +13,7 @@ function calculateNextLevelXP(level) {
 
 const assignExperience = (db, systemEvents) => async (req, res) => {
   const bridgeId = req.headers["bridge-id"];
-  console.log(bridgeId);
+
   const bridge = await findBridgeById(db, bridgeId);
 
   const experienceToAssign = [...req.body];
@@ -57,8 +57,6 @@ const assignExperience = (db, systemEvents) => async (req, res) => {
     },
     []
   );
-
-  console.log(operations);
 
   await db.bulkWrite("UserExperience", operations);
 

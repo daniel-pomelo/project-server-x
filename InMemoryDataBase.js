@@ -70,7 +70,12 @@ class InMemoryDataBase {
     }
   }
   async find(collectionName, criteria) {
-    return Array.from(this.stats.values());
+    if (collectionName === "Users") {
+      return Array.from(this.users.values());
+    }
+    if (collectionName === "UsersProps") {
+      return Array.from(this.stats.values());
+    }
   }
   async groupByUserId(collectionName, userIds) {
     const all = Array.from(this.userExperience.values());
