@@ -67,6 +67,9 @@ class MyServer {
         path.resolve(path.join(__dirname, "/../view/register.html"))
       );
     });
+    app.get("/profile/:id", function (req, res) {
+      res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));
+    });
     app.post("/api/bridge", saveBridge(db));
     app.post("/api/xp", async (req, res, next) => {
       try {
