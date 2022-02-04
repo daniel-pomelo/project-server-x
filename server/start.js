@@ -1,4 +1,4 @@
-const { MyServer } = require("./index");
+const { MyServer } = require("../built/server");
 const SystemEvents = require("./SystemEvents");
 const MongoDataBase = require("../MongoDataBase");
 
