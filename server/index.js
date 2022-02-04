@@ -32,6 +32,9 @@ class MyServer {
   static start(db, systemEvents) {
     const app = express();
 
+    app.set("view engine", "pug");
+    app.set("views", path.resolve(path.join(__dirname, "..", "view")));
+
     app.use(express.static("public"));
     app.use(
       express.urlencoded({
@@ -53,7 +56,12 @@ class MyServer {
       res.send();
     });
     app.get("/", function (req, res) {
-      res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));
+      // res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));
+      res.render("charts", {
+        experienceSeriesData: [
+          128, 320, 356, 220, 156, 110, 56, 128, 320, 356, 220, 156, 110, 56,
+        ],
+      });
     });
     app.post("/register/:id", async (req, res, next) => {
       try {

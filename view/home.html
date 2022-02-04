@@ -258,31 +258,10 @@
     </style>
   </head>
   <body>
-    <div class="page">
-      <div class="countdown-col col">
-        <div class="time middle">
-          <span
-            ><div id="days">00</div>
-            Dias</span
-          >
-          <span
-            ><div id="hours">00</div>
-            Horas</span
-          >
-          <span
-            ><div id="minutes">00</div>
-            Minutos</span
-          >
-          <span
-            ><div id="seconds">00</div>
-            Segundos</span
-          >
-        </div>
-        <div class="box middle">
-          <div class="loader3"></div>
-        </div>
-      </div>
-    </div>
+    <figure class="highcharts-figure">
+      <div id="container"></div>
+    </figure>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
     <script>
       let comingDate = new Date("Mar 21, 2022 12:00:00");
 
@@ -320,6 +299,70 @@
         if (x < 10) return "0" + x;
         else return x;
       }
+    </script>
+    <script>
+      Highcharts.chart("container", {
+        title: {
+          text: "User experience",
+        },
+
+        subtitle: {
+          text: "by day",
+        },
+
+        yAxis: {
+          title: {
+            text: "Number of Employees",
+          },
+        },
+
+        xAxis: {
+          type: "datetime",
+          accessibility: {
+            rangeDescription: "Range: 2010 to 2017",
+          },
+        },
+
+        legend: {
+          layout: "vertical",
+          align: "right",
+          verticalAlign: "middle",
+        },
+
+        plotOptions: {
+          series: {
+            label: {
+              connectorAllowed: false,
+            },
+            pointStart: Date.UTC(2021, 0, 1),
+            pointInterval: 24 * 3600 * 1000, // one day,
+          },
+        },
+
+        series: [
+          {
+            name: "XP",
+            data: [128, 320, 356, 220, 156, 110, 56],
+          },
+        ],
+
+        responsive: {
+          rules: [
+            {
+              condition: {
+                maxWidth: 500,
+              },
+              chartOptions: {
+                legend: {
+                  layout: "horizontal",
+                  align: "center",
+                  verticalAlign: "bottom",
+                },
+              },
+            },
+          ],
+        },
+      });
     </script>
   </body>
 </html>
