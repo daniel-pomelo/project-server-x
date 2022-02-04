@@ -1,0 +1,64 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title Profile
+        style(type="text/css").
+            @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                text-decoration: none;
+                font-family: "Poppins", sans-serif;
+            }
+
+            body {
+                background-color: #000;
+                color: #fff;
+                padding: 22px;
+            }
+            .stats-container {
+                padding: 10px;
+            }
+            @import "compass/css3";
+
+            .progress {
+                width: 100%;
+                height: 50px;
+            }
+            .progress-wrap {
+                background: #f80;
+                margin: 20px 0;
+                overflow: hidden;
+                position: relative;
+            }
+            .progress-bar {
+                    background: #ddd;
+                    left: 0;
+                    position: absolute;
+                    top: 0;
+                }
+            }
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    body
+        div
+        p !{user.name}
+        p health !{user.health} / mana !{user.mana}
+        div level !{user.level_value}
+        
+        p XP total !{user.xp_current}
+        p XP !{user.xp_level} / !{user.xp_max} [!{user.xp_max - user.xp_level} XP to level up]
+        p level percentage !{user.xp_level_percentage}%
+
+    div.stats-container
+        p strength: !{user.strength}
+        p fortitude: !{user.fortitude}
+        p intelligence: !{user.intelligence}
+        p will: !{user.will}
+        p perception: !{user.perception}
+        p agility: !{user.agility}
+        p endurance: !{user.endurance}
