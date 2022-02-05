@@ -7,6 +7,7 @@ const getUserDataOrRegisterLink = require("./routes/getUserDataOrRegisterLink");
 const saveUser = require("./routes/saveUser");
 const saveBridge = require("./routes/saveBridge");
 const assignExperience = require("./routes/assignExperience");
+const getUserProfile = require("./routes/getUserProfile");
 
 const PORT = process.env.PORT || 3000;
 
@@ -39,6 +40,8 @@ class MyServer {
       })
     );
     app.use(express.json());
+    app.set("views", path.resolve(path.join(__dirname, "..", "view")));
+    app.set("view engine", "ejs");
     app.get("/api/users", findUsers(db));
     app.get("/api/users/:id", logBridgeId, async (req, res, next) => {
       try {
@@ -67,9 +70,7 @@ class MyServer {
         path.resolve(path.join(__dirname, "/../view/register.html"))
       );
     });
-    app.get("/profile/:id", function (req, res) {
-      res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));
-    });
+    app.get("/profile/:id", getUserProfile(db));
     app.post("/api/bridge", saveBridge(db));
     app.post("/api/xp", async (req, res, next) => {
       try {
