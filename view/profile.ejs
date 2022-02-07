@@ -132,12 +132,9 @@
           <div class="mr-4">
             <img src="/img/wizard.png" width="50" height="50" alt="" />
           </div>
-          <div>
-            <div class="name">
-              <span><%= user.name %></span>
-              <span> - </span>
-              <span><%= user.health %> / <%= user.mana %></span>
-            </div>
+          <div class="flex flex-col">
+              <div><%= user.name %></div>
+              <div><%= user.health %> / <%= user.mana %></div>
           </div>
         </div>
       </div>
@@ -153,11 +150,13 @@
               <span class="card-level-name">level</span>
             </div>
           </div>
-          <div class="flex items-center ml-4">
-            <span><%= user.xp_level %> / <%= user.xp_max %></span>
-          </div>
-          <div class="flex items-center ml-4">
-            <span>total: <%= user.xp_current %> xp</span>
+          <div class="flex flex-col">
+            <div class="flex items-center ml-4">
+              <span><%= user.xp_level %> / <%= user.xp_max %></span>
+            </div>
+            <div class="flex items-center ml-4">
+              <span><%= user.xp_current %> XP</span>
+            </div>
           </div>
         </div>
       </div>
