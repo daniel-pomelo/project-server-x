@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              clifford: "#da373d",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        text-decoration: none;
+        font-family: "Roboto", sans-serif;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0px;
+        padding: 0px;
+        background-color: #2e2449;
+      }
+      .container {
+        position: relative;
+      }
+      .card {
+        background-color: #332e5b;
+        color: white;
+      }
+      .card-title {
+        color: #6f6a99;
+      }
+      .card-level {
+        background-color: #322a51;
+        width: 100px;
+        height: 100px;
+      }
+      .card-inner-level {
+        background-color: #4d3389;
+        width: 75px;
+        height: 75px;
+      }
+      .card-level-name {
+        font-size: 10px;
+      }
+
+      #overlay {
+        position: fixed; /* Sit on top of the page content */
+        width: 100%; /* Full width (cover the whole page) */
+        height: 100%; /* Full height (cover the whole page) */
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(
+          0,
+          0,
+          0,
+          0.5
+        ); /* Black background with opacity */
+        z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+        cursor: pointer; /* Add a pointer on hover */
+      }
+      .hidden {
+        display: none;
+      }
+      .dialog {
+        position: relative;
+      }
+      .close-button {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        border-radius: 50%;
+        background-color: #443373;
+        width: 20px;
+        height: 20px;
+        text-align: center;
+        border: 1px solid #744cce;
+        font-size: 12px;
+        cursor: pointer;
+      }
+      #points-assigner {
+        position: absolute;
+        top: 0px;
+        width: 100%;
+        z-index: 8;
+      }
+      .fadein {
+        animation: fadein 1s;
+      }
+      .fadeout {
+        animation: fadeout 1s forwards;
+      }
+      @keyframes fadein {
+        0% {
+          transform: translateY(-200px);
+        }
+        100% {
+          transform: translateY(0px);
+        }
+      }
+      @keyframes fadeout {
+        0% {
+          transform: translateY(0px);
+        }
+        100% {
+          transform: translateY(-200px);
+        }
+      }
+    </style>
+  </head>
+  <body class="p-5">
+    <div class="container">
+      <div class="flex flex-col p-4 mb-5 rounded-lg card">
+        <div class="card-title pb-2 text-sm">Personal information</div>
+        <div class="flex items-center pl-5">
+          <div class="mr-4">
+            <img src="/img/wizard.png" width="50" height="50" alt="" />
+          </div>
+          <div>
+            <div class="name">
+              <span><%= user.name %></span>
+              <span> - </span>
+              <span><%= user.health %> / <%= user.mana %></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col p-4 mb-5 rounded-lg card">
+        <div class="card-title pb-2 text-sm"><%= user.level_name %></div>
+        <div class="flex items-center">
+          <div class="card-level rounded-full flex items-center justify-center">
+            <div
+              class="card-inner-level rounded-full flex flex-col items-center justify-center"
+            >
+              <span><%= user.level_value %></span>
+              <span class="card-level-name">level</span>
+            </div>
+          </div>
+          <div class="flex items-center ml-4">
+            <span><%= user.xp_level %> / <%= user.xp_max %></span>
+          </div>
+          <div class="flex items-center ml-4">
+            <span>total: <%= user.xp_current %> xp</span>
+          </div>
+        </div>
+      </div>
+
+      <% if(user.has_points){ %>
+      <!-- <div class="flex flex-col p-4 mb-5 rounded-lg card">
+        <div class="card-title pb-2 text-sm">Points to assign</div>
+        <div class="flex items-center pl-10">
+          <a onclick="showPointsAssigner(event)" href="#"><%= user.points %></a>
+        </div>
+      </div> -->
+      <% } %>
+
+      <!-- <div
+        id="points-assigner"
+        class="flex flex-col p-4 mb-5 rounded-lg card hidden"
+      >
+        <div class="dialog">
+          <div id="close-dialog" class="close-button">x</div>
+          <div class="card-title pb-2 text-sm">Assign to stats</div>
+          ...
+        </div>
+      </div>
+    </div> -->
+
+    <!-- <div id="overlay" class="hidden"></div> -->
+
+    <script>
+      function showPointsAssigner(e) {
+        e.preventDefault();
+        const pointsAssigner = document.querySelector("#points-assigner");
+        pointsAssigner.classList.remove("hidden");
+        pointsAssigner.classList.remove("fadeout");
+        pointsAssigner.classList.add("fadein");
+        const overlay = document.querySelector("#overlay");
+        overlay.classList.remove("hidden");
+
+        document.querySelector("#overlay").addEventListener("click", () => {
+          pointsAssigner.classList.remove("fadein");
+          pointsAssigner.classList.add("fadeout");
+          overlay.classList.add("hidden");
+        });
+        document
+          .querySelector("#close-dialog")
+          .addEventListener("click", () => {
+            pointsAssigner.classList.remove("fadein");
+            pointsAssigner.classList.add("fadeout");
+            overlay.classList.add("hidden");
+          });
+      }
+    </script>
+  </body>
+</html>
