@@ -22,39 +22,60 @@ const assignExperience = (db, systemEvents) => async (req, res) => {
   const userIds = experienceToAssign.map(({ user_id }) => user_id);
   const userExperiences = await db.groupByUserId("UserExperience", userIds);
 
+  function reCalculate(userExperience, userId, xp) {
+    const xpLevelTotal =
+      ((userExperience && userExperience.xp_level) || 0) + xp;
+    const xpCurrentTotal =
+      ((userExperience && userExperience.xp_current) || 0) + xp;
+
+    let level = (userExperience && userExperience.level_value) || 1;
+
+    let xpByLevel = calculateNextLevelXP(level);
+    let xpTotal = xpLevelTotal;
+
+    while (xpTotal >= xpByLevel) {
+      xpByLevel = calculateNextLevelXP(level);
+      if (xpTotal - xpByLevel >= 0) {
+        xpTotal -= xpByLevel;
+        level += 1;
+      } else {
+        xpTotal = xpByLevel - (xpByLevel - xpTotal);
+      }
+    }
+    return {
+      user_id: userId,
+      xp_current: xpCurrentTotal,
+      xp_level: xpTotal,
+      level_value: level,
+      xp_max: calculateNextLevelXP(level),
+    };
+  }
+
   const operations = experienceToAssign.reduce(
     (acc, { user_id: userId, xp }) => {
       const userExperience = userExperiences[userId];
-      const xpCurrentTotal =
-        ((userExperience && userExperience.xp_current) || 0) + xp;
-
-      let level = 1;
-      let xpByLevel = calculateNextLevelXP(level);
-      let xpTotal = xpCurrentTotal;
-
-      while (xpTotal >= xpByLevel) {
-        xpByLevel = calculateNextLevelXP(level);
-        if (xpTotal - xpByLevel >= 0) {
-          xpTotal -= xpByLevel;
-          level += 1;
-        } else {
-          xpTotal = xpByLevel - (xpByLevel - xpTotal);
-        }
-      }
-
-      return [
-        ...acc,
-        {
-          document: {
-            user_id: userId,
-            xp_current: xpCurrentTotal,
-            xp_level: xpTotal,
-            level_value: level,
-            xp_max: calculateNextLevelXP(level),
+      if (userExperience) {
+        return [
+          ...acc,
+          {
+            document: reCalculate(userExperience, userId, xp),
+            operation: "update",
           },
-          operation: userExperience ? "update" : "insert",
-        },
-      ];
+        ];
+      } else {
+        const INITIAL_USER_EXPERIENCE = {
+          xp_level: 0,
+          xp_current: 0,
+          level_value: 1,
+        };
+        return [
+          ...acc,
+          {
+            document: reCalculate(INITIAL_USER_EXPERIENCE, userId, xp),
+            operation: "insert",
+          },
+        ];
+      }
     },
     []
   );
