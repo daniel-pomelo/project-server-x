@@ -90,11 +90,15 @@ class InMemoryDataBase {
     return experiences;
   }
   async bulkWrite(collectionName, operations) {
-    operations.forEach(({ operation, document }) => {
-      if (operation === "insert") {
-        this.save(collectionName, document);
+    operations.forEach(({ isFirstAssignment, newUserExperience }) => {
+      if (isFirstAssignment) {
+        this.save(collectionName, newUserExperience);
       } else {
-        this.updateOne(collectionName, { user_id: document.user_id }, document);
+        this.updateOne(
+          collectionName,
+          { user_id: newUserExperience.user_id },
+          newUserExperience
+        );
       }
     });
   }

@@ -105,19 +105,21 @@ class MongoDataBase {
         if (err) {
           return reject(err);
         }
-        operations = operations.map(({ operation, document }) => {
-          if (operation === "insert") {
-            return { insertOne: { document } };
-          } else {
-            return {
-              updateOne: {
-                filter: { user_id: document.user_id },
-                update: { $set: document },
-                upsert: true,
-              },
-            };
+        operations = operations.map(
+          ({ isFirstAssignment, newUserExperience }) => {
+            if (isFirstAssignment) {
+              return { insertOne: { document: newUserExperience } };
+            } else {
+              return {
+                updateOne: {
+                  filter: { user_id: newUserExperience.user_id },
+                  update: { $set: newUserExperience },
+                  upsert: true,
+                },
+              };
+            }
           }
-        });
+        );
         const res = await this.client
           .db("ProjectX")
           .collection(collectionName)
