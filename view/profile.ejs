@@ -94,6 +94,11 @@
         font-size: 12px;
         cursor: pointer;
       }
+      .button {
+        border: 1px solid #744cce;
+        padding: 3px;
+        background-color: #443373 !important;
+      }
       #points-assigner {
         position: absolute;
         top: 0px;
@@ -133,8 +138,8 @@
             <img src="/img/wizard.png" width="50" height="50" alt="" />
           </div>
           <div class="flex flex-col">
-              <div><%= user.name %></div>
-              <div><%= user.health %> / <%= user.mana %></div>
+            <div><%= user.name %></div>
+            <div><%= user.health %> / <%= user.mana %></div>
           </div>
         </div>
       </div>
@@ -163,9 +168,15 @@
 
       <% if(user.has_points){ %>
       <!-- <div class="flex flex-col p-4 mb-5 rounded-lg card">
-        <div class="card-title pb-2 text-sm">Points to assign</div>
-        <div class="flex items-center pl-10">
-          <a onclick="showPointsAssigner(event)" href="#"><%= user.points %></a>
+        <div class="card-title pb-2 text-sm">Rewards</div>
+        <div class="flex items-center">
+          <button
+            type="button"
+            class="button"
+            onclick="showPointsAssigner(event)"
+          >
+            Assign points (<%= user.points %>)
+          </button>
         </div>
       </div> -->
       <% } %>
@@ -179,10 +190,10 @@
           <div class="card-title pb-2 text-sm">Assign to stats</div>
           ...
         </div>
-      </div>
-    </div> -->
+      </div> -->
+    </div>
 
-    <!-- <div id="overlay" class="hidden"></div> -->
+    <div id="overlay" class="hidden"></div>
 
     <script>
       function showPointsAssigner(e) {

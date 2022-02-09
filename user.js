@@ -86,8 +86,15 @@ function reduce(stats) {
   }, props);
 }
 
+async function findUserPointsByUserId(db, id) {
+  const records = await db.find("UserPoints", { user_id: id });
+  const balance = records.reduce((acc, record) => acc + record.points, 0);
+  return { balance };
+}
+
 module.exports = {
   findUserById,
   findAllUser,
   getUserStats,
+  findUserPointsByUserId,
 };

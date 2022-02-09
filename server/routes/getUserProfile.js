@@ -1,4 +1,4 @@
-const { findUserById } = require("../../user");
+const { findUserById, findUserPointsByUserId } = require("../../user");
 
 const cache = new Map();
 
@@ -8,17 +8,17 @@ const getUserProfile = (db) => async (req, res) => {
     return res.render("profile", cache.get(id));
   }
   const user = await findUserById(db, id);
-  console.log(user);
+  const userPoints = await findUserPointsByUserId(db, id);
+
   const { stats } = user;
-  console.log(user.xp_max - user.xp_level);
-  console.log(user.xp_level / user.xp_max);
+
   const utils = {
     xp_level_percentage: new Number(
       (user.xp_level / user.xp_max) * 100
     ).toFixed(2),
   };
 
-  const points = 12;
+  const points = userPoints.balance;
 
   const response = {
     user: {
@@ -37,7 +37,7 @@ const getUserProfile = (db) => async (req, res) => {
       xp_current: user.xp_current,
       xp_max: user.xp_max,
       xp_level: user.xp_level,
-      has_points: points !== null && points !== undefined,
+      has_points: points !== null && points !== undefined && points > 0,
       points: points,
       ...utils,
     },
