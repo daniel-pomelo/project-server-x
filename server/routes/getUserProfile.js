@@ -8,10 +8,7 @@ const getUserProfile = (db) => async (req, res) => {
     return res.render("profile", cache.get(id));
   }
   const user = await findUserById(db, id);
-  console.log(user);
   const { stats } = user;
-  console.log(user.xp_max - user.xp_level);
-  console.log(user.xp_level / user.xp_max);
   const utils = {
     xp_level_percentage: new Number(
       (user.xp_level / user.xp_max) * 100
