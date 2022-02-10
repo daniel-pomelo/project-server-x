@@ -51,7 +51,7 @@ module.exports = (db, systemEvents) => async (req, res) => {
 
   const user = await findUserById(db, userId);
 
-  systemEvents.notify(user, bridge);
+  systemEvents.notify("SYNC_USER", { user, bridge });
 
   res.status(201).send();
 };

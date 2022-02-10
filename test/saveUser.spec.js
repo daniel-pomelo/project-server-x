@@ -5,13 +5,19 @@ const { ServerInterface } = require("./ServerInterface.js");
 
 class SystemEventsMock {
   constructor() {
-    this.user = null;
+    this.map = {
+      SYNC_USER: [],
+      USER_LEVEL_UP: [],
+    };
   }
-  contains(expected) {
-    expect(this.user).to.eqls(expected);
+  hasSyncUser(expected) {
+    expect(this.map["SYNC_USER"]).to.eqls([expected]);
   }
-  notify(user, bridge) {
-    this.user = user;
+  hasReceiveThatUserLevelUp(expected) {
+    expect(this.map["USER_LEVEL_UP"]).to.eqls([expected]);
+  }
+  notify(eventName, data) {
+    this.map[eventName].push(data);
   }
 }
 
@@ -267,32 +273,38 @@ describe("Given a application to manage users in a second life game", () => {
     const res = await api.RegisterUser(USER_ID, formValues);
 
     const EXPECTED_USER = {
-      id: "12f6538d-fea7-421c-97f0-8f86b763ce75",
-      name: "Daniel",
-      breed: "Dragon",
-      type: "Ice",
-      level_name: "Milleniums",
-      level_value: 1,
-      health: 100,
-      mana: 100,
-      xp_current: 0,
-      xp_max: 240,
-      xp_level: 0,
-      stats: {
-        agility: 0,
-        endurance: 0,
-        fortitude: 0,
-        health: 0,
-        intelligence: 0,
-        perception: 0,
-        strength: 0,
-        will: 0,
+      user: {
+        id: "12f6538d-fea7-421c-97f0-8f86b763ce75",
+        name: "Daniel",
+        breed: "Dragon",
+        type: "Ice",
+        level_name: "Milleniums",
+        level_value: 1,
+        health: 100,
+        mana: 100,
+        xp_current: 0,
+        xp_max: 240,
+        xp_level: 0,
+        stats: {
+          agility: 0,
+          endurance: 0,
+          fortitude: 0,
+          health: 0,
+          intelligence: 0,
+          perception: 0,
+          strength: 0,
+          will: 0,
+        },
+      },
+      bridge: {
+        id: "BRIDGE_ID",
+        url: "http://sarasa.com",
       },
     };
 
     res.statusEquals(201);
 
-    systemEvents.contains(EXPECTED_USER);
+    systemEvents.hasSyncUser(EXPECTED_USER);
   });
   it("test 1", async () => {
     const api = new ServerInterface(server);
@@ -686,5 +698,30 @@ describe("Given a application to manage users in a second life game", () => {
 
     await api.AssertUserExist(USER_ID, EXPECTED_USER);
     await api.AssertUserExist(OTHER_USER_ID, EXPECTED_USER_2);
+  });
+  it("test 8", async () => {
+    const api = new ServerInterface(server);
+    const USER_ID = "12f6538d-fea7-421c-97f0-8f86b763ce75";
+    const OTHER_USER_ID = "13f6538d-fea7-421c-97f0-8f86b763ce75";
+    await api.GivenTheresABridge({ id: "BRIDGE_ID", url: "http://sarasa.com" });
+    await api.AssertUserNotRegistered(USER_ID);
+    await api.AssertUserNotRegistered(OTHER_USER_ID);
+
+    const formValues = {
+      name: "Daniel",
+      breed: "Dragon",
+      type: "Ice",
+      level_name: "Milleniums",
+    };
+    const res1 = await api.RegisterUser(USER_ID, formValues);
+    res1.statusEquals(201);
+
+    await api.assignExperience(listOf(userExperience(USER_ID, 240)));
+
+    await systemEvents.hasReceiveThatUserLevelUp({
+      userId: USER_ID,
+      prevLevel: 1,
+      currentLevel: 2,
+    });
   });
 });

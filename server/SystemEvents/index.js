@@ -1,17 +1,37 @@
 const axios = require("axios").default;
 
+const SYNC_USER = "SYNC_USER";
+const USER_LEVEL_UP = "USER_LEVEL_UP";
+
 class SystemEvents {
-  static init() {
-    return new SystemEvents();
+  static init(db) {
+    return new SystemEvents(db);
   }
-  async notify(user, bridge) {
+  constructor(db) {
+    this.db = db;
+  }
+  async notify(eventName, data) {
     try {
-      const { url } = bridge;
-      await axios.post(url, user);
+      if (eventName === SYNC_USER) {
+        const { user, bridge } = data;
+        const { url } = bridge;
+        await axios.post(url, user);
+      }
+      if (eventName === USER_LEVEL_UP) {
+        const { userId, prevLevel, currentLevel } = data;
+        const points = (currentLevel - prevLevel) * 10;
+        await this.db.save("UserPoints", {
+          user_id: userId,
+          prevLevel,
+          currentLevel,
+          points,
+        });
+      }
     } catch (error) {
+      console.log(error);
       const { status, config } = error.response;
       const { method, url, data } = config;
-      console.log("Error trying to sync user data");
+      console.log("Error trying to handle event:", eventName);
       console.log(status);
       console.log(method);
       console.log(url);

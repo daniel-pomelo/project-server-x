@@ -51,21 +51,30 @@ const assignExperience = (db, systemEvents) => async (req, res) => {
   const usersToSync = await findAllUser(db, userIds);
 
   usersToSync.forEach((user) => {
-    systemEvents.notify(user, bridge);
+    systemEvents.notify("SYNC_USER", { user, bridge });
   });
 
   res.send();
 
   await db.registerAssignExperience(experienceToAssign, timestamp());
+
+  operations.forEach((operation) => {
+    const { userExperience, newUserExperience } = operation;
+    if (newUserExperience.level_value > userExperience.level_value) {
+      systemEvents.notify("USER_LEVEL_UP", {
+        currentLevel: newUserExperience.level_value,
+        prevLevel: userExperience.level_value,
+        userId: newUserExperience.user_id,
+      });
+    }
+  });
 };
 
 function reCalculate(userExperience, userId, xp) {
-  const xpLevelTotal = ((userExperience && userExperience.xp_level) || 0) + xp;
-  const xpCurrentTotal =
-    ((userExperience && userExperience.xp_current) || 0) + xp;
+  const xpLevelTotal = userExperience.xp_level + xp;
+  const xpCurrentTotal = userExperience.xp_current + xp;
 
-  let level = (userExperience && userExperience.level_value) || 1;
-
+  let level = userExperience.level_value;
   let xpByLevel = calculateNextLevelXP(level);
   let xpTotal = xpLevelTotal;
 
