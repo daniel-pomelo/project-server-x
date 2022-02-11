@@ -1,6 +1,6 @@
 const axios = require("axios").default;
 
-const SYNC_USER = "SYNC_USER";
+const USER_REGISTERED = "USER_REGISTERED";
 const USER_LEVEL_UP = "USER_LEVEL_UP";
 
 class SystemEvents {
@@ -12,7 +12,7 @@ class SystemEvents {
   }
   async notify(eventName, data) {
     try {
-      if (eventName === SYNC_USER) {
+      if (eventName === USER_REGISTERED) {
         const { user, bridge } = data;
         const { url } = bridge;
         await axios.post(url, user);

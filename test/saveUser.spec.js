@@ -6,12 +6,12 @@ const { ServerInterface } = require("./ServerInterface.js");
 class SystemEventsMock {
   constructor() {
     this.map = {
-      SYNC_USER: [],
+      USER_REGISTERED: [],
       USER_LEVEL_UP: [],
     };
   }
-  hasSyncUser(expected) {
-    expect(this.map["SYNC_USER"]).to.eqls([expected]);
+  hasReceiveThatUserRegister(expected) {
+    expect(this.map["USER_REGISTERED"]).to.eqls([expected]);
   }
   hasReceiveThatUserLevelUp(expected) {
     expect(this.map["USER_LEVEL_UP"]).to.eqls([expected]);
@@ -304,7 +304,7 @@ describe("Given a application to manage users in a second life game", () => {
 
     res.statusEquals(201);
 
-    systemEvents.hasSyncUser(EXPECTED_USER);
+    systemEvents.hasReceiveThatUserRegister(EXPECTED_USER);
   });
   it("test 1", async () => {
     const api = new ServerInterface(server);

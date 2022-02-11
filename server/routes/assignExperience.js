@@ -48,12 +48,6 @@ const assignExperience = (db, systemEvents) => async (req, res) => {
 
   await db.bulkWrite("UserExperience", operations);
 
-  const usersToSync = await findAllUser(db, userIds);
-
-  usersToSync.forEach((user) => {
-    systemEvents.notify("SYNC_USER", { user, bridge });
-  });
-
   res.send();
 
   await db.registerAssignExperience(experienceToAssign, timestamp());
