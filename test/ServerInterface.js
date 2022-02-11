@@ -48,6 +48,10 @@ class ServerInterface {
       statusEquals(status) {
         expect(res.status).to.eqls(status);
       },
+      equals({ status, message }) {
+        expect(res.status).to.eqls(status);
+        expect(res.body.message).to.eqls(message);
+      },
     };
   }
   async AssertUserExist(userId, user) {

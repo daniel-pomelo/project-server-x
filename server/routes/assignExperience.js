@@ -37,6 +37,7 @@ const assignExperience = (db, systemEvents) => async (req, res) => {
       return [
         ...acc,
         {
+          userId,
           newUserExperience,
           userExperience,
           isFirstAssignment,
@@ -46,21 +47,43 @@ const assignExperience = (db, systemEvents) => async (req, res) => {
     []
   );
 
-  await db.bulkWrite("UserExperience", operations);
+  await db.saveUserExperience("UserExperience", operations);
 
   res.send();
 
   await db.registerAssignExperience(experienceToAssign, timestamp());
 
-  operations.forEach((operation) => {
+  const usersThatLevelUp = operations.filter((operation) => {
     const { userExperience, newUserExperience } = operation;
-    if (newUserExperience.level_value > userExperience.level_value) {
-      systemEvents.notify("USER_LEVEL_UP", {
-        currentLevel: newUserExperience.level_value,
-        prevLevel: userExperience.level_value,
-        userId: newUserExperience.user_id,
-      });
-    }
+    return newUserExperience.level_value > userExperience.level_value;
+  });
+
+  const userPoints = usersThatLevelUp.map((operation) => {
+    const { userExperience, newUserExperience, userId } = operation;
+    const currentLevel = newUserExperience.level_value;
+    const prevLevel = userExperience.level_value;
+    const points = (currentLevel - prevLevel) * 10;
+    return {
+      user_id: userId,
+      level_value: {
+        previous: prevLevel,
+        current: currentLevel,
+      },
+      points,
+      type: "USER_LEVEL_UP_REWARD",
+      timestamp: timestamp(),
+    };
+  });
+
+  await db.saveUserPoints(userPoints);
+
+  usersThatLevelUp.forEach(async (operation) => {
+    const { userExperience, newUserExperience } = operation;
+    systemEvents.notify("USER_LEVEL_UP", {
+      currentLevel: newUserExperience.level_value,
+      prevLevel: userExperience.level_value,
+      userId: newUserExperience.user_id,
+    });
   });
 };
 

@@ -90,6 +90,7 @@ describe("Given a application to manage users in a second life game", () => {
       level_name: "Milleniums",
     };
     await api.RegisterUser(USER_ID, formValues);
+    await api.assignExperience(listOf(userExperience(USER_ID, 240)));
 
     const formStatsValues1 = {
       fortitude: 40,
@@ -123,11 +124,11 @@ describe("Given a application to manage users in a second life game", () => {
       breed: "Dragon",
       type: "Ice",
       level_name: "Milleniums",
-      level_value: 1,
+      level_value: 2,
       health: 100,
       mana: 100,
-      xp_current: 0,
-      xp_max: 240,
+      xp_current: 240,
+      xp_max: 288,
       xp_level: 0,
       stats: {
         agility: 0,
@@ -143,6 +144,37 @@ describe("Given a application to manage users in a second life game", () => {
 
     await api.AssertUserExist(USER_ID, EXPECTED_USER);
   });
+  it("should return Insufficient points", async () => {
+    const api = new ServerInterface(server);
+    const USER_ID = "12f6538d-fea7-421c-97f0-8f86b763ce75";
+    await api.GivenTheresABridge({ id: "BRIDGE_ID", url: "http://sarasa.com" });
+    await api.AssertUserNotRegistered(USER_ID);
+
+    const formValues = {
+      name: "Daniel",
+      breed: "Dragon",
+      type: "Ice",
+      level_name: "Milleniums",
+    };
+    await api.RegisterUser(USER_ID, formValues);
+    await api.assignExperience(listOf(userExperience(USER_ID, 239)));
+
+    const formStatsValues1 = {
+      fortitude: 40,
+      intelligence: 30,
+      perception: 20,
+      strength: 10,
+    };
+    const registerUserStatsResponse1 = await api.RegisterUserStats(
+      USER_ID,
+      formStatsValues1
+    );
+
+    registerUserStatsResponse1.equals({
+      status: 400,
+      message: "Insufficient points",
+    });
+  });
   it("when getting all users should then return registered users", async () => {
     const api = new ServerInterface(server);
     const USER_ID = "12f6538d-fea7-421c-97f0-8f86b763ce75";
@@ -156,12 +188,13 @@ describe("Given a application to manage users in a second life game", () => {
       level_name: "Milleniums",
     };
     await api.RegisterUser(USER_ID, formValues);
+    await api.assignExperience(listOf(userExperience(USER_ID, 240)));
 
     const formStatsValues = {
-      fortitude: 40,
-      intelligence: 30,
-      perception: 20,
-      strength: 10,
+      fortitude: 4,
+      intelligence: 3,
+      perception: 2,
+      strength: 1,
     };
     const registerUserStatsResponse = await api.RegisterUserStats(
       USER_ID,
@@ -176,20 +209,20 @@ describe("Given a application to manage users in a second life game", () => {
       breed: "Dragon",
       type: "Ice",
       level_name: "Milleniums",
-      level_value: 1,
+      level_value: 2,
       health: 100,
       mana: 100,
-      xp_current: 0,
-      xp_max: 240,
+      xp_current: 240,
+      xp_max: 288,
       xp_level: 0,
       stats: {
         agility: 0,
         endurance: 0,
-        fortitude: 40,
+        fortitude: 4,
         health: 0,
-        intelligence: 30,
-        perception: 20,
-        strength: 10,
+        intelligence: 3,
+        perception: 2,
+        strength: 1,
         will: 0,
       },
     };
