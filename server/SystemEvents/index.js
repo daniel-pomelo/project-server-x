@@ -11,6 +11,7 @@ class SystemEvents {
     this.db = db;
   }
   async notify(eventName, data) {
+    const event = { name: eventName, data };
     try {
       if (eventName === USER_REGISTERED) {
         const { user, bridge } = data;
@@ -36,6 +37,11 @@ class SystemEvents {
       console.log(method);
       console.log(url);
       console.log(JSON.parse(data));
+    } finally {
+      this.db
+        .save("EventRecords", event)
+        .then(() => console.log("Saved EventRecords"))
+        .catch((err) => console.log("Error saving EventRecords: ", err));
     }
   }
 }
