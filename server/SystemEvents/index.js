@@ -19,14 +19,7 @@ class SystemEvents {
         await axios.post(url, user);
       }
       if (eventName === USER_LEVEL_UP) {
-        const { userId, prevLevel, currentLevel } = data;
-        const points = (currentLevel - prevLevel) * 10;
-        await this.db.save("UserPoints", {
-          user_id: userId,
-          prevLevel,
-          currentLevel,
-          points,
-        });
+        //hacer sync cuando obtenga el bridge
       }
     } catch (error) {
       console.log(error);

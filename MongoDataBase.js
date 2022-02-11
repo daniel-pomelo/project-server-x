@@ -99,7 +99,7 @@ class MongoDataBase {
       return acc;
     }, {});
   }
-  async bulkWrite(collectionName, operations) {
+  async saveUserExperience(collectionName, operations) {
     return new Promise((resolve, reject) => {
       this.client.connect(async (err) => {
         if (err) {
@@ -134,6 +134,25 @@ class MongoDataBase {
     return this.save("UserExperienceRecords", {
       experiences: experienceToAssign,
       timestamp,
+    });
+  }
+  saveUserPoints(operations) {
+    return new Promise((resolve, reject) => {
+      this.client.connect(async (err) => {
+        if (err) {
+          return reject(err);
+        }
+        operations = operations.map((operation) => {
+          return { insertOne: { document: operation } };
+        });
+        const res = await this.client
+          .db("ProjectX")
+          .collection("UserPoints")
+          .bulkWrite(operations);
+        console.log(res);
+        resolve();
+        this.client.close();
+      });
     });
   }
 }

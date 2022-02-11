@@ -1,5 +1,6 @@
 const COLLECTION_NAMES = {
   USER_EXPERIENCE: "UserExperience",
+  USER_POINTS: "UserPoints",
 };
 
 function collectionIs(expectedName, collectionName) {
@@ -13,6 +14,7 @@ class InMemoryDataBase {
     db.bridges = new Map();
     db.userExperience = new Map();
     db.stats = new Set();
+    db.userPoints = new Set();
     return db;
   }
   async save(collectionName, data) {
@@ -21,6 +23,9 @@ class InMemoryDataBase {
     }
     if (collectionIs(COLLECTION_NAMES.USER_EXPERIENCE, collectionName)) {
       this.userExperience.set(data.user_id, data);
+    }
+    if (collectionIs(COLLECTION_NAMES.USER_POINTS, collectionName)) {
+      this.userPoints.add(data);
     }
     if (collectionName === "UsersProps") {
       this.stats.add(data);
@@ -76,6 +81,12 @@ class InMemoryDataBase {
     if (collectionName === "UsersProps") {
       return Array.from(this.stats.values());
     }
+    if (collectionIs(COLLECTION_NAMES.USER_POINTS, collectionName)) {
+      return Array.from(this.userPoints.values()).filter(
+        (item) => item.user_id === criteria.user_id
+      );
+    }
+    return [];
   }
   async groupByUserId(collectionName, userIds) {
     const all = Array.from(this.userExperience.values());
@@ -89,7 +100,7 @@ class InMemoryDataBase {
       }, {});
     return experiences;
   }
-  async bulkWrite(collectionName, operations) {
+  async saveUserExperience(collectionName, operations) {
     operations.forEach(({ isFirstAssignment, newUserExperience }) => {
       if (isFirstAssignment) {
         this.save(collectionName, newUserExperience);
@@ -103,6 +114,11 @@ class InMemoryDataBase {
     });
   }
   registerAssignExperience(experienceToAssign, timestamp) {}
+  saveUserPoints(userPoints) {
+    userPoints.forEach((points) => {
+      this.save(COLLECTION_NAMES.USER_POINTS, points);
+    });
+  }
 }
 
 module.exports = InMemoryDataBase;
