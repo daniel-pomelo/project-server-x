@@ -8,9 +8,10 @@ const saveBridge = require("./routes/saveBridge");
 const assignExperience = require("./routes/assignExperience");
 const getUserProfile = require("./routes/getUserProfile");
 const assignPointsToStats = require("./routes/assignPointsToStats");
-const renderHome = require("./routes/renderHome");
+const renderHomePage = require("./routes/renderHomePage");
 const returnUserById = require("./routes/returnUserById");
 const registerUser = require("./routes/registerUser");
+const renderRegisterPage = require("./routes/renderRegisterPage");
 
 const PORT = process.env.PORT || 3000;
 
@@ -48,13 +49,9 @@ class MyServer {
     app.get("/api/users", findUsers(db));
     app.get("/api/users/:id", logBridgeId, returnUserById(db));
     app.post("/api/users/:id/stats", assignPointsToStats(db));
-    app.get("/", renderHome);
+    app.get("/", renderHomePage);
     app.post("/register/:id", registerUser(db, systemEvents));
-    app.get("/register/:id", function (req, res) {
-      res.sendFile(
-        path.resolve(path.join(__dirname, "/../view/register.html"))
-      );
-    });
+    app.get("/register/:id", renderRegisterPage);
     app.get("/profile/:id", getUserProfile(db));
     app.post("/api/bridge", saveBridge(db));
     app.post("/api/xp", async (req, res, next) => {
