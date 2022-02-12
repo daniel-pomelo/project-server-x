@@ -10,6 +10,7 @@ const getUserProfile = require("./routes/getUserProfile");
 const assignPointsToStats = require("./routes/assignPointsToStats");
 const renderHome = require("./routes/renderHome");
 const returnUserById = require("./routes/returnUserById");
+const registerUser = require("./routes/registerUser");
 
 const PORT = process.env.PORT || 3000;
 
@@ -48,13 +49,7 @@ class MyServer {
     app.get("/api/users/:id", logBridgeId, returnUserById(db));
     app.post("/api/users/:id/stats", assignPointsToStats(db));
     app.get("/", renderHome);
-    app.post("/register/:id", async (req, res, next) => {
-      try {
-        await saveUser(db, systemEvents)(req, res);
-      } catch (error) {
-        next(error);
-      }
-    });
+    app.post("/register/:id", registerUser(db, systemEvents));
     app.get("/register/:id", function (req, res) {
       res.sendFile(
         path.resolve(path.join(__dirname, "/../view/register.html"))
