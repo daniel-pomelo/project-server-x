@@ -1,4 +1,5 @@
-const { findUserPointsByUserId, findUserById } = require("../../user");
+const { findUserPointsByUserId } = require("../../user");
+const { timestamp } = require("../../time");
 
 const statsNames = [
   "strength",
@@ -17,7 +18,7 @@ const assignPointsToStats = (db) => async (req, res, next) => {
     if (points.balance === 0) {
       return res.status(400).send({ message: "Insufficient points" });
     }
-    const stats = { user_id: userId, ...req.body };
+    const stats = { user_id: userId, ...req.body, timestamp: timestamp() };
     await db.save("UsersProps", stats);
     res.send();
   } catch (error) {

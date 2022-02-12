@@ -1,5 +1,5 @@
 const { findBridgeById } = require("../../bridge");
-const { findAllUser } = require("../../user");
+const { timestamp } = require("../../time");
 
 const firstLevelMaxXP = 240;
 
@@ -10,8 +10,6 @@ function calculateNextLevelXP(level) {
   }
   return Math.round(nextLevelXP);
 }
-
-const timestamp = () => new Date().toISOString();
 
 const INITIAL_USER_EXPERIENCE = {
   xp_level: 0,
