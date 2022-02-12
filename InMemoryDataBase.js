@@ -27,7 +27,7 @@ class InMemoryDataBase {
     if (collectionIs(COLLECTION_NAMES.USER_POINTS, collectionName)) {
       this.userPoints.add(data);
     }
-    if (collectionName === "UsersProps") {
+    if (collectionName === "UserStats") {
       this.stats.add(data);
     } else {
       const { userId } = data;
@@ -38,7 +38,7 @@ class InMemoryDataBase {
     if (collectionName === "Users") {
       return Array.from(this.users.values());
     }
-    if (collectionName === "UsersProps") {
+    if (collectionName === "UserStats") {
       return Array.from(this.stats.values());
     }
     if (collectionIs(COLLECTION_NAMES.USER_EXPERIENCE, collectionName)) {
@@ -78,7 +78,7 @@ class InMemoryDataBase {
     if (collectionName === "Users") {
       return Array.from(this.users.values());
     }
-    if (collectionName === "UsersProps") {
+    if (collectionName === "UserStats") {
       return Array.from(this.stats.values());
     }
     if (collectionIs(COLLECTION_NAMES.USER_POINTS, collectionName)) {

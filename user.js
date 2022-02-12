@@ -31,7 +31,7 @@ async function findUserById(db, id) {
   });
 }
 async function findAllUser(db, userIds = []) {
-  const stats = await db.findAll("UsersProps");
+  const stats = await db.findAll("UserStats");
   const experiences = await db.findAll("UserExperience");
   const criteria =
     userIds.length > 0
@@ -54,7 +54,7 @@ async function findAllUser(db, userIds = []) {
   });
 }
 async function getUserStats(db, id) {
-  const stats = await db.find("UsersProps", { user_id: id });
+  const stats = await db.find("UserStats", { user_id: id });
   return reduce(stats);
 }
 function buildUserStats(stats, user) {
@@ -88,7 +88,15 @@ function reduce(stats) {
 
 async function findUserPointsByUserId(db, id) {
   const records = await db.find("UserPoints", { user_id: id });
-  const balance = records.reduce((acc, record) => acc + record.points, 0);
+  const balance = records.reduce((acc, record) => {
+    if (record.type === "USER_POINTS_WITHDRAWAL") {
+      return acc - record.points;
+    } else if (record.type === "USER_LEVEL_UP_REWARD") {
+      return acc + record.points;
+    } else {
+      return acc;
+    }
+  }, 0);
   return { balance };
 }
 

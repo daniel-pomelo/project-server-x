@@ -124,7 +124,6 @@ class MongoDataBase {
           .db("ProjectX")
           .collection(collectionName)
           .bulkWrite(operations);
-        console.log(res);
         resolve();
         this.client.close();
       });
@@ -149,7 +148,6 @@ class MongoDataBase {
           .db("ProjectX")
           .collection("UserPoints")
           .bulkWrite(operations);
-        console.log(res);
         resolve();
         this.client.close();
       });
