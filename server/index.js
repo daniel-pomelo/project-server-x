@@ -8,7 +8,7 @@ const saveUser = require("./routes/saveUser");
 const saveBridge = require("./routes/saveBridge");
 const assignExperience = require("./routes/assignExperience");
 const getUserProfile = require("./routes/getUserProfile");
-const { findUserPointsByUserId } = require("../user");
+const assignPointsToStats = require("./routes/assignPointsToStats");
 
 const PORT = process.env.PORT || 3000;
 
@@ -51,20 +51,7 @@ class MyServer {
         next(error);
       }
     });
-    app.post("/api/users/:id/stats", async (req, res, next) => {
-      try {
-        const userId = req.params.id;
-        const points = await findUserPointsByUserId(db, userId);
-        if (points.balance === 0) {
-          return res.status(400).send({ message: "Insufficient points" });
-        }
-        const stats = { user_id: userId, ...req.body };
-        await db.save("UsersProps", stats);
-        res.send();
-      } catch (error) {
-        next(error);
-      }
-    });
+    app.post("/api/users/:id/stats", assignPointsToStats(db));
     app.get("/", function (req, res) {
       res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));
     });
