@@ -3,7 +3,6 @@ const path = require("path");
 const express = require("express");
 const { logBridgeId } = require("./logBridgeId");
 const findUsers = require("./routes/findUsers");
-const saveUser = require("./routes/saveUser");
 const saveBridge = require("./routes/saveBridge");
 const assignExperience = require("./routes/assignExperience");
 const getUserProfile = require("./routes/getUserProfile");
@@ -30,6 +29,14 @@ const responses = {
   },
 };
 
+const asyncHandler = (handler) => async (req, res, next) => {
+  try {
+    await handler(req, res, next);
+  } catch (error) {
+    next(error);
+  }
+};
+
 class MyServer {
   constructor(app) {
     this.app = app;
@@ -54,13 +61,7 @@ class MyServer {
     app.get("/register/:id", renderRegisterPage);
     app.get("/profile/:id", getUserProfile(db));
     app.post("/api/bridge", saveBridge(db));
-    app.post("/api/xp", async (req, res, next) => {
-      try {
-        await assignExperience(db, systemEvents)(req, res);
-      } catch (error) {
-        next(error);
-      }
-    });
+    app.post("/api/xp", asyncHandler(assignExperience(db, systemEvents)));
     app.use((error, req, res, next) => {
       const custom = responses[error.message];
       res
