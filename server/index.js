@@ -55,7 +55,7 @@ class MyServer {
     app.set("view engine", "ejs");
     app.get("/api/users", findUsers(db));
     app.get("/api/users/:id", logBridgeId, returnUserById(db));
-    app.post("/api/users/:id/stats", assignPointsToStats(db));
+    app.post("/api/users/:id/stats", asyncHandler(assignPointsToStats(db)));
     app.get("/", renderHomePage);
     app.post("/register/:id", registerUser(db, systemEvents));
     app.get("/register/:id", renderRegisterPage);

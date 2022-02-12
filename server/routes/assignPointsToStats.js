@@ -1,4 +1,4 @@
-const { findUserPointsByUserId, findUserById } = require("../../user");
+const { findUserPointsByUserId } = require("../../user");
 const { timestamp } = require("../../time");
 
 const statsNames = [
@@ -11,35 +11,31 @@ const statsNames = [
   "endurance",
 ];
 
-const assignPointsToStats = (db) => async (req, res, next) => {
-  try {
-    const userId = req.params.id;
-    const points = await findUserPointsByUserId(db, userId);
-    if (points.balance <= 0) {
-      return res.status(400).send({ message: "Insufficient points" });
-    }
-    const total = statsNames.reduce((acc, statName) => {
-      return acc + (req.body[statName] || 0);
-    }, 0);
-    if (points.balance < total) {
-      return res.status(400).send({ message: "Insufficient points" });
-    }
-    const stats = { user_id: userId, ...req.body, timestamp: timestamp() };
-    await db.save("UserStats", stats);
-
-    await db.saveUserPoints([
-      {
-        user_id: userId,
-        points: points.balance,
-        type: "USER_POINTS_WITHDRAWAL",
-        timestamp: timestamp(),
-      },
-    ]);
-
-    res.send();
-  } catch (error) {
-    next(error);
+const assignPointsToStats = (db) => async (req, res) => {
+  const userId = req.params.id;
+  const points = await findUserPointsByUserId(db, userId);
+  if (points.balance <= 0) {
+    return res.status(400).send({ message: "Insufficient points" });
   }
+  const total = statsNames.reduce((acc, statName) => {
+    return acc + (req.body[statName] || 0);
+  }, 0);
+  if (points.balance < total) {
+    return res.status(400).send({ message: "Insufficient points" });
+  }
+  const stats = { user_id: userId, ...req.body, timestamp: timestamp() };
+  await db.save("UserStats", stats);
+
+  await db.saveUserPoints([
+    {
+      user_id: userId,
+      points: points.balance,
+      type: "USER_POINTS_WITHDRAWAL",
+      timestamp: timestamp(),
+    },
+  ]);
+
+  res.send();
 };
 
 module.exports = assignPointsToStats;
