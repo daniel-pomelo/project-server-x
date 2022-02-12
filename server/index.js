@@ -3,12 +3,13 @@ const path = require("path");
 const express = require("express");
 const { logBridgeId } = require("./logBridgeId");
 const findUsers = require("./routes/findUsers");
-const getUserDataOrRegisterLink = require("./routes/getUserDataOrRegisterLink");
 const saveUser = require("./routes/saveUser");
 const saveBridge = require("./routes/saveBridge");
 const assignExperience = require("./routes/assignExperience");
 const getUserProfile = require("./routes/getUserProfile");
 const assignPointsToStats = require("./routes/assignPointsToStats");
+const renderHome = require("./routes/renderHome");
+const returnUserById = require("./routes/returnUserById");
 
 const PORT = process.env.PORT || 3000;
 
@@ -44,17 +45,9 @@ class MyServer {
     app.set("views", path.resolve(path.join(__dirname, "..", "view")));
     app.set("view engine", "ejs");
     app.get("/api/users", findUsers(db));
-    app.get("/api/users/:id", logBridgeId, async (req, res, next) => {
-      try {
-        await getUserDataOrRegisterLink(db)(req, res);
-      } catch (error) {
-        next(error);
-      }
-    });
+    app.get("/api/users/:id", logBridgeId, returnUserById(db));
     app.post("/api/users/:id/stats", assignPointsToStats(db));
-    app.get("/", function (req, res) {
-      res.sendFile(path.resolve(path.join(__dirname, "/../view/home.html")));
-    });
+    app.get("/", renderHome);
     app.post("/register/:id", async (req, res, next) => {
       try {
         await saveUser(db, systemEvents)(req, res);
