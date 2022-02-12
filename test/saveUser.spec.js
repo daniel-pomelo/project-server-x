@@ -92,31 +92,20 @@ describe("Given a application to manage users in a second life game", () => {
     await api.RegisterUser(USER_ID, formValues);
     await api.assignExperience(listOf(userExperience(USER_ID, 240)));
 
-    const formStatsValues1 = {
+    const formStatsValues = {
       fortitude: 40,
       intelligence: 30,
       perception: 20,
       strength: 10,
     };
-    const registerUserStatsResponse1 = await api.RegisterUserStats(
+    const assignUserStatsResponse = await api.RegisterUserStats(
       USER_ID,
-      formStatsValues1
+      formStatsValues
     );
-
-    registerUserStatsResponse1.statusEquals(200);
-
-    const formStatsValues2 = {
-      fortitude: 10,
-      intelligence: 20,
-      perception: 15,
-      strength: 22,
-    };
-    const registerUserStatsResponse2 = await api.RegisterUserStats(
-      USER_ID,
-      formStatsValues2
-    );
-
-    registerUserStatsResponse2.statusEquals(200);
+    assignUserStatsResponse.equals({
+      status: 400,
+      message: "Insufficient points",
+    });
 
     const EXPECTED_USER = {
       id: "12f6538d-fea7-421c-97f0-8f86b763ce75",
@@ -133,11 +122,11 @@ describe("Given a application to manage users in a second life game", () => {
       stats: {
         agility: 0,
         endurance: 0,
-        fortitude: 50,
+        fortitude: 0,
         health: 0,
-        intelligence: 50,
-        perception: 35,
-        strength: 32,
+        intelligence: 0,
+        perception: 0,
+        strength: 0,
         will: 0,
       },
     };

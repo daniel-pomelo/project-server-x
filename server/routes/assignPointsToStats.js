@@ -18,6 +18,12 @@ const assignPointsToStats = (db) => async (req, res, next) => {
     if (points.balance <= 0) {
       return res.status(400).send({ message: "Insufficient points" });
     }
+    const total = statsNames.reduce((acc, statName) => {
+      return acc + (req.body[statName] || 0);
+    }, 0);
+    if (points.balance < total) {
+      return res.status(400).send({ message: "Insufficient points" });
+    }
     const stats = { user_id: userId, ...req.body, timestamp: timestamp() };
     await db.save("UserStats", stats);
 
