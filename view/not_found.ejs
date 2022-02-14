@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>404 Not found</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Special+Elite&display=swap");
+      * {
+        margin: 0;
+        padding: 0;
+        font-family: "Special Elite", cursive;
+      }
+
+      :root {
+        --bck: #0b0a0d;
+        --font: #1f598c;
+        --element: ;
+        --text: #f21905;
+      }
+
+      #main {
+        display: grid;
+        place-items: center;
+        height: 100vh;
+        width: 100vw;
+        background: var(--bck);
+        color: var(--font);
+      }
+      .wrapper {
+        display: flex;
+        flex-direction: column;
+        background: var(--element);
+        transform: skew(-10deg, 10deg) scale(1.1);
+        animation: anim 14s infinite;
+      }
+      .element {
+        font-size: 13rem;
+      }
+
+      @keyframes anim {
+        0% {
+          transform: skew(-10deg, 10deg) scale(1.1);
+        }
+        25% {
+          transform: skew(10deg, -10deg) scale(1);
+        }
+        50% {
+          transform: skew(-10deg, 10deg) scale(1);
+        }
+        75% {
+          transform: skew(10deg, -10deg) scale(1.1);
+        }
+        99% {
+          transform: skew(-10deg, 10deg) scale(1.1);
+        }
+      }
+
+      .action {
+        position: fixed;
+        display: flex;
+        bottom: 2rem;
+        margin: auto;
+        width: 100%;
+        justify-content: space-around;
+        align-items: center;
+        color: var(--text);
+      }
+      #back {
+        padding: 0.5rem;
+        border: none;
+        color: var(--text);
+        background: var(--font);
+        font-size: 1.2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="main">
+      <div class="wrapper">
+          <div class="element">
+            404
+          </div>
+        
+        </div>
+      <div class="action">
+      <div class="text">
+          </div>
+            <button id="back"><a href="/">Home</a></button>
+      </div></div>
+    </div>
+  </body>
+</html>

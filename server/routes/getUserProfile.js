@@ -8,6 +8,9 @@ const getUserProfile = (db) => async (req, res) => {
     return res.render("profile", cache.get(id));
   }
   const user = await findUserById(db, id);
+  if (!user) {
+    return res.render("not_found");
+  }
   const userPoints = await findUserPointsByUserId(db, id);
 
   const { stats } = user;
