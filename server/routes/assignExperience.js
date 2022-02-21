@@ -18,9 +18,7 @@ const INITIAL_USER_EXPERIENCE = {
 };
 
 const assignExperience = (db, systemEvents) => async (req, res) => {
-  const bridgeId = req.headers["bridge-id"];
-  const bridge = await findBridgeById(db, bridgeId);
-
+  console.log(req.body);
   const experienceToAssign = [...req.body];
 
   const userIds = experienceToAssign.map(({ user_id }) => user_id);
