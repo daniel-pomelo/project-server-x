@@ -18,7 +18,6 @@ const INITIAL_USER_EXPERIENCE = {
 };
 
 const assignExperience = (db, systemEvents) => async (req, res) => {
-  console.log(req.body);
   const experienceToAssign = [...req.body];
 
   const userIds = experienceToAssign.map(({ user_id }) => user_id);
@@ -71,7 +70,9 @@ const assignExperience = (db, systemEvents) => async (req, res) => {
     };
   });
 
-  await db.saveUserPoints(userPoints);
+  if (userPoints.length > 0) {
+    await db.saveUserPoints(userPoints);
+  }
 
   usersThatLevelUp.forEach(async (operation) => {
     const { userExperience, newUserExperience } = operation;
