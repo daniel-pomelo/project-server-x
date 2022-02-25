@@ -11,84 +11,49 @@ class MongoDataBase {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    return new MongoDataBase(client);
+    return new Promise((resolve, reject) => {
+      client.connect(async (err) => {
+        if (err) {
+          return reject(err);
+        }
+        resolve(new MongoDataBase(client));
+      });
+    });
   }
   findOne(collectionName, criteria) {
-    return new Promise((resolve, reject) => {
-      this.client.connect(async (err) => {
-        if (err) {
-          return reject(err);
-        }
-        const results = await this.client
-          .db("ProjectX")
-          .collection(collectionName)
-          .findOne(criteria);
-        resolve(results);
-        this.client.close();
-      });
-    });
+    return this.client
+      .db("ProjectX")
+      .collection(collectionName)
+      .findOne(criteria);
   }
   findAll(collectionName) {
-    return new Promise((resolve, reject) => {
-      this.client.connect(async (err) => {
-        if (err) {
-          return reject(err);
-        }
-        const cursor = this.client
-          .db("ProjectX")
-          .collection(collectionName)
-          .find();
-        const results = await cursor.toArray();
-        resolve(results);
-        this.client.close();
-      });
-    });
+    return this.client
+      .db("ProjectX")
+      .collection(collectionName)
+      .find()
+      .toArray();
   }
-  async save(collectionName, data) {
-    await new Promise((resolve, reject) => {
-      this.client.connect(async (err) => {
-        if (err) {
-          return reject(err);
-        }
-        await this.client
-          .db("ProjectX")
-          .collection(collectionName)
-          .insertOne(data);
-        this.client.close();
-        resolve();
-      });
-    });
+  save(collectionName, data) {
+    return this.client
+      .db("ProjectX")
+      .collection(collectionName)
+      .insertOne(data);
   }
   updateOne(collectionName, criteria, document) {
-    return this.client.connect(async (err) => {
-      if (err) {
-        return reject(err);
-      }
-      await this.client.db("ProjectX").collection(collectionName).updateOne(
-        criteria,
-        {
-          $set: document,
-        },
-        { upsert: true }
-      );
-      this.client.close();
-    });
+    return this.client.db("ProjectX").collection(collectionName).updateOne(
+      criteria,
+      {
+        $set: document,
+      },
+      { upsert: true }
+    );
   }
-  async find(collectionName, criteria) {
-    return new Promise((resolve, reject) => {
-      this.client.connect(async (err) => {
-        if (err) {
-          return reject(err);
-        }
-        const cursor = this.client
-          .db("ProjectX")
-          .collection(collectionName)
-          .find(criteria);
-        const results = await cursor.toArray();
-        resolve(results);
-        this.client.close();
-      });
-    });
+  find(collectionName, criteria) {
+    return this.client
+      .db("ProjectX")
+      .collection(collectionName)
+      .find(criteria)
+      .toArray();
   }
   async groupByUserId(collectionName, userIds) {
     const documents = await this.find(collectionName, {
@@ -100,34 +65,23 @@ class MongoDataBase {
     }, {});
   }
   async saveUserExperience(collectionName, operations) {
-    return new Promise((resolve, reject) => {
-      this.client.connect(async (err) => {
-        if (err) {
-          return reject(err);
-        }
-        operations = operations.map(
-          ({ isFirstAssignment, newUserExperience }) => {
-            if (isFirstAssignment) {
-              return { insertOne: { document: newUserExperience } };
-            } else {
-              return {
-                updateOne: {
-                  filter: { user_id: newUserExperience.user_id },
-                  update: { $set: newUserExperience },
-                  upsert: true,
-                },
-              };
-            }
-          }
-        );
-        const res = await this.client
-          .db("ProjectX")
-          .collection(collectionName)
-          .bulkWrite(operations);
-        resolve();
-        this.client.close();
-      });
+    operations = operations.map(({ isFirstAssignment, newUserExperience }) => {
+      if (isFirstAssignment) {
+        return { insertOne: { document: newUserExperience } };
+      } else {
+        return {
+          updateOne: {
+            filter: { user_id: newUserExperience.user_id },
+            update: { $set: newUserExperience },
+            upsert: true,
+          },
+        };
+      }
     });
+    return this.client
+      .db("ProjectX")
+      .collection(collectionName)
+      .bulkWrite(operations);
   }
   registerAssignExperience(experienceToAssign, timestamp) {
     return this.save("UserExperienceRecords", {
@@ -136,22 +90,13 @@ class MongoDataBase {
     });
   }
   saveUserPoints(operations) {
-    return new Promise((resolve, reject) => {
-      this.client.connect(async (err) => {
-        if (err) {
-          return reject(err);
-        }
-        operations = operations.map((operation) => {
-          return { insertOne: { document: operation } };
-        });
-        const res = await this.client
-          .db("ProjectX")
-          .collection("UserPoints")
-          .bulkWrite(operations);
-        resolve();
-        this.client.close();
-      });
+    operations = operations.map((operation) => {
+      return { insertOne: { document: operation } };
     });
+    return this.client
+      .db("ProjectX")
+      .collection("UserPoints")
+      .bulkWrite(operations);
   }
 }
 
