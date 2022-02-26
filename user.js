@@ -65,14 +65,13 @@ function buildUserStats(stats, user) {
 
 function reduce(stats) {
   const props = {
-    strength: 0,
-    fortitude: 0,
-    health: 0,
-    intelligence: 0,
-    will: 0,
-    perception: 0,
-    agility: 0,
-    endurance: 0,
+    strength: 10,
+    fortitude: 10,
+    intelligence: 10,
+    will: 10,
+    perception: 10,
+    agility: 10,
+    endurance: 10,
   };
   return stats.reduce((acc, stat) => {
     return Object.entries(stat).reduce((initial, [name, value]) => {
