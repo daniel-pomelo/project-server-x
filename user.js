@@ -23,8 +23,10 @@ async function findUserById(db, id) {
   }
   const stats = await getUserStats(db, id);
   const experience = await db.findOne("UserExperience", { user_id: id });
+  const userPoints = await findUserPointsByUserId(db, id);
   return addXPProps(experience, {
     ...user,
+    points: userPoints.balance,
     health: user.stats.health,
     mana: user.stats.mana,
     stats,

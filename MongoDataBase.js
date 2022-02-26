@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { MongoClient } = require("mongodb");
 const { MONGO_DB_USERNAME, MONGO_DB_PASSWORD } = process.env;
 const uri = `mongodb+srv://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@cluster0.jvhhw.mongodb.net/ProjectX?retryWrites=true&w=majority`;

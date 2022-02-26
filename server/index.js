@@ -1,5 +1,5 @@
-require("dotenv").config();
 const path = require("path");
+const cors = require("cors");
 const express = require("express");
 const { logBridgeId } = require("./logBridgeId");
 const findUsers = require("./routes/findUsers");
@@ -12,7 +12,7 @@ const returnUserById = require("./routes/returnUserById");
 const registerUser = require("./routes/registerUser");
 const renderRegisterPage = require("./routes/renderRegisterPage");
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 const responses = {
   USER_ALREADY_EXISTS: {
@@ -45,6 +45,7 @@ class MyServer {
     const app = express();
 
     app.use(express.static("public"));
+    app.use(cors());
     app.use(
       express.urlencoded({
         extended: true,

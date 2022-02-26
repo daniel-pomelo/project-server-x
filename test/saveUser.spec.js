@@ -55,6 +55,7 @@ describe("Given a application to manage users in a second life game", () => {
       id: "12f6538d-fea7-421c-97f0-8f86b763ce75",
       name: "Daniel",
       breed: "Dragon",
+      points: 0,
       type: "Ice",
       level_name: "Milleniums",
       level_value: 1,
@@ -111,6 +112,7 @@ describe("Given a application to manage users in a second life game", () => {
       id: "12f6538d-fea7-421c-97f0-8f86b763ce75",
       name: "Daniel",
       breed: "Dragon",
+      points: 10,
       type: "Ice",
       level_name: "Milleniums",
       level_value: 2,
@@ -298,6 +300,7 @@ describe("Given a application to manage users in a second life game", () => {
       user: {
         id: "12f6538d-fea7-421c-97f0-8f86b763ce75",
         name: "Daniel",
+        points: 0,
         breed: "Dragon",
         type: "Ice",
         level_name: "Milleniums",
@@ -349,6 +352,7 @@ describe("Given a application to manage users in a second life game", () => {
       id: USER_ID,
       name: "Daniel",
       breed: "Dragon",
+      points: 0,
       type: "Ice",
       level_name: "Milleniums",
       level_value: 1,
@@ -391,6 +395,7 @@ describe("Given a application to manage users in a second life game", () => {
     const EXPECTED_USER = {
       id: USER_ID,
       name: "Daniel",
+      points: 10,
       breed: "Dragon",
       type: "Ice",
       level_name: "Milleniums",
@@ -436,6 +441,7 @@ describe("Given a application to manage users in a second life game", () => {
       id: USER_ID,
       name: "Daniel",
       breed: "Dragon",
+      points: 0,
       type: "Ice",
       level_name: "Milleniums",
       level_value: 1,
@@ -480,6 +486,7 @@ describe("Given a application to manage users in a second life game", () => {
     const EXPECTED_USER = {
       id: USER_ID,
       name: "Daniel",
+      points: 10,
       breed: "Dragon",
       type: "Ice",
       level_name: "Milleniums",
@@ -526,6 +533,7 @@ describe("Given a application to manage users in a second life game", () => {
     const EXPECTED_USER = {
       id: USER_ID,
       name: "Daniel",
+      points: 10,
       breed: "Dragon",
       type: "Ice",
       level_name: "Milleniums",
@@ -570,6 +578,7 @@ describe("Given a application to manage users in a second life game", () => {
       id: USER_ID,
       name: "Daniel",
       breed: "Dragon",
+      points: 50,
       type: "Ice",
       level_name: "Milleniums",
       level_value: 6,
@@ -613,6 +622,7 @@ describe("Given a application to manage users in a second life game", () => {
     const EXPECTED_USER = {
       id: USER_ID,
       name: "Daniel",
+      points: 20,
       breed: "Dragon",
       type: "Ice",
       level_name: "Milleniums",
@@ -673,6 +683,7 @@ describe("Given a application to manage users in a second life game", () => {
     const EXPECTED_USER = {
       id: USER_ID,
       name: "Daniel",
+      points: 30,
       breed: "Dragon",
       type: "Ice",
       level_name: "Milleniums",
@@ -696,6 +707,7 @@ describe("Given a application to manage users in a second life game", () => {
     const EXPECTED_USER_2 = {
       id: OTHER_USER_ID,
       name: "Kaleb",
+      points: 10,
       breed: "Vampiro",
       type: "DarkSoul",
       xp_level: 0,
