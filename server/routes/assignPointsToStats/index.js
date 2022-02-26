@@ -15,7 +15,7 @@ const assignPointsToStats = (db) => async (req, res) => {
 
   await db.saveUserPoints([UserPoints.withdrawal(userId, balance)]);
 
-  res.send();
+  res.send({});
 };
 
 module.exports = assignPointsToStats;

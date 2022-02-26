@@ -44,7 +44,7 @@ const assignExperience = (db, systemEvents) => async (req, res) => {
 
   await db.saveUserExperience("UserExperience", operations);
 
-  res.send();
+  res.send({});
 
   await db.registerAssignExperience(experienceToAssign, timestamp());
 
