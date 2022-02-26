@@ -72,6 +72,8 @@ function reduce(stats) {
     perception: 10,
     agility: 10,
     endurance: 10,
+    hit_damage: 10,
+    hit_absorption: 5,
   };
   return stats.reduce((acc, stat) => {
     return Object.entries(stat).reduce((initial, [name, value]) => {

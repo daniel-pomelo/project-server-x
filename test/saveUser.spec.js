@@ -65,6 +65,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 240,
       xp_level: 0,
       stats: {
+        hit_absorption: 5,
+        hit_damage: 10,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -121,6 +123,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 288,
       xp_level: 0,
       stats: {
+        hit_absorption: 5,
+        hit_damage: 10,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -205,6 +209,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 288,
       xp_level: 0,
       stats: {
+        hit_absorption: 5,
+        hit_damage: 10,
         agility: 10,
         endurance: 10,
         fortitude: 14,
@@ -308,6 +314,8 @@ describe("Given a application to manage users in a second life game", () => {
         xp_max: 240,
         xp_level: 0,
         stats: {
+          hit_absorption: 5,
+          hit_damage: 10,
           agility: 10,
           endurance: 10,
           fortitude: 10,
@@ -358,6 +366,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 240,
       xp_level: 100,
       stats: {
+        hit_absorption: 5,
+        hit_damage: 10,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -401,6 +411,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 288,
       xp_level: 0,
       stats: {
+        hit_absorption: 5,
+        hit_damage: 10,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -445,6 +457,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 240,
       xp_level: 239,
       stats: {
+        hit_absorption: 5,
+        hit_damage: 10,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -490,6 +504,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 288,
       xp_level: 60,
       stats: {
+        hit_absorption: 5,
+        hit_damage: 10,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -536,6 +552,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 288,
       xp_level: 160,
       stats: {
+        hit_absorption: 5,
+        hit_damage: 10,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -579,6 +597,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 480,
       xp_level: 10,
       stats: {
+        hit_absorption: 5,
+        hit_damage: 10,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -623,6 +643,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 336,
       xp_level: 334,
       stats: {
+        hit_absorption: 5,
+        hit_damage: 10,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -683,6 +705,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 384,
       xp_level: 0,
       stats: {
+        hit_absorption: 5,
+        hit_damage: 10,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -707,6 +731,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 288,
       xp_level: 99,
       stats: {
+        hit_absorption: 5,
+        hit_damage: 10,
         agility: 10,
         endurance: 10,
         fortitude: 10,
