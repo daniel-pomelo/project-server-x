@@ -5,8 +5,7 @@ const DEFAULT_USER_EXPERIENCE = {
   xp_max: 240,
 };
 
-function addXPProps(experience = DEFAULT_USER_EXPERIENCE, user) {
-  experience = experience || DEFAULT_USER_EXPERIENCE;
+function addXPProps(experience, user) {
   return {
     ...user,
     xp_current: experience.xp_current,
@@ -16,19 +15,28 @@ function addXPProps(experience = DEFAULT_USER_EXPERIENCE, user) {
   };
 }
 
+function calcHealth(fortitude, level_value) {
+  return Math.round((fortitude / 1.8) * (level_value / 1.2) + 100);
+}
+function calcMana(endurance, level_value) {
+  return Math.round((endurance / 1.8) * (level_value / 1.2) + 100);
+}
+
 async function findUserById(db, id) {
   const user = await db.findOne("Users", { id });
   if (!user) {
     return null;
   }
   const stats = await getUserStats(db, id);
-  const experience = await db.findOne("UserExperience", { user_id: id });
+  const experience =
+    (await db.findOne("UserExperience", { user_id: id })) ||
+    DEFAULT_USER_EXPERIENCE;
   const userPoints = await findUserPointsByUserId(db, id);
   return addXPProps(experience, {
     ...user,
     points: userPoints.balance,
-    health: user.stats.health,
-    mana: user.stats.mana,
+    health: calcHealth(stats.fortitude, experience.level_value),
+    mana: calcMana(stats.endurance, experience.level_value),
     stats,
   });
 }
