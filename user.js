@@ -82,6 +82,7 @@ function reduce(stats) {
     endurance: 10,
     hit_damage: 10,
     hit_absorption: 5,
+    absorption: 10,
   };
   return stats.reduce((acc, stat) => {
     return Object.entries(stat).reduce((initial, [name, value]) => {
