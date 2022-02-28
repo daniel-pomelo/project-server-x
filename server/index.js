@@ -61,10 +61,10 @@ class MyServer {
     app.get("/", renderHomePage);
     app.post("/register/:id", registerUser(db, systemEvents));
     app.get("/register/:id", renderRegisterPage);
-    app.get("/api/profile/:token", asyncHandler(getUserProfile(db, tokens)));
     app.post("/api/bridge", saveBridge(db));
     app.post("/api/xp", asyncHandler(assignExperience(db, systemEvents)));
 
+    app.get("/api/profile/:token", asyncHandler(getUserProfile(db, tokens)));
     app.get("/api/auth/:id", getUrlToProfile(tokens, UI_URL));
 
     app.use((error, req, res, next) => {

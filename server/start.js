@@ -5,7 +5,7 @@ const SystemEvents = require("./SystemEvents");
 const MongoDataBase = require("../MongoDataBase");
 const Tokens = require("./Tokens");
 
-const UI_URL = "http://localhost:3000";
+const UI_URL = process.env.URL_TO_UI;
 
 MongoDataBase.init().then((db) => {
   const server = MyServer.start(
