@@ -1,17 +1,17 @@
-const jwt = require("jsonwebtoken");
+const { v4: uuidv4 } = require("uuid");
+
+const map = new Map();
 
 class Tokens {
   getTokenForProfile(userId) {
-    const date = new Date();
-    date.setMinutes(date.getMinutes() + 5);
-    return jwt.sign({ userId, expiration: date }, "my-secret");
+    const token = uuidv4();
+
+    map.set(token, userId);
+
+    return token;
   }
   getUserIdFromToken(token) {
-    const { userId, expiration } = jwt.verify(token, "my-secret");
-    if (new Date(expiration) < new Date()) {
-      throw new Error("Expired");
-    }
-    return userId;
+    return map.get(token);
   }
 }
 
