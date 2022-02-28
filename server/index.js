@@ -11,6 +11,7 @@ const renderHomePage = require("./routes/renderHomePage");
 const returnUserById = require("./routes/returnUserById");
 const registerUser = require("./routes/registerUser");
 const renderRegisterPage = require("./routes/renderRegisterPage");
+const getUrlToProfile = require("./routes/getUrlToProfile");
 
 const PORT = process.env.PORT || 3001;
 
@@ -41,7 +42,7 @@ class MyServer {
   constructor(app) {
     this.app = app;
   }
-  static start(db, systemEvents) {
+  static start(db, systemEvents, tokens, UI_URL) {
     const app = express();
 
     app.use(express.static("public"));
@@ -60,9 +61,12 @@ class MyServer {
     app.get("/", renderHomePage);
     app.post("/register/:id", registerUser(db, systemEvents));
     app.get("/register/:id", renderRegisterPage);
-    app.get("/profile/:id", getUserProfile(db));
+    app.get("/api/profile/:token", asyncHandler(getUserProfile(db, tokens)));
     app.post("/api/bridge", saveBridge(db));
     app.post("/api/xp", asyncHandler(assignExperience(db, systemEvents)));
+
+    app.get("/api/auth/:id", getUrlToProfile(tokens, UI_URL));
+
     app.use((error, req, res, next) => {
       const custom = responses[error.message];
       res
