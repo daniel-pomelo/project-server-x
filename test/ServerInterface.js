@@ -100,6 +100,17 @@ class ServerInterface {
       },
     };
   }
+  async getURLToProfile(userId) {
+    const res = await supertest(this.server.app)
+      .get("/api/auth/" + userId)
+      .set("bridge-id", "BRIDGE_ID")
+      .expect(200);
+    return {
+      bodyEquals(expectedBody) {
+        expect(res.body).to.eqls(expectedBody);
+      },
+    };
+  }
 }
 
 module.exports = {
