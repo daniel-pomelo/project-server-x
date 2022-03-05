@@ -71,6 +71,7 @@ describe("Given a application to manage users in a second life game", () => {
       name: "Daniel",
       breed: "Dragon",
       points: 0,
+      skill_points: 0,
       type: "Ice",
       level_name: "Milleniums",
       level_value: 1,
@@ -130,6 +131,7 @@ describe("Given a application to manage users in a second life game", () => {
       name: "Daniel",
       breed: "Dragon",
       points: 10,
+      skill_points: 1,
       type: "Ice",
       level_name: "Milleniums",
       level_value: 2,
@@ -322,6 +324,7 @@ describe("Given a application to manage users in a second life game", () => {
         id: "12f6538d-fea7-421c-97f0-8f86b763ce75",
         name: "Daniel",
         points: 0,
+        skill_points: 0,
         breed: "Dragon",
         type: "Ice",
         level_name: "Milleniums",
@@ -376,6 +379,7 @@ describe("Given a application to manage users in a second life game", () => {
       name: "Daniel",
       breed: "Dragon",
       points: 0,
+      skill_points: 0,
       type: "Ice",
       level_name: "Milleniums",
       level_value: 1,
@@ -421,6 +425,7 @@ describe("Given a application to manage users in a second life game", () => {
       id: USER_ID,
       name: "Daniel",
       points: 10,
+      skill_points: 1,
       breed: "Dragon",
       type: "Ice",
       level_name: "Milleniums",
@@ -469,6 +474,7 @@ describe("Given a application to manage users in a second life game", () => {
       name: "Daniel",
       breed: "Dragon",
       points: 0,
+      skill_points: 0,
       type: "Ice",
       level_name: "Milleniums",
       level_value: 1,
@@ -516,6 +522,7 @@ describe("Given a application to manage users in a second life game", () => {
       id: USER_ID,
       name: "Daniel",
       points: 10,
+      skill_points: 1,
       breed: "Dragon",
       type: "Ice",
       level_name: "Milleniums",
@@ -565,6 +572,7 @@ describe("Given a application to manage users in a second life game", () => {
       id: USER_ID,
       name: "Daniel",
       points: 10,
+      skill_points: 1,
       breed: "Dragon",
       type: "Ice",
       level_name: "Milleniums",
@@ -612,6 +620,7 @@ describe("Given a application to manage users in a second life game", () => {
       name: "Daniel",
       breed: "Dragon",
       points: 50,
+      skill_points: 5,
       type: "Ice",
       level_name: "Milleniums",
       level_value: 6,
@@ -658,6 +667,7 @@ describe("Given a application to manage users in a second life game", () => {
       id: USER_ID,
       name: "Daniel",
       points: 20,
+      skill_points: 2,
       breed: "Dragon",
       type: "Ice",
       level_name: "Milleniums",
@@ -721,6 +731,7 @@ describe("Given a application to manage users in a second life game", () => {
       id: USER_ID,
       name: "Daniel",
       points: 30,
+      skill_points: 3,
       breed: "Dragon",
       type: "Ice",
       level_name: "Milleniums",
@@ -747,6 +758,7 @@ describe("Given a application to manage users in a second life game", () => {
       id: OTHER_USER_ID,
       name: "Kaleb",
       points: 10,
+      skill_points: 1,
       breed: "Vampiro",
       type: "DarkSoul",
       xp_level: 0,
@@ -843,27 +855,53 @@ describe("Given a application to manage users in a second life game", () => {
     res.contains({
       skills: [
         {
-          id: "heal",
+          id: "self-heal",
           name: "Heal",
-          description: "Some description...",
+          description:
+            "Reference site about Lorem Ipsum, giving information on its origins, as well as a random Lipsum generator.",
           level_min: 2,
           level_gap: 2,
         },
         {
           id: "ignite",
           name: "Ignite",
-          description: "Some description...",
+          description:
+            "Reference site about Lorem Ipsum, giving information on its origins, as well as a random Lipsum generator.",
           level_min: 2,
           level_gap: 3,
         },
         {
           id: "chaining",
           name: "Chaining",
-          description: "Some description...",
+          description:
+            "Reference site about Lorem Ipsum, giving information on its origins, as well as a random Lipsum generator.",
           level_min: 2,
           level_gap: 2,
         },
       ],
+    });
+  });
+  it("should show the skills points in the profile", async () => {
+    const api = new ServerInterface(server);
+    const USER_ID = "12f6538d-fea7-421c-97f0-8f86b763ce75";
+    await api.GivenTheresABridge({ id: "BRIDGE_ID", url: "http://sarasa.com" });
+    await api.AssertUserNotRegistered(USER_ID);
+
+    const formValues = {
+      name: "Daniel",
+      breed: "Dragon",
+      type: "Ice",
+      level_name: "Milleniums",
+    };
+    await api.RegisterUser(USER_ID, formValues);
+    await api.assignExperience(listOf(userExperience(USER_ID, 240 + 288)));
+
+    await api.getURLToProfile(USER_ID);
+
+    const res = await api.GetUserProfile("12345678");
+
+    res.contains({
+      skill_points: 2,
     });
   });
 });

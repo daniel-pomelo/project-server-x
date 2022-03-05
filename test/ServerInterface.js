@@ -123,8 +123,13 @@ class ServerInterface {
           body: res.body,
         });
       },
-      contains({ skills }) {
-        expect(res.body.skills).to.eqls(skills);
+      contains({ skills, skill_points }) {
+        if (skill_points) {
+          expect(res.body.skill_points).to.eqls(skill_points);
+        }
+        if (skills) {
+          expect(res.body.skills).to.eqls(skills);
+        }
       },
     };
   }

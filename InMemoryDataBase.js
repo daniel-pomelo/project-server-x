@@ -1,6 +1,7 @@
 const COLLECTION_NAMES = {
   USER_EXPERIENCE: "UserExperience",
   USER_POINTS: "UserPoints",
+  USER_SKILL_POINTS: "UserSkillPoints",
 };
 
 function collectionIs(expectedName, collectionName) {
@@ -15,6 +16,7 @@ class InMemoryDataBase {
     db.userExperience = new Map();
     db.stats = new Set();
     db.userPoints = new Set();
+    db.userSkillPoints = new Set();
     return db;
   }
   async save(collectionName, data) {
@@ -26,6 +28,9 @@ class InMemoryDataBase {
     }
     if (collectionIs(COLLECTION_NAMES.USER_POINTS, collectionName)) {
       this.userPoints.add(data);
+    }
+    if (collectionIs(COLLECTION_NAMES.USER_SKILL_POINTS, collectionName)) {
+      this.userSkillPoints.add(data);
     }
     if (collectionName === "UserStats") {
       this.stats.add(data);
@@ -86,6 +91,11 @@ class InMemoryDataBase {
         (item) => item.user_id === criteria.user_id
       );
     }
+    if (collectionIs(COLLECTION_NAMES.USER_SKILL_POINTS, collectionName)) {
+      return Array.from(this.userSkillPoints.values()).filter(
+        (item) => item.user_id === criteria.user_id
+      );
+    }
     return [];
   }
   async groupByUserId(collectionName, userIds) {
@@ -117,6 +127,11 @@ class InMemoryDataBase {
   saveUserPoints(userPoints) {
     userPoints.forEach((points) => {
       this.save(COLLECTION_NAMES.USER_POINTS, points);
+    });
+  }
+  saveUserSkillPoints(userPoints) {
+    userPoints.forEach((points) => {
+      this.save(COLLECTION_NAMES.USER_SKILL_POINTS, points);
     });
   }
 }
