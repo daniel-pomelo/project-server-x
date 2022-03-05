@@ -21,24 +21,47 @@ function calcHealth(fortitude, level_value) {
 function calcMana(endurance, level_value) {
   return Math.round((endurance / 1.8) * (level_value / 1.2) + 100);
 }
+function calcPointsBalance(records) {
+  const balance = records.reduce((acc, record) => {
+    if (record.type === "USER_POINTS_WITHDRAWAL") {
+      return acc - record.points;
+    } else if (record.type === "USER_LEVEL_UP_REWARD") {
+      return acc + record.points;
+    } else {
+      return acc;
+    }
+  }, 0);
+  return { balance };
+}
 
 async function findUserById(db, id) {
   const user = await db.findOne("Users", { id });
   if (!user) {
     return null;
   }
-  const stats = await getUserStats(db, id);
-  const experience =
-    (await db.findOne("UserExperience", { user_id: id })) ||
-    DEFAULT_USER_EXPERIENCE;
-  const userPoints = await findUserPointsByUserId(db, id);
-  return addXPProps(experience, {
+  const [experience, userPoints, stats] = await Promise.all([
+    db.findOne("UserExperience", { user_id: id }),
+    db.find("UserPoints", { user_id: id }),
+    db.find("UserStats", { user_id: id }),
+  ]).then(([experience, userPoints, stats]) => {
+    return [
+      experience || DEFAULT_USER_EXPERIENCE,
+      calcPointsBalance(userPoints),
+      reduce(stats),
+    ];
+  });
+
+  return {
     ...user,
-    points: userPoints.balance,
     health: calcHealth(stats.fortitude, experience.level_value),
     mana: calcMana(stats.endurance, experience.level_value),
+    xp_current: experience.xp_current,
+    xp_max: experience.xp_max,
+    xp_level: experience.xp_level,
+    level_value: experience.level_value,
+    points: userPoints.balance,
     stats,
-  });
+  };
 }
 async function findAllUser(db, userIds = []) {
   const stats = await db.findAll("UserStats");
@@ -62,10 +85,6 @@ async function findAllUser(db, userIds = []) {
       );
     });
   });
-}
-async function getUserStats(db, id) {
-  const stats = await db.find("UserStats", { user_id: id });
-  return reduce(stats);
 }
 function buildUserStats(stats, user) {
   return reduce(stats.filter((stat) => stat.user_id === user.id));
@@ -115,6 +134,5 @@ async function findUserPointsByUserId(db, id) {
 module.exports = {
   findUserById,
   findAllUser,
-  getUserStats,
   findUserPointsByUserId,
 };
