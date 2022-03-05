@@ -109,6 +109,23 @@ class ServerInterface {
       bodyEquals(expectedBody) {
         expect(res.body).to.eqls(expectedBody);
       },
+      url: () => res.body.url,
+    };
+  }
+  async GetUserProfile(token) {
+    const res = await supertest(this.server.app)
+      .get("/api/profile/" + token)
+      .expect(200);
+    return {
+      debug() {
+        console.log({
+          status: res.status,
+          body: res.body,
+        });
+      },
+      contains({ skills }) {
+        expect(res.body.skills).to.eqls(skills);
+      },
     };
   }
 }
