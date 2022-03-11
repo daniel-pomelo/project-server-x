@@ -99,6 +99,15 @@ class MongoDataBase {
       .collection("UserPoints")
       .bulkWrite(operations);
   }
+  saveUserSkillPoints(operations) {
+    operations = operations.map((operation) => {
+      return { insertOne: { document: operation } };
+    });
+    return this.client
+      .db("ProjectX")
+      .collection("UserSkillPoints")
+      .bulkWrite(operations);
+  }
 }
 
 module.exports = MongoDataBase;

@@ -854,14 +854,14 @@ describe("Given a application to manage users in a second life game", () => {
           name: "Ignite",
           description: "Some description...",
           level_min: 2,
-          level_gap: 3,
+          level_gap: 2,
         },
         {
           id: "chaining",
           name: "Chaining",
           description: "Some description...",
           level_min: 2,
-          level_gap: 2,
+          level_gap: 3,
         },
       ],
     });
