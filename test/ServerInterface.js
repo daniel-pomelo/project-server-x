@@ -128,6 +128,20 @@ class ServerInterface {
       },
     };
   }
+  async SaveSkill(body) {
+    const res = await supertest(this.server.app).post("/api/skills").send(body);
+    return {
+      debug() {
+        console.log({
+          status: res.status,
+          body: res.body,
+        });
+      },
+      statusEquals(status) {
+        expect(res.status).to.eqls(status);
+      },
+    };
+  }
 }
 
 module.exports = {

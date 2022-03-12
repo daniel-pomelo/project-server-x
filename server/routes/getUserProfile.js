@@ -29,5 +29,7 @@ module.exports = (db, tokens) => async (req, res) => {
   const userId = tokens.getUserIdFromToken(token);
   const user = await findUserById(db, userId);
 
-  res.send({ ...user, skills });
+  const moreSkills = await db.find("Skills");
+
+  res.send({ ...user, skills: [...skills, ...moreSkills] });
 };
