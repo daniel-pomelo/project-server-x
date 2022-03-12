@@ -13,6 +13,7 @@ const registerUser = require("./routes/registerUser");
 const renderRegisterPage = require("./routes/renderRegisterPage");
 const getUrlToProfile = require("./routes/getUrlToProfile");
 const getSkills = require("./routes/getSkills");
+const saveSkills = require("./routes/saveSkills");
 
 const PORT = process.env.PORT || 3001;
 
@@ -65,6 +66,7 @@ class MyServer {
     app.post("/api/bridge", saveBridge(db));
     app.post("/api/xp", asyncHandler(assignExperience(db, systemEvents)));
     app.get("/api/skills", asyncHandler(getSkills(db)));
+    app.post("/api/skills", asyncHandler(saveSkills(db)));
 
     app.get("/api/profile/:token", asyncHandler(getUserProfile(db, tokens)));
     app.get("/api/auth/:id", getUrlToProfile(tokens, UI_URL));
