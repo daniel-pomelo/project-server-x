@@ -841,29 +841,7 @@ describe("Given a application to manage users in a second life game", () => {
     const res = await api.GetUserProfile("12345678");
 
     res.contains({
-      skills: [
-        {
-          id: "heal",
-          name: "Heal",
-          description: "Some description...",
-          level_min: 2,
-          level_gap: 2,
-        },
-        {
-          id: "ignite",
-          name: "Ignite",
-          description: "Some description...",
-          level_min: 2,
-          level_gap: 2,
-        },
-        {
-          id: "chaining",
-          name: "Chaining",
-          description: "Some description...",
-          level_min: 2,
-          level_gap: 3,
-        },
-      ],
+      skills: [],
     });
   });
   it("should save the skill", async () => {
@@ -895,27 +873,6 @@ describe("Given a application to manage users in a second life game", () => {
 
     res.contains({
       skills: [
-        {
-          id: "heal",
-          name: "Heal",
-          description: "Some description...",
-          level_min: 2,
-          level_gap: 2,
-        },
-        {
-          id: "ignite",
-          name: "Ignite",
-          description: "Some description...",
-          level_min: 2,
-          level_gap: 2,
-        },
-        {
-          id: "chaining",
-          name: "Chaining",
-          description: "Some description...",
-          level_min: 2,
-          level_gap: 3,
-        },
         {
           id: "fire-beam",
           name: "Fire Beam",
