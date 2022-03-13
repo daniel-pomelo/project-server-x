@@ -853,30 +853,44 @@ describe("Given a application to manage users in a second life game", () => {
     const res = await api.GetUserProfile("12345678");
 
     res.contains({
+      skills: [],
+    });
+  });
+  it("should save the skill", async () => {
+    const api = new ServerInterface(server);
+    const USER_ID = "12f6538d-fea7-421c-97f0-8f86b763ce75";
+    await api.GivenTheresABridge({ id: "BRIDGE_ID", url: "http://sarasa.com" });
+    await api.AssertUserNotRegistered(USER_ID);
+
+    const formValues = {
+      name: "Daniel",
+      breed: "Dragon",
+      type: "Ice",
+      level_name: "Milleniums",
+    };
+    await api.RegisterUser(USER_ID, formValues);
+    await api.assignExperience(listOf(userExperience(USER_ID, 240)));
+
+    await api.getURLToProfile(USER_ID);
+
+    await api.SaveSkill({
+      id: "fire-beam",
+      name: "Fire Beam",
+      description: "Some description for fire beam...",
+      level_min: 2,
+      level_gap: 4,
+    });
+
+    const res = await api.GetUserProfile("12345678");
+
+    res.contains({
       skills: [
         {
-          id: "self-heal",
-          name: "Heal",
-          description:
-            "Reference site about Lorem Ipsum, giving information on its origins, as well as a random Lipsum generator.",
+          id: "fire-beam",
+          name: "Fire Beam",
+          description: "Some description for fire beam...",
           level_min: 2,
-          level_gap: 2,
-        },
-        {
-          id: "ignite",
-          name: "Ignite",
-          description:
-            "Reference site about Lorem Ipsum, giving information on its origins, as well as a random Lipsum generator.",
-          level_min: 2,
-          level_gap: 3,
-        },
-        {
-          id: "chaining",
-          name: "Chaining",
-          description:
-            "Reference site about Lorem Ipsum, giving information on its origins, as well as a random Lipsum generator.",
-          level_min: 2,
-          level_gap: 2,
+          level_gap: 4,
         },
       ],
     });
