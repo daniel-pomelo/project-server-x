@@ -74,6 +74,27 @@ const assignExperience = (db, systemEvents) => async (req, res) => {
     await db.saveUserPoints(userPoints);
   }
 
+  const userSkillPoints = usersThatLevelUp.map((operation) => {
+    const { userExperience, newUserExperience, userId } = operation;
+    const currentLevel = newUserExperience.level_value;
+    const prevLevel = userExperience.level_value;
+    const points = currentLevel - prevLevel;
+    return {
+      user_id: userId,
+      level_value: {
+        previous: prevLevel,
+        current: currentLevel,
+      },
+      points,
+      type: "USER_LEVEL_UP_REWARD",
+      timestamp: timestamp(),
+    };
+  });
+
+  if (userSkillPoints.length > 0) {
+    await db.saveUserSkillPoints(userSkillPoints);
+  }
+
   usersThatLevelUp.forEach(async (operation) => {
     const { userExperience, newUserExperience } = operation;
     systemEvents.notify("USER_LEVEL_UP", {
