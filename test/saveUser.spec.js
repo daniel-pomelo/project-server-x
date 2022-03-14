@@ -853,7 +853,7 @@ describe("Given a application to manage users in a second life game", () => {
     const res = await api.GetUserProfile("12345678");
 
     res.contains({
-      skills: [],
+      skills_catalog: [],
     });
   });
   it("should save the skill", async () => {
@@ -884,7 +884,7 @@ describe("Given a application to manage users in a second life game", () => {
     const res = await api.GetUserProfile("12345678");
 
     res.contains({
-      skills: [
+      skills_catalog: [
         {
           id: "fire-beam",
           name: "Fire Beam",

@@ -123,12 +123,12 @@ class ServerInterface {
           body: res.body,
         });
       },
-      contains({ skills, skill_points }) {
+      contains({ skills_catalog, skill_points }) {
         if (skill_points) {
           expect(res.body.skill_points).to.eqls(skill_points);
         }
-        if (skills) {
-          expect(res.body.skills).to.eqls(skills);
+        if (skills_catalog) {
+          expect(res.body.skills_catalog).to.eqls(skills_catalog);
         }
       },
     };
