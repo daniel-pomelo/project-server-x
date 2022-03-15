@@ -39,19 +39,22 @@ async function findUserById(db, id) {
   if (!user) {
     return null;
   }
-  const [experience, userPoints, stats, skillPoints] = await Promise.all([
-    db.findOne("UserExperience", { user_id: id }),
-    db.find("UserPoints", { user_id: id }),
-    db.find("UserStats", { user_id: id }),
-    db.find("UserSkillPoints", { user_id: id }),
-  ]).then(([experience, userPoints, stats, skillPoints]) => {
-    return [
-      experience || DEFAULT_USER_EXPERIENCE,
-      calcPointsBalance(userPoints),
-      reduce(stats),
-      calcPointsBalance(skillPoints),
-    ];
-  });
+  const [experience, userPoints, stats, skillPoints, userSkills] =
+    await Promise.all([
+      db.findOne("UserExperience", { user_id: id }),
+      db.find("UserPoints", { user_id: id }),
+      db.find("UserStats", { user_id: id }),
+      db.find("UserSkillPoints", { user_id: id }),
+      db.find("UserSkills", { user_id: id }),
+    ]).then(([experience, userPoints, stats, skillPoints, userSkills]) => {
+      return [
+        experience || DEFAULT_USER_EXPERIENCE,
+        calcPointsBalance(userPoints),
+        reduce(stats),
+        calcPointsBalance(skillPoints),
+        (userSkills[0] && userSkills[0].skills) || [],
+      ];
+    });
 
   return {
     ...user,
@@ -64,6 +67,7 @@ async function findUserById(db, id) {
     points: userPoints.balance,
     skill_points: skillPoints.balance,
     stats,
+    skills: userSkills,
   };
 }
 async function findAllUser(db, userIds = []) {

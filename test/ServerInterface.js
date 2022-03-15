@@ -123,12 +123,36 @@ class ServerInterface {
           body: res.body,
         });
       },
-      contains({ skills_catalog, skill_points }) {
+      skillsPointsEquals(skillPoints) {
+        expect(res.body.skill_points).to.eqls(skillPoints);
+      },
+      contains({ skills_catalog, skill_points, skills }) {
         if (skill_points) {
           expect(res.body.skill_points).to.eqls(skill_points);
         }
         if (skills_catalog) {
           expect(res.body.skills_catalog).to.eqls(skills_catalog);
+        }
+        if (skills) {
+          expect(res.body.skills).to.eqls(skills);
+        }
+      },
+    };
+  }
+  async LearnSkills({ token, skills }) {
+    const res = await supertest(this.server.app)
+      .post("/api/profile/" + token + "/skills")
+      .send({ skills });
+    return {
+      debug() {
+        console.log({
+          status: res.status,
+          body: res.body,
+        });
+      },
+      contains({ skills }) {
+        if (skills) {
+          expect(res.body.skills).to.eqls(skills);
         }
       },
     };

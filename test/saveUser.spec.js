@@ -80,6 +80,7 @@ describe("Given a application to manage users in a second life game", () => {
       xp_current: 0,
       xp_max: 240,
       xp_level: 0,
+      skills: [],
       stats: {
         absorption: 10,
         hit_absorption: 5,
@@ -140,6 +141,7 @@ describe("Given a application to manage users in a second life game", () => {
       xp_current: 240,
       xp_max: 288,
       xp_level: 0,
+      skills: [],
       stats: {
         absorption: 10,
         hit_absorption: 5,
@@ -334,6 +336,7 @@ describe("Given a application to manage users in a second life game", () => {
         xp_current: 0,
         xp_max: 240,
         xp_level: 0,
+        skills: [],
         stats: {
           absorption: 10,
           hit_absorption: 5,
@@ -388,6 +391,7 @@ describe("Given a application to manage users in a second life game", () => {
       xp_current: 100,
       xp_max: 240,
       xp_level: 100,
+      skills: [],
       stats: {
         absorption: 10,
         hit_absorption: 5,
@@ -435,6 +439,7 @@ describe("Given a application to manage users in a second life game", () => {
       xp_current: 240,
       xp_max: 288,
       xp_level: 0,
+      skills: [],
       stats: {
         absorption: 10,
         hit_absorption: 5,
@@ -483,6 +488,7 @@ describe("Given a application to manage users in a second life game", () => {
       xp_current: 239,
       xp_max: 240,
       xp_level: 239,
+      skills: [],
       stats: {
         absorption: 10,
         hit_absorption: 5,
@@ -532,6 +538,7 @@ describe("Given a application to manage users in a second life game", () => {
       xp_current: 300,
       xp_max: 288,
       xp_level: 60,
+      skills: [],
       stats: {
         absorption: 10,
         hit_absorption: 5,
@@ -582,6 +589,7 @@ describe("Given a application to manage users in a second life game", () => {
       xp_current: 400,
       xp_max: 288,
       xp_level: 160,
+      skills: [],
       stats: {
         absorption: 10,
         hit_absorption: 5,
@@ -629,6 +637,7 @@ describe("Given a application to manage users in a second life game", () => {
       xp_current: 1690,
       xp_max: 480,
       xp_level: 10,
+      skills: [],
       stats: {
         absorption: 10,
         hit_absorption: 5,
@@ -677,6 +686,7 @@ describe("Given a application to manage users in a second life game", () => {
       xp_current: 862,
       xp_max: 336,
       xp_level: 334,
+      skills: [],
       stats: {
         absorption: 10,
         hit_absorption: 5,
@@ -741,6 +751,7 @@ describe("Given a application to manage users in a second life game", () => {
       xp_current: 864,
       xp_max: 384,
       xp_level: 0,
+      skills: [],
       stats: {
         absorption: 10,
         hit_absorption: 5,
@@ -769,6 +780,7 @@ describe("Given a application to manage users in a second life game", () => {
       xp_current: 339,
       xp_max: 288,
       xp_level: 99,
+      skills: [],
       stats: {
         absorption: 10,
         hit_absorption: 5,
@@ -917,5 +929,97 @@ describe("Given a application to manage users in a second life game", () => {
     res.contains({
       skill_points: 2,
     });
+  });
+  it("should ...", async () => {
+    const api = new ServerInterface(server);
+    const USER_ID = "12f6538d-fea7-421c-97f0-8f86b763ce75";
+    await api.GivenTheresABridge({ id: "BRIDGE_ID", url: "http://sarasa.com" });
+    await api.AssertUserNotRegistered(USER_ID);
+
+    await api.SaveSkill({
+      id: "fire-beam",
+      name: "Fire Beam",
+      description: "Some description for fire beam...",
+      level_min: 2,
+      level_gap: 4,
+    });
+
+    const formValues = {
+      name: "Daniel",
+      breed: "Dragon",
+      type: "Ice",
+      level_name: "Milleniums",
+    };
+    await api.RegisterUser(USER_ID, formValues);
+    await api.assignExperience(listOf(userExperience(USER_ID, 240)));
+
+    await api.getURLToProfile(USER_ID);
+
+    await api.GetUserProfile("12345678");
+
+    await api.LearnSkills({
+      token: "12345678",
+      skills: [
+        {
+          id: "fire-beam",
+          skill_level_value: 1,
+          user_level_value: 2,
+        },
+      ],
+    });
+
+    const res = await api.GetUserProfile("12345678");
+
+    res.contains({
+      skills: [
+        {
+          id: "fire-beam",
+          skill_level_value: 1,
+          user_level_value: 2,
+        },
+      ],
+    });
+  });
+  it("should 2 ...", async () => {
+    const api = new ServerInterface(server);
+    const USER_ID = "12f6538d-fea7-421c-97f0-8f86b763ce75";
+    await api.GivenTheresABridge({ id: "BRIDGE_ID", url: "http://sarasa.com" });
+    await api.AssertUserNotRegistered(USER_ID);
+
+    await api.SaveSkill({
+      id: "fire-beam",
+      name: "Fire Beam",
+      description: "Some description for fire beam...",
+      level_min: 2,
+      level_gap: 4,
+    });
+
+    const formValues = {
+      name: "Daniel",
+      breed: "Dragon",
+      type: "Ice",
+      level_name: "Milleniums",
+    };
+    await api.RegisterUser(USER_ID, formValues);
+    await api.assignExperience(listOf(userExperience(USER_ID, 240)));
+
+    await api.getURLToProfile(USER_ID);
+
+    await api.GetUserProfile("12345678");
+
+    await api.LearnSkills({
+      token: "12345678",
+      skills: [
+        {
+          id: "fire-beam",
+          skill_level_value: 1,
+          user_level_value: 2,
+        },
+      ],
+    });
+
+    const res = await api.GetUserProfile("12345678");
+
+    res.skillsPointsEquals(0);
   });
 });

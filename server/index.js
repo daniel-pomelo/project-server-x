@@ -12,6 +12,7 @@ const registerUser = require("./routes/registerUser");
 const getUrlToProfile = require("./routes/getUrlToProfile");
 const getSkills = require("./routes/getSkills");
 const saveSkills = require("./routes/saveSkills");
+const updateUserSkills = require("./routes/updateUserSkills");
 
 const PORT = process.env.PORT || 3001;
 
@@ -65,6 +66,10 @@ class MyServer {
     app.post("/api/skills", asyncHandler(saveSkills(db)));
 
     app.get("/api/profile/:token", asyncHandler(getUserProfile(db, tokens)));
+    app.post(
+      "/api/profile/:token/skills",
+      asyncHandler(updateUserSkills(db, tokens))
+    );
     app.get("/api/auth/:id", getUrlToProfile(tokens, UI_URL));
 
     app.use((error, req, res, next) => {
