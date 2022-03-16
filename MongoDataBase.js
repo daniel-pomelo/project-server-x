@@ -50,6 +50,14 @@ class MongoDataBase {
     );
   }
   find(collectionName, criteria) {
+    if (collectionName === "UserSkills") {
+      return this.client
+        .db("ProjectX")
+        .collection(collectionName)
+        .find(criteria)
+        .sort({ timestamp: -1 })
+        .toArray();
+    }
     return this.client
       .db("ProjectX")
       .collection(collectionName)
