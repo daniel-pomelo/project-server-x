@@ -3,6 +3,7 @@ const COLLECTION_NAMES = {
   USER_POINTS: "UserPoints",
   USER_SKILL_POINTS: "UserSkillPoints",
   SKILLS: "Skills",
+  USER_SKILLS: "UserSkills",
 };
 
 function collectionIs(expectedName, collectionName) {
@@ -19,11 +20,15 @@ class InMemoryDataBase {
     db.userPoints = new Set();
     db.userSkillPoints = new Set();
     db.skills = new Set();
+    db.userSkills = new Set();
     return db;
   }
   async save(collectionName, data) {
     if (collectionName === "Users") {
       this.users.set(data.id, data);
+    }
+    if (collectionIs(COLLECTION_NAMES.USER_SKILLS, collectionName)) {
+      this.userSkills.add(data);
     }
     if (collectionIs(COLLECTION_NAMES.USER_EXPERIENCE, collectionName)) {
       this.userExperience.set(data.user_id, data);
@@ -93,6 +98,11 @@ class InMemoryDataBase {
     }
     if (collectionIs(COLLECTION_NAMES.USER_POINTS, collectionName)) {
       return Array.from(this.userPoints.values()).filter(
+        (item) => item.user_id === criteria.user_id
+      );
+    }
+    if (collectionIs(COLLECTION_NAMES.USER_SKILLS, collectionName)) {
+      return Array.from(this.userSkills.values()).filter(
         (item) => item.user_id === criteria.user_id
       );
     }
