@@ -83,7 +83,7 @@ describe("Given a application to manage users in a second life game", () => {
       skills: [],
       stats: {
         absorption: 10,
-        hit_absorption: 5,
+        hit_absorption: 10,
         hit_damage: 10,
         agility: 10,
         endurance: 10,
@@ -144,8 +144,8 @@ describe("Given a application to manage users in a second life game", () => {
       skills: [],
       stats: {
         absorption: 10,
-        hit_absorption: 5,
-        hit_damage: 10,
+        hit_absorption: 11,
+        hit_damage: 11,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -188,64 +188,6 @@ describe("Given a application to manage users in a second life game", () => {
       status: 400,
       message: "Insufficient points",
     });
-  });
-  it("when getting all users should then return registered users", async () => {
-    const api = new ServerInterface(server);
-    const USER_ID = "12f6538d-fea7-421c-97f0-8f86b763ce75";
-    await api.GivenTheresABridge({ id: "BRIDGE_ID", url: "http://sarasa.com" });
-    await api.AssertUserNotRegistered(USER_ID);
-
-    const formValues = {
-      name: "Daniel",
-      breed: "Dragon",
-      type: "Ice",
-      level_name: "Milleniums",
-    };
-    await api.RegisterUser(USER_ID, formValues);
-    await api.assignExperience(listOf(userExperience(USER_ID, 240)));
-
-    const formStatsValues = {
-      fortitude: 4,
-      intelligence: 3,
-      perception: 2,
-      strength: 1,
-    };
-    const registerUserStatsResponse = await api.RegisterUserStats(
-      USER_ID,
-      formStatsValues
-    );
-
-    registerUserStatsResponse.statusEquals(200);
-
-    const EXPECTED_USER = {
-      id: "12f6538d-fea7-421c-97f0-8f86b763ce75",
-      name: "Daniel",
-      breed: "Dragon",
-      type: "Ice",
-      level_name: "Milleniums",
-      level_value: 2,
-      health: 100,
-      mana: 100,
-      xp_current: 240,
-      xp_max: 288,
-      xp_level: 0,
-      stats: {
-        absorption: 10,
-        hit_absorption: 5,
-        hit_damage: 10,
-        agility: 10,
-        endurance: 10,
-        fortitude: 14,
-        intelligence: 13,
-        perception: 12,
-        strength: 11,
-        will: 10,
-      },
-    };
-
-    const findAllUsersResponse = await api.findAllUsers();
-
-    findAllUsersResponse.equals(200, [EXPECTED_USER]);
   });
   it("when there's not attempt then register should fail", async () => {
     const api = new ServerInterface(server);
@@ -339,7 +281,7 @@ describe("Given a application to manage users in a second life game", () => {
         skills: [],
         stats: {
           absorption: 10,
-          hit_absorption: 5,
+          hit_absorption: 10,
           hit_damage: 10,
           agility: 10,
           endurance: 10,
@@ -394,7 +336,7 @@ describe("Given a application to manage users in a second life game", () => {
       skills: [],
       stats: {
         absorption: 10,
-        hit_absorption: 5,
+        hit_absorption: 10,
         hit_damage: 10,
         agility: 10,
         endurance: 10,
@@ -442,8 +384,8 @@ describe("Given a application to manage users in a second life game", () => {
       skills: [],
       stats: {
         absorption: 10,
-        hit_absorption: 5,
-        hit_damage: 10,
+        hit_absorption: 11,
+        hit_damage: 11,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -491,7 +433,7 @@ describe("Given a application to manage users in a second life game", () => {
       skills: [],
       stats: {
         absorption: 10,
-        hit_absorption: 5,
+        hit_absorption: 10,
         hit_damage: 10,
         agility: 10,
         endurance: 10,
@@ -541,8 +483,8 @@ describe("Given a application to manage users in a second life game", () => {
       skills: [],
       stats: {
         absorption: 10,
-        hit_absorption: 5,
-        hit_damage: 10,
+        hit_absorption: 11,
+        hit_damage: 11,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -592,8 +534,8 @@ describe("Given a application to manage users in a second life game", () => {
       skills: [],
       stats: {
         absorption: 10,
-        hit_absorption: 5,
-        hit_damage: 10,
+        hit_absorption: 11,
+        hit_damage: 11,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -640,8 +582,8 @@ describe("Given a application to manage users in a second life game", () => {
       skills: [],
       stats: {
         absorption: 10,
-        hit_absorption: 5,
-        hit_damage: 10,
+        hit_absorption: 11,
+        hit_damage: 11,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -689,8 +631,8 @@ describe("Given a application to manage users in a second life game", () => {
       skills: [],
       stats: {
         absorption: 10,
-        hit_absorption: 5,
-        hit_damage: 10,
+        hit_absorption: 11,
+        hit_damage: 11,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -754,8 +696,8 @@ describe("Given a application to manage users in a second life game", () => {
       skills: [],
       stats: {
         absorption: 10,
-        hit_absorption: 5,
-        hit_damage: 10,
+        hit_absorption: 11,
+        hit_damage: 11,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -783,8 +725,8 @@ describe("Given a application to manage users in a second life game", () => {
       skills: [],
       stats: {
         absorption: 10,
-        hit_absorption: 5,
-        hit_damage: 10,
+        hit_absorption: 11,
+        hit_damage: 11,
         agility: 10,
         endurance: 10,
         fortitude: 10,
