@@ -1,19 +1,16 @@
+const {
+  HitDamage,
+  HitAbsorption,
+  Health,
+  Mana,
+} = require("@origin-la/user-stats");
+
 const DEFAULT_USER_EXPERIENCE = {
   level_value: 1,
   xp_current: 0,
   xp_level: 0,
   xp_max: 240,
 };
-
-function addXPProps(experience, user) {
-  return {
-    ...user,
-    xp_current: experience.xp_current,
-    xp_max: experience.xp_max,
-    xp_level: experience.xp_level,
-    level_value: experience.level_value,
-  };
-}
 
 function calcHealth(fortitude, level_value) {
   return Math.round((fortitude / 1.8) * (level_value / 1.2) + 100);
@@ -47,10 +44,11 @@ async function findUserById(db, id) {
       db.find("UserSkillPoints", { user_id: id }),
       db.find("UserSkills", { user_id: id }),
     ]).then(([experience, userPoints, stats, skillPoints, userSkills]) => {
+      const userExperience = experience || DEFAULT_USER_EXPERIENCE;
       return [
-        experience || DEFAULT_USER_EXPERIENCE,
+        userExperience,
         calcPointsBalance(userPoints),
-        reduce(stats),
+        reduce(stats, userExperience.level_value),
         calcPointsBalance(skillPoints),
         (userSkills[0] && userSkills[0].skills) || [],
       ];
@@ -58,8 +56,8 @@ async function findUserById(db, id) {
 
   return {
     ...user,
-    health: calcHealth(stats.fortitude, experience.level_value),
-    mana: calcMana(stats.endurance, experience.level_value),
+    health: Health.calc(stats.fortitude, experience.level_value),
+    mana: Mana.calc(stats.endurance, experience.level_value),
     xp_current: experience.xp_current,
     xp_max: experience.xp_max,
     xp_level: experience.xp_level,
@@ -71,33 +69,16 @@ async function findUserById(db, id) {
   };
 }
 async function findAllUser(db, userIds = []) {
-  const stats = await db.findAll("UserStats");
-  const experiences = await db.findAll("UserExperience");
   const criteria =
     userIds.length > 0
       ? {
           id: { $in: userIds },
         }
       : null;
-  return db.find("Users", criteria).then((users) => {
-    return users.map((user) => {
-      return addXPProps(
-        experiences.find((experience) => experience.user_id === user.id),
-        {
-          ...user,
-          health: user.stats.health,
-          mana: user.stats.mana,
-          stats: buildUserStats(stats, user),
-        }
-      );
-    });
-  });
-}
-function buildUserStats(stats, user) {
-  return reduce(stats.filter((stat) => stat.user_id === user.id));
+  return db.find("Users", criteria);
 }
 
-function reduce(stats) {
+function reduce(stats, level_value) {
   const props = {
     strength: 10,
     fortitude: 10,
@@ -106,11 +87,10 @@ function reduce(stats) {
     perception: 10,
     agility: 10,
     endurance: 10,
-    hit_damage: 10,
-    hit_absorption: 5,
     absorption: 10,
   };
-  return stats.reduce((acc, stat) => {
+
+  const userStats = stats.reduce((acc, stat) => {
     return Object.entries(stat).reduce((initial, [name, value]) => {
       if (initial[name] !== undefined && initial[name] !== null) {
         return {
@@ -122,6 +102,12 @@ function reduce(stats) {
       }
     }, acc);
   }, props);
+
+  return {
+    ...userStats,
+    hit_damage: HitDamage.calc(userStats.strength, level_value),
+    hit_absorption: HitAbsorption.calc(userStats.absorption, level_value),
+  };
 }
 
 async function findUserPointsByUserId(db, id) {
