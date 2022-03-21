@@ -109,16 +109,6 @@ describe("Given I need to provide the skills of the users", () => {
           },
         ],
       });
-      await api.LearnSkills({
-        token: "12345678",
-        skills: [
-          {
-            id: "fire-beam",
-            skill_level_value: 1,
-            user_level_value: 2,
-          },
-        ],
-      });
 
       const res = await api.GetUserSkills(
         "12f6538d-fea7-421c-97f0-8f86b763ce75"
@@ -129,6 +119,94 @@ describe("Given I need to provide the skills of the users", () => {
           id: "fire-beam",
           name: "Fire Beam",
           description: "Some description for fire beam...",
+          level_min: 2,
+          level_gap: 4,
+        },
+      ]);
+    });
+  });
+  describe("because we limit the amount of skills to 2", () => {
+    it("should provide a url to get more skills", async () => {
+      const api = new ServerInterface(server);
+      const USER_ID = "12f6538d-fea7-421c-97f0-8f86b763ce75";
+      await api.GivenTheresABridge({
+        id: "BRIDGE_ID",
+        url: "http://sarasa.com",
+      });
+      await api.AssertUserNotRegistered(USER_ID);
+
+      const formValues = {
+        name: "Daniel",
+        breed: "Dragon",
+        type: "Ice",
+        level_name: "Milleniums",
+      };
+      await api.RegisterUser(USER_ID, formValues);
+
+      const saveSkillResponse = await api.SaveSkill({
+        id: "fire-beam",
+        name: "Fire Beam",
+        description: "Some description for fire beam...",
+        level_min: 2,
+        level_gap: 4,
+      });
+      const saveSkillResponse2 = await api.SaveSkill({
+        id: "ice-wing",
+        name: "Ice Wing",
+        description: "Some description for ice wing...",
+        level_min: 2,
+        level_gap: 4,
+      });
+      const saveSkillResponse3 = await api.SaveSkill({
+        id: "mega-punch",
+        name: "Mega Punch",
+        description: "Some description for mega punch...",
+        level_min: 2,
+        level_gap: 4,
+      });
+
+      saveSkillResponse.statusEquals(200);
+      saveSkillResponse2.statusEquals(200);
+      saveSkillResponse3.statusEquals(200);
+
+      await api.getURLToProfile(USER_ID);
+
+      await api.LearnSkills({
+        token: "12345678",
+        skills: [
+          {
+            id: "fire-beam",
+            skill_level_value: 1,
+            user_level_value: 2,
+          },
+          {
+            id: "ice-wing",
+            skill_level_value: 1,
+            user_level_value: 2,
+          },
+        ],
+      });
+
+      const res = await api.GetUserSkills(
+        "12f6538d-fea7-421c-97f0-8f86b763ce75"
+      );
+
+      res.contains(
+        "next",
+        "http://localhost:3001/api/skills/12f6538d-fea7-421c-97f0-8f86b763ce75?page=2"
+      );
+      res.contains("skills", [
+        {
+          id: "fire-beam",
+          name: "Fire Beam",
+          description: "Some description for fire beam...",
+          level_min: 2,
+          level_gap: 4,
+        },
+        {
+          id: "ice-wing",
+          name: "Ice Wing",
+          description: "Some description for ice wing...",
           level_min: 2,
           level_gap: 4,
         },
