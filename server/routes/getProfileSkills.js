@@ -13,9 +13,12 @@ const getProfileSkills = (db) => async (req, res) => {
       ),
     };
   });
+  const hasMore = skills.length > (page - 1) * 2 + 2;
 
   res.send({
-    next: `${BASE_URL}/api/skills/${id}?page=${parseInt(page) + 1}`,
+    ...(hasMore
+      ? { next: `${BASE_URL}/api/skills/${id}?page=${parseInt(page) + 1}` }
+      : {}),
     skills: skills.slice((page - 1) * 2, (page - 1) * 2 + 2),
   });
 };

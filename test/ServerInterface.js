@@ -171,9 +171,10 @@ class ServerInterface {
       },
     };
   }
-  async GetUserSkills(id) {
+  async GetUserSkills(id, settings) {
+    const qs = settings && settings.page ? `?page=${settings.page}` : "";
     const res = await supertest(this.server.app)
-      .get("/api/skills/" + id)
+      .get("/api/skills/" + id + qs)
       .expect(200);
     return {
       debug() {

@@ -184,6 +184,11 @@ describe("Given I need to provide the skills of the users", () => {
             skill_level_value: 1,
             user_level_value: 2,
           },
+          {
+            id: "mega-punch",
+            skill_level_value: 1,
+            user_level_value: 2,
+          },
         ],
       });
 
@@ -209,6 +214,88 @@ describe("Given I need to provide the skills of the users", () => {
           description: "Some description for ice wing...",
           level_min: 2,
           level_gap: 4,
+        },
+      ]);
+    });
+    it("should ...", async () => {
+      const api = new ServerInterface(server);
+      const USER_ID = "12f6538d-fea7-421c-97f0-8f86b763ce75";
+      await api.GivenTheresABridge({
+        id: "BRIDGE_ID",
+        url: "http://sarasa.com",
+      });
+      await api.AssertUserNotRegistered(USER_ID);
+
+      const formValues = {
+        name: "Daniel",
+        breed: "Dragon",
+        type: "Ice",
+        level_name: "Milleniums",
+      };
+      await api.RegisterUser(USER_ID, formValues);
+
+      const saveSkillResponse = await api.SaveSkill({
+        id: "fire-beam",
+        name: "Fire Beam",
+        description: "Some description for fire beam...",
+        level_min: 2,
+        level_gap: 4,
+      });
+      const saveSkillResponse2 = await api.SaveSkill({
+        id: "ice-wing",
+        name: "Ice Wing",
+        description: "Some description for ice wing...",
+        level_min: 2,
+        level_gap: 4,
+      });
+      const saveSkillResponse3 = await api.SaveSkill({
+        id: "mega-punch",
+        name: "Mega Punch",
+        description: "Some description for mega punch...",
+        level_min: 2,
+        level_gap: 4,
+      });
+
+      saveSkillResponse.statusEquals(200);
+      saveSkillResponse2.statusEquals(200);
+      saveSkillResponse3.statusEquals(200);
+
+      await api.getURLToProfile(USER_ID);
+
+      await api.LearnSkills({
+        token: "12345678",
+        skills: [
+          {
+            id: "fire-beam",
+            skill_level_value: 1,
+            user_level_value: 2,
+          },
+          {
+            id: "ice-wing",
+            skill_level_value: 1,
+            user_level_value: 2,
+          },
+          {
+            id: "mega-punch",
+            skill_level_value: 1,
+            user_level_value: 2,
+          },
+        ],
+      });
+
+      const res = await api.GetUserSkills(
+        "12f6538d-fea7-421c-97f0-8f86b763ce75",
+        { page: 2 }
+      );
+
+      res.contains("next", undefined);
+      res.contains("skills", [
+        {
+          description: "Some description for mega punch...",
+          id: "mega-punch",
+          level_gap: 4,
+          level_min: 2,
+          name: "Mega Punch",
         },
       ]);
     });
