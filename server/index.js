@@ -72,7 +72,7 @@ class MyServer {
       asyncHandler(updateUserSkills(db, tokens))
     );
     app.get("/api/auth/:id", getUrlToProfile(tokens, UI_URL));
-    app.get("/api/skills/:id", getProfileSkills);
+    app.get("/api/skills/:id", getProfileSkills(db));
 
     app.use((error, req, res, next) => {
       const custom = responses[error.message];

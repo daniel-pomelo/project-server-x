@@ -171,6 +171,22 @@ class ServerInterface {
       },
     };
   }
+  async GetUserSkills(id) {
+    const res = await supertest(this.server.app)
+      .get("/api/skills/" + id)
+      .expect(200);
+    return {
+      debug() {
+        console.log({
+          status: res.status,
+          body: res.body,
+        });
+      },
+      contains(key, value) {
+        expect(res.body[key]).to.eqls(value);
+      },
+    };
+  }
 }
 
 module.exports = {

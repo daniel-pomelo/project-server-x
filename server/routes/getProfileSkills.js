@@ -1,13 +1,17 @@
 const BASE_URL = process.env.BACKEND_URL;
 
-const getProfileSkills = (req, res) => {
+const getProfileSkills = (db) => async (req, res) => {
   const { id } = req.params;
-  const { page = 1, limit = 2 } = req.query;
-  const next =
-    BASE_URL + `/api/skills/${id}?page=${parseInt(page) + 1}&limit=${limit}`;
+  const skillsCatalog = await db.find("Skills");
+  const skills = await db.find("UserSkills", { user_id: id });
   res.send({
-    skills: [],
-    next,
+    skills: (skills[0] ? skills[0].skills : []).map((skill) => {
+      return {
+        ...skillsCatalog.find(
+          (skillFromCatalog) => skillFromCatalog.id === skill.id
+        ),
+      };
+    }),
   });
 };
 
