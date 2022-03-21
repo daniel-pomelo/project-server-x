@@ -14,6 +14,8 @@ const getSkills = require("./routes/getSkills");
 const saveSkills = require("./routes/saveSkills");
 const updateUserSkills = require("./routes/updateUserSkills");
 const getProfileSkills = require("./routes/getProfileSkills");
+const listBridges = require("./routes/listBridges");
+const saveBridges = require("./routes/saveBridges");
 
 const PORT = process.env.PORT || 3001;
 
@@ -62,6 +64,8 @@ class MyServer {
     app.post("/api/users/:id/stats", asyncHandler(assignPointsToStats(db)));
     app.post("/register/:id", registerUser(db, systemEvents));
     app.post("/api/bridge", saveBridge(db));
+    app.get("/api/bridges", listBridges(db));
+    app.post("/api/bridges", saveBridges(db));
     app.post("/api/xp", asyncHandler(assignExperience(db, systemEvents)));
     app.get("/api/skills", asyncHandler(getSkills(db)));
     app.post("/api/skills", asyncHandler(saveSkills(db)));
