@@ -201,10 +201,10 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz#e45e384e4b8ec16bce2fd903af78450f6bf7ec98"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
-"@origin-la/user-stats@0.0.5":
-  version "0.0.5"
-  resolved "https://npm.pkg.github.com/download/@origin-la/user-stats/0.0.5/e4a1a137505b06a997246e0a7f5adde63dfd2a3a1566269d9d9bf0ca346a6131#1a9f427b3cd4e0c72d910c3dc96a2a49bcf0473f"
-  integrity sha512-1wF2n05d+153Oy6/CJG8U15qKzGxAYVU0HPerhDQ2DoXTUJEXFHkEwwkzhj8tqFC+C+ROHp9q3NhS42wkSfy1w==
+"@origin-la/user-stats@0.0.6":
+  version "0.0.6"
+  resolved "https://npm.pkg.github.com/download/@origin-la/user-stats/0.0.6/3d2773e0df7e099f363afcfbe7d7489c5f859d60003cb79cd010916e6ad97164#0dbffec93b0c6bc30684408231db426d9b007b40"
+  integrity sha512-gGsJW+KmeJSF3DjFLs8wx3rKFQ6fc7Bnn7C7ajk/+i6KVAieB01xWCLaNThvBidIEbsfbyFfX+LOGx7xKbh7IA==
 
 "@types/node@*":
   version "17.0.8"
