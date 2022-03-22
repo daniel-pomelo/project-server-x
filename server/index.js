@@ -17,6 +17,7 @@ const getProfileSkills = require("./routes/getProfileSkills");
 const listBridges = require("./routes/listBridges");
 const saveBridges = require("./routes/saveBridges");
 const toggleSkill = require("./routes/toggleSkill");
+const toggleBridge = require("./routes/toggleBridge");
 
 const PORT = process.env.PORT || 3001;
 
@@ -71,6 +72,7 @@ class MyServer {
     app.get("/api/skills", asyncHandler(getSkills(db)));
     app.post("/api/skills", asyncHandler(saveSkills(db)));
     app.get("/api/skills/:skill_id/toggle", asyncHandler(toggleSkill(db)));
+    app.get("/api/bridges/:bridge_id/toggle", asyncHandler(toggleBridge(db)));
 
     app.get("/api/profile/:token", asyncHandler(getUserProfile(db, tokens)));
     app.post(
