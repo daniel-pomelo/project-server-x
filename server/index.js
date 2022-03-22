@@ -16,6 +16,7 @@ const updateUserSkills = require("./routes/updateUserSkills");
 const getProfileSkills = require("./routes/getProfileSkills");
 const listBridges = require("./routes/listBridges");
 const saveBridges = require("./routes/saveBridges");
+const toggleSkill = require("./routes/toggleSkill");
 
 const PORT = process.env.PORT || 3001;
 
@@ -69,6 +70,7 @@ class MyServer {
     app.post("/api/xp", asyncHandler(assignExperience(db, systemEvents)));
     app.get("/api/skills", asyncHandler(getSkills(db)));
     app.post("/api/skills", asyncHandler(saveSkills(db)));
+    app.get("/api/skills/:skill_id/toggle", asyncHandler(toggleSkill(db)));
 
     app.get("/api/profile/:token", asyncHandler(getUserProfile(db, tokens)));
     app.post(
