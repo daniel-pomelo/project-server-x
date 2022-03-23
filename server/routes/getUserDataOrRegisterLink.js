@@ -5,7 +5,11 @@ module.exports = (db) => async (req, res) => {
   const bridgeId = req.headers["bridge-id"];
   const user = await findUserById(db, userId);
   if (user) {
-    res.send(user);
+    res.send({
+      ...user,
+      skills: [],
+      skills_url: `${process.env.BACKEND_URL}/api/skills/${userId}`,
+    });
   } else {
     db.save("RegisterAttempts", {
       userId,

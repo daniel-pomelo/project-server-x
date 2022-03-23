@@ -49,7 +49,13 @@ module.exports = (db, systemEvents) => async (req, res) => {
 
   await db.save("Users", User.from(userId, name, breed, type, level_name));
 
-  const user = await findUserById(db, userId);
+  const user = await findUserById(db, userId).then((user) => {
+    return {
+      ...user,
+      skills: [],
+      skills_url: `${process.env.BACKEND_URL}/api/skills/${userId}`,
+    };
+  });
 
   systemEvents.notify("USER_REGISTERED", { user, bridge });
 

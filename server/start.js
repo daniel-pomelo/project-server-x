@@ -1,5 +1,3 @@
-require("dotenv").config();
-
 const { MyServer } = require("./index");
 const SystemEvents = require("./SystemEvents");
 const MongoDataBase = require("../MongoDataBase");

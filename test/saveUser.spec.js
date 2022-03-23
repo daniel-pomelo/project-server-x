@@ -81,6 +81,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 240,
       xp_level: 0,
       skills: [],
+      skills_url:
+        "http://localhost:3001/api/skills/12f6538d-fea7-421c-97f0-8f86b763ce75",
       stats: {
         absorption: 10,
         hit_absorption: 10,
@@ -142,6 +144,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 288,
       xp_level: 0,
       skills: [],
+      skills_url:
+        "http://localhost:3001/api/skills/12f6538d-fea7-421c-97f0-8f86b763ce75",
       stats: {
         absorption: 10,
         hit_absorption: 11,
@@ -279,6 +283,8 @@ describe("Given a application to manage users in a second life game", () => {
         xp_max: 240,
         xp_level: 0,
         skills: [],
+        skills_url:
+          "http://localhost:3001/api/skills/12f6538d-fea7-421c-97f0-8f86b763ce75",
         stats: {
           absorption: 10,
           hit_absorption: 10,
@@ -334,6 +340,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 240,
       xp_level: 100,
       skills: [],
+      skills_url:
+        "http://localhost:3001/api/skills/12f6538d-fea7-421c-97f0-8f86b763ce75",
       stats: {
         absorption: 10,
         hit_absorption: 10,
@@ -382,6 +390,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 288,
       xp_level: 0,
       skills: [],
+      skills_url:
+        "http://localhost:3001/api/skills/12f6538d-fea7-421c-97f0-8f86b763ce75",
       stats: {
         absorption: 10,
         hit_absorption: 11,
@@ -431,6 +441,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 240,
       xp_level: 239,
       skills: [],
+      skills_url:
+        "http://localhost:3001/api/skills/12f6538d-fea7-421c-97f0-8f86b763ce75",
       stats: {
         absorption: 10,
         hit_absorption: 10,
@@ -481,6 +493,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 288,
       xp_level: 60,
       skills: [],
+      skills_url:
+        "http://localhost:3001/api/skills/12f6538d-fea7-421c-97f0-8f86b763ce75",
       stats: {
         absorption: 10,
         hit_absorption: 11,
@@ -532,6 +546,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 288,
       xp_level: 160,
       skills: [],
+      skills_url:
+        "http://localhost:3001/api/skills/12f6538d-fea7-421c-97f0-8f86b763ce75",
       stats: {
         absorption: 10,
         hit_absorption: 11,
@@ -580,6 +596,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 480,
       xp_level: 10,
       skills: [],
+      skills_url:
+        "http://localhost:3001/api/skills/12f6538d-fea7-421c-97f0-8f86b763ce75",
       stats: {
         absorption: 10,
         hit_absorption: 11,
@@ -629,6 +647,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 336,
       xp_level: 334,
       skills: [],
+      skills_url:
+        "http://localhost:3001/api/skills/12f6538d-fea7-421c-97f0-8f86b763ce75",
       stats: {
         absorption: 10,
         hit_absorption: 11,
@@ -694,6 +714,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 384,
       xp_level: 0,
       skills: [],
+      skills_url:
+        "http://localhost:3001/api/skills/12f6538d-fea7-421c-97f0-8f86b763ce75",
       stats: {
         absorption: 10,
         hit_absorption: 11,
@@ -723,6 +745,8 @@ describe("Given a application to manage users in a second life game", () => {
       xp_max: 288,
       xp_level: 99,
       skills: [],
+      skills_url:
+        "http://localhost:3001/api/skills/13f6538d-fea7-421c-97f0-8f86b763ce75",
       stats: {
         absorption: 10,
         hit_absorption: 11,
