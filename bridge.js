@@ -1,10 +1,9 @@
 const BRIDGE_COLLECTION_NAME = "Bridges";
 
-async function saveBridge(db, id, url, enabled = 0) {
+async function saveBridge(db, id, url) {
   const bridge = {
     id,
     url,
-    enabled,
   };
   await db.updateOne(BRIDGE_COLLECTION_NAME, { id }, bridge);
 }
