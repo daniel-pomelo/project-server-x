@@ -121,6 +121,7 @@ describe("Given I need to provide the skills of the users", () => {
           description: "Some description for fire beam...",
           level_min: 2,
           level_gap: 4,
+          skill_level_value: 1,
         },
       ]);
     });
@@ -178,16 +179,19 @@ describe("Given I need to provide the skills of the users", () => {
             id: "fire-beam",
             skill_level_value: 1,
             user_level_value: 2,
+            skill_level_value: 1,
           },
           {
             id: "ice-wing",
             skill_level_value: 1,
             user_level_value: 2,
+            skill_level_value: 1,
           },
           {
             id: "mega-punch",
             skill_level_value: 1,
             user_level_value: 2,
+            skill_level_value: 1,
           },
         ],
       });
@@ -207,6 +211,7 @@ describe("Given I need to provide the skills of the users", () => {
           description: "Some description for fire beam...",
           level_min: 2,
           level_gap: 4,
+          skill_level_value: 1,
         },
         {
           id: "ice-wing",
@@ -214,6 +219,7 @@ describe("Given I need to provide the skills of the users", () => {
           description: "Some description for ice wing...",
           level_min: 2,
           level_gap: 4,
+          skill_level_value: 1,
         },
       ]);
     });
@@ -296,6 +302,7 @@ describe("Given I need to provide the skills of the users", () => {
           level_gap: 4,
           level_min: 2,
           name: "Mega Punch",
+          skill_level_value: 1,
         },
       ]);
     });

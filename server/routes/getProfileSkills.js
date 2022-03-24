@@ -1,3 +1,5 @@
+const scaleSkill = require("../scaleSkill");
+
 const BASE_URL = "http://localhost:3001";
 
 const getProfileSkills = (db) => async (req, res) => {
@@ -7,10 +9,15 @@ const getProfileSkills = (db) => async (req, res) => {
   const userSkills = await db.find("UserSkills", { user_id: id });
 
   const skills = (userSkills[0] ? userSkills[0].skills : []).map((skill) => {
+    const skillFromCatalog = skillsCatalog.find(
+      (skillFromCatalog) => skillFromCatalog.id === skill.id
+    );
     return {
-      ...skillsCatalog.find(
-        (skillFromCatalog) => skillFromCatalog.id === skill.id
-      ),
+      ...scaleSkill({
+        ...skillFromCatalog,
+        skill_level_value: skill.skill_level_value,
+      }),
+      skill_level_value: skill.skill_level_value,
     };
   });
   const hasMore = skills.length > (page - 1) * 2 + 2;

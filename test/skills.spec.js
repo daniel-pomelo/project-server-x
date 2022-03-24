@@ -1,3 +1,4 @@
+const scaleSkill = require("../server/scaleSkill");
 const { expect } = require("chai");
 
 describe("xx", () => {
@@ -45,13 +46,3 @@ describe("xx", () => {
     expect(actual).to.eqls(expected);
   });
 });
-
-function scaleSkill(skill) {
-  const { health_self, mana_self, skill_level_value = 1 } = skill;
-  return {
-    ...skill,
-    health_self:
-      health_self + (health_self / 100) * 20 * (skill_level_value - 1),
-    mana_self: mana_self + (mana_self / 100) * 20 * (skill_level_value - 1),
-  };
-}
