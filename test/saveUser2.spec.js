@@ -21,6 +21,12 @@ class SystemEventsMock {
   }
 }
 
+const listOf = (...arg) => arg;
+const userExperience = (user_id, xp) => ({
+  user_id,
+  xp,
+});
+
 describe("Given I need to provide the skills of the users", () => {
   let server;
   let systemEvents;
@@ -87,6 +93,8 @@ describe("Given I need to provide the skills of the users", () => {
       };
       await api.RegisterUser(USER_ID, formValues);
 
+      await api.assignExperience(listOf(userExperience(USER_ID, 240)));
+
       const saveSkillResponse = await api.SaveSkill({
         id: "fire-beam",
         name: "Fire Beam",
@@ -143,6 +151,8 @@ describe("Given I need to provide the skills of the users", () => {
         level_name: "Milleniums",
       };
       await api.RegisterUser(USER_ID, formValues);
+
+      await api.assignExperience(listOf(userExperience(USER_ID, 240)));
 
       const saveSkillResponse = await api.SaveSkill({
         id: "fire-beam",
@@ -239,6 +249,8 @@ describe("Given I need to provide the skills of the users", () => {
         level_name: "Milleniums",
       };
       await api.RegisterUser(USER_ID, formValues);
+
+      await api.assignExperience(listOf(userExperience(USER_ID, 240)));
 
       const saveSkillResponse = await api.SaveSkill({
         id: "fire-beam",
