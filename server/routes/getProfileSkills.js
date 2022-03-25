@@ -1,6 +1,6 @@
 const scaleSkill = require("../scaleSkill");
 
-const BASE_URL = "http://localhost:3001";
+const BASE_URL = process.env.BACKEND_URL;
 
 const getProfileSkills = (db) => async (req, res) => {
   const { id } = req.params;
