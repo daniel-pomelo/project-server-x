@@ -12,12 +12,23 @@ const getProfileSkills = (db) => async (req, res) => {
     const skillFromCatalog = skillsCatalog.find(
       (skillFromCatalog) => skillFromCatalog.id === skill.id
     );
-    return {
-      ...scaleSkill({
-        ...skillFromCatalog,
-        skill_level_value: skill.skill_level_value,
-      }),
+    const asd = scaleSkill({
+      ...skillFromCatalog,
       skill_level_value: skill.skill_level_value,
+    });
+    return {
+      reach: asd.reach,
+      name: asd.name,
+      icon: asd.icon,
+      mana_self: asd.mana_self,
+      mana_other: asd.mana_other,
+      health_self: asd.health_self,
+      health_other: asd.health_other,
+      effect: asd.effect,
+      amount: asd.amount,
+      duration: asd.duration,
+      cooldown: asd.cooldown,
+      target: asd.target,
     };
   });
   const hasMore = skills.length > (page - 1) * 2 + 2;

@@ -124,16 +124,89 @@ describe("Given I need to provide the skills of the users", () => {
 
       res.contains("skills", [
         {
-          id: "fire-beam",
           name: "Fire Beam",
-          description: "Some description for fire beam...",
-          level_min: 2,
-          level_gap: 4,
-          skill_level_value: 1,
         },
       ]);
     });
   });
+
+  describe("Test de formato de respuesta de skills", () => {
+    it("test 1", async () => {
+      const api = new ServerInterface(server);
+      const USER_ID = "12f6538d-fea7-421c-97f0-8f86b763ce75";
+      await api.GivenTheresABridge({
+        id: "BRIDGE_ID",
+        url: "http://sarasa.com",
+      });
+      await api.AssertUserNotRegistered(USER_ID);
+
+      const formValues = {
+        name: "Daniel",
+        breed: "Dragon",
+        type: "Ice",
+        level_name: "Milleniums",
+      };
+      await api.RegisterUser(USER_ID, formValues);
+
+      await api.assignExperience(listOf(userExperience(USER_ID, 240)));
+
+      const saveSkillResponse = await api.SaveSkill({
+        id: "fire-beam",
+        name: "Fire Beam",
+        description: "Some description for fire beam...",
+        icon: "40032c3a-79a9-f91f-8af3-0fd250f8a0b8",
+        level_min: 2,
+        level_gap: 4,
+        health_self: 100,
+        health_other: 0,
+        mana_self: -50,
+        mana_other: 0,
+        amount: 0,
+        effect: 1,
+        duration: 0,
+        cooldown: 10,
+        target: 0,
+        reach: 0,
+      });
+
+      saveSkillResponse.statusEquals(200);
+
+      await api.getURLToProfile(USER_ID);
+
+      await api.LearnSkills({
+        token: "12345678",
+        skills: [
+          {
+            id: "fire-beam",
+            skill_level_value: 1,
+            user_level_value: 2,
+          },
+        ],
+      });
+
+      const res = await api.GetUserSkills(
+        "12f6538d-fea7-421c-97f0-8f86b763ce75"
+      );
+
+      res.contains("skills", [
+        {
+          reach: 0,
+          name: "Fire Beam",
+          icon: "40032c3a-79a9-f91f-8af3-0fd250f8a0b8",
+          mana_self: -50,
+          mana_other: 0,
+          health_self: 100,
+          health_other: 0,
+          effect: 1,
+          amount: 0,
+          duration: 0,
+          cooldown: 10,
+          target: 0,
+        },
+      ]);
+    });
+  });
+
   describe("because we limit the amount of skills to 2", () => {
     it("should provide a url to get more skills", async () => {
       const api = new ServerInterface(server);
@@ -216,20 +289,10 @@ describe("Given I need to provide the skills of the users", () => {
       );
       res.contains("skills", [
         {
-          id: "fire-beam",
           name: "Fire Beam",
-          description: "Some description for fire beam...",
-          level_min: 2,
-          level_gap: 4,
-          skill_level_value: 1,
         },
         {
-          id: "ice-wing",
           name: "Ice Wing",
-          description: "Some description for ice wing...",
-          level_min: 2,
-          level_gap: 4,
-          skill_level_value: 1,
         },
       ]);
     });
@@ -309,12 +372,7 @@ describe("Given I need to provide the skills of the users", () => {
       res.contains("next", undefined);
       res.contains("skills", [
         {
-          description: "Some description for mega punch...",
-          id: "mega-punch",
-          level_gap: 4,
-          level_min: 2,
           name: "Mega Punch",
-          skill_level_value: 1,
         },
       ]);
     });
