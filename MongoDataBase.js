@@ -21,6 +21,12 @@ class MongoDataBase {
       });
     });
   }
+  deleteOne(collectionName, criteria) {
+    return this.client
+      .db("ProjectX")
+      .collection(collectionName)
+      .deleteOne(criteria);
+  }
   findOne(collectionName, criteria) {
     return this.client
       .db("ProjectX")

@@ -20,6 +20,8 @@ const listBridges = require("./routes/listBridges");
 const saveBridges = require("./routes/saveBridges");
 const toggleSkill = require("./routes/toggleSkill");
 const toggleBridge = require("./routes/toggleBridge");
+const getPlayers = require("./routes/getPlayers");
+const togglePlayer = require("./routes/togglePlayer");
 
 const PORT = process.env.PORT || 3001;
 
@@ -75,6 +77,7 @@ class MyServer {
     app.post("/api/skills", asyncHandler(saveSkills(db)));
     app.get("/api/skills/:skill_id/toggle", asyncHandler(toggleSkill(db)));
     app.get("/api/bridges/:bridge_id/toggle", asyncHandler(toggleBridge(db)));
+    app.get("/api/players/:player_id/toggle", asyncHandler(togglePlayer(db)));
 
     app.get("/api/profile/:token", asyncHandler(getUserProfile(db, tokens)));
     app.post(
@@ -83,6 +86,7 @@ class MyServer {
     );
     app.get("/api/auth/:id", getUrlToProfile(tokens, UI_URL));
     app.get("/api/skills/:id", getProfileSkills(db));
+    app.get("/api/players", getPlayers(db));
 
     app.use((error, req, res, next) => {
       const custom = responses[error.message];

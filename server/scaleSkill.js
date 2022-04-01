@@ -1,5 +1,5 @@
-function incrementBySkillLevel(health_self, skill_level_value) {
-  return health_self + (health_self / 100) * 20 * (skill_level_value - 1);
+function incrementBySkillLevel(prop_base, skill_level_value) {
+  return prop_base + (prop_base / 100) * 20 * (skill_level_value - 1);
 }
 
 function scaleSkill(skill) {
