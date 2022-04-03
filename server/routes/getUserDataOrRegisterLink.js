@@ -1,5 +1,7 @@
 const { findUserById } = require("../../user");
 
+const BACKEND_URL = process.env.BACKEND_URL;
+
 module.exports = (db) => async (req, res) => {
   const userId = req.params.id;
   const bridgeId = req.headers["bridge-id"];
@@ -21,6 +23,6 @@ module.exports = (db) => async (req, res) => {
 
 function getLinkToRegister(id) {
   return {
-    register_link: "https://project-server-x.herokuapp.com/register/" + id,
+    register_link: `${process.env.BACKEND_URL}/register/${id}`,
   };
 }

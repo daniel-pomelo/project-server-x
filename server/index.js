@@ -22,6 +22,7 @@ const toggleSkill = require("./routes/toggleSkill");
 const toggleBridge = require("./routes/toggleBridge");
 const getPlayers = require("./routes/getPlayers");
 const togglePlayer = require("./routes/togglePlayer");
+const saveUser = require("./routes/saveUser");
 
 const PORT = process.env.PORT || 3001;
 
@@ -78,7 +79,18 @@ class MyServer {
     app.get("/api/skills/:skill_id/toggle", asyncHandler(toggleSkill(db)));
     app.get("/api/bridges/:bridge_id/toggle", asyncHandler(toggleBridge(db)));
     app.get("/api/players/:player_id/toggle", asyncHandler(togglePlayer(db)));
-
+    app.get("/register/:id", function (req, res) {
+      res.sendFile(
+        path.resolve(path.join(__dirname, "/../view/register.html"))
+      );
+    });
+    app.post("/register/:id", async (req, res, next) => {
+      try {
+        await saveUser(db, systemEvents)(req, res);
+      } catch (error) {
+        next(error);
+      }
+    });
     app.get("/api/profile/:token", asyncHandler(getUserProfile(db, tokens)));
     app.post(
       "/api/profile/:token/skills",
