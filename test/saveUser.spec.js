@@ -225,7 +225,7 @@ describe("Given a application to manage users in a second life game", () => {
     const res = await api.AssertUserNotRegistered(USER_ID);
     res.equals(404, {
       register_link:
-        "https://project-server-x.herokuapp.com/register/12f6538d-fea7-421c-97f0-8f86b763ce75",
+        "http://localhost:3001/register/12f6538d-fea7-421c-97f0-8f86b763ce75",
     });
   });
   it("should fail second try of register", async () => {

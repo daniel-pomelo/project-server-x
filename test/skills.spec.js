@@ -13,6 +13,7 @@ describe("scale skills", () => {
     const expected = {
       health_self: 100,
       mana_self: -50,
+      skill_level_value: 1,
     };
 
     expect(actual).to.eqls(expected);
@@ -21,13 +22,13 @@ describe("scale skills", () => {
     const actual = scaleSkill({
       health_self: 100,
       mana_self: -50,
-      skill_level_value: 3,
+      skill_level_value: 2,
     });
 
     const expected = {
       health_self: 120,
       mana_self: -60,
-      skill_level_value: 3,
+      skill_level_value: 2,
     };
 
     expect(actual).to.eqls(expected);
