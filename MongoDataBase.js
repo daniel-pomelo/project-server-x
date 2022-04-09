@@ -55,8 +55,17 @@ class MongoDataBase {
       { upsert: true }
     );
   }
-  find(collectionName, criteria) {
+  find(collectionName, criteria, options = {}) {
+    const { sorting } = options;
     if (collectionName === "UserSkills") {
+      return this.client
+        .db("ProjectX")
+        .collection(collectionName)
+        .find(criteria)
+        .sort({ timestamp: -1 })
+        .toArray();
+    }
+    if (sorting && sorting === "desc") {
       return this.client
         .db("ProjectX")
         .collection(collectionName)
