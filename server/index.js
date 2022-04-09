@@ -21,6 +21,7 @@ const saveBridges = require("./routes/saveBridges");
 const toggleSkill = require("./routes/toggleSkill");
 const toggleBridge = require("./routes/toggleBridge");
 const getPlayers = require("./routes/getPlayers");
+const getPoints = require("./routes/getPoints");
 const togglePlayer = require("./routes/togglePlayer");
 const saveUser = require("./routes/saveUser");
 
@@ -99,6 +100,7 @@ class MyServer {
     app.get("/api/auth/:id", getUrlToProfile(tokens, UI_URL));
     app.get("/api/skills/:id", getProfileSkills(db));
     app.get("/api/players", getPlayers(db));
+    app.get("/api/points/:id", getPoints(db));
 
     app.use((error, req, res, next) => {
       const custom = responses[error.message];
