@@ -1,6 +1,7 @@
 const {
   HitDamage,
   HitAbsorption,
+  HitSpeed,
   Health,
   Mana,
 } = require("@origin-la/user-stats");
@@ -107,6 +108,7 @@ function reduce(stats, level_value) {
     ...userStats,
     hit_damage: HitDamage.calc(userStats.strength, level_value),
     hit_absorption: HitAbsorption.calc(userStats.absorption, level_value),
+    hit_speed: HitSpeed.calc(userStats),
   };
 }
 

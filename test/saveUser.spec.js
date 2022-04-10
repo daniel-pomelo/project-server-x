@@ -87,6 +87,7 @@ describe("Given a application to manage users in a second life game", () => {
         absorption: 10,
         hit_absorption: 10,
         hit_damage: 10,
+        hit_speed: 1,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -115,25 +116,20 @@ describe("Given a application to manage users in a second life game", () => {
     await api.assignExperience(listOf(userExperience(USER_ID, 240)));
 
     const formStatsValues = {
-      fortitude: 40,
-      intelligence: 30,
-      perception: 20,
-      strength: 10,
+      perception: 5,
+      strength: 5,
     };
     const assignUserStatsResponse = await api.RegisterUserStats(
       USER_ID,
       formStatsValues
     );
-    assignUserStatsResponse.equals({
-      status: 400,
-      message: "Insufficient points",
-    });
+    assignUserStatsResponse.statusEquals(200);
 
     const EXPECTED_USER = {
       id: "12f6538d-fea7-421c-97f0-8f86b763ce75",
       name: "Daniel",
       breed: "Dragon",
-      points: 10,
+      points: 0,
       skill_points: 1,
       type: "Ice",
       level_name: "Milleniums",
@@ -149,13 +145,14 @@ describe("Given a application to manage users in a second life game", () => {
       stats: {
         absorption: 10,
         hit_absorption: 11,
-        hit_damage: 11,
+        hit_speed: 1,
+        hit_damage: 17,
         agility: 10,
         endurance: 10,
         fortitude: 10,
         intelligence: 10,
-        perception: 10,
-        strength: 10,
+        perception: 15,
+        strength: 15,
         will: 10,
       },
     };
@@ -289,6 +286,7 @@ describe("Given a application to manage users in a second life game", () => {
           absorption: 10,
           hit_absorption: 10,
           hit_damage: 10,
+          hit_speed: 1,
           agility: 10,
           endurance: 10,
           fortitude: 10,
@@ -346,6 +344,7 @@ describe("Given a application to manage users in a second life game", () => {
         absorption: 10,
         hit_absorption: 10,
         hit_damage: 10,
+        hit_speed: 1,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -396,6 +395,7 @@ describe("Given a application to manage users in a second life game", () => {
         absorption: 10,
         hit_absorption: 11,
         hit_damage: 11,
+        hit_speed: 1,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -447,6 +447,7 @@ describe("Given a application to manage users in a second life game", () => {
         absorption: 10,
         hit_absorption: 10,
         hit_damage: 10,
+        hit_speed: 1,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -499,6 +500,7 @@ describe("Given a application to manage users in a second life game", () => {
         absorption: 10,
         hit_absorption: 11,
         hit_damage: 11,
+        hit_speed: 1,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -552,6 +554,7 @@ describe("Given a application to manage users in a second life game", () => {
         absorption: 10,
         hit_absorption: 11,
         hit_damage: 11,
+        hit_speed: 1,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -602,6 +605,7 @@ describe("Given a application to manage users in a second life game", () => {
         absorption: 10,
         hit_absorption: 11,
         hit_damage: 11,
+        hit_speed: 1,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -653,6 +657,7 @@ describe("Given a application to manage users in a second life game", () => {
         absorption: 10,
         hit_absorption: 11,
         hit_damage: 11,
+        hit_speed: 1,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -720,6 +725,7 @@ describe("Given a application to manage users in a second life game", () => {
         absorption: 10,
         hit_absorption: 11,
         hit_damage: 11,
+        hit_speed: 1,
         agility: 10,
         endurance: 10,
         fortitude: 10,
@@ -751,6 +757,7 @@ describe("Given a application to manage users in a second life game", () => {
         absorption: 10,
         hit_absorption: 11,
         hit_damage: 11,
+        hit_speed: 1,
         agility: 10,
         endurance: 10,
         fortitude: 10,
