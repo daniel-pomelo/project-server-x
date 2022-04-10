@@ -201,10 +201,10 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.3.tgz#e45e384e4b8ec16bce2fd903af78450f6bf7ec98"
   integrity sha512-ZXRY4jNvVgSVQ8DL3LTcakaAtXwTVUxE81hslsyD2AtoXW/wVob10HkOJ1X/pAlcI7D+2YoZKg5do8G/w6RYgA==
 
-"@origin-la/user-stats@0.0.6":
-  version "0.0.6"
-  resolved "https://npm.pkg.github.com/download/@origin-la/user-stats/0.0.6/3d2773e0df7e099f363afcfbe7d7489c5f859d60003cb79cd010916e6ad97164#0dbffec93b0c6bc30684408231db426d9b007b40"
-  integrity sha512-gGsJW+KmeJSF3DjFLs8wx3rKFQ6fc7Bnn7C7ajk/+i6KVAieB01xWCLaNThvBidIEbsfbyFfX+LOGx7xKbh7IA==
+"@origin-la/user-stats@0.0.7":
+  version "0.0.7"
+  resolved "https://npm.pkg.github.com/download/@origin-la/user-stats/0.0.7/a4abfd6893caf1ab463e704d9b8d1cfff91924febd78d6bb1706ca17401404fa#dc97ac277076a00517100f9ec06f0d43abfbf383"
+  integrity sha512-FoAlnqPHlsxubIz3pBDCXMyk8zHMISUBuW42rxD/2fHvjky7xYyflic+gAn9qOCKddXmiZaZjljRStnFneWncQ==
 
 "@types/node@*":
   version "17.0.8"
