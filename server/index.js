@@ -14,6 +14,7 @@ const registerUser = require("./routes/registerUser");
 const getUrlToProfile = require("./routes/getUrlToProfile");
 const getSkills = require("./routes/getSkills");
 const saveSkills = require("./routes/saveSkills");
+const deleteSkill = require("./routes/deleteSkill");
 const updateUserSkills = require("./routes/updateUserSkills");
 const getProfileSkills = require("./routes/getProfileSkills");
 const listBridges = require("./routes/listBridges");
@@ -77,6 +78,7 @@ class MyServer {
     app.post("/api/xp", asyncHandler(assignExperience(db, systemEvents)));
     app.get("/api/skills", asyncHandler(getSkills(db)));
     app.post("/api/skills", asyncHandler(saveSkills(db)));
+    app.delete("/api/skills/:id", asyncHandler(deleteSkill(db)));
     app.get("/api/skills/:skill_id/toggle", asyncHandler(toggleSkill(db)));
     app.get("/api/bridges/:bridge_id/toggle", asyncHandler(toggleBridge(db)));
     app.get("/api/players/:player_id/toggle", asyncHandler(togglePlayer(db)));
