@@ -11,9 +11,7 @@ MongoDataBase.init().then((db) => {
   ];
 
   const promises = collections.map((collection) => {
-    return db.client.db("ProjectX").collection(collection).deleteMany({
-      user_id: "12f6538d-fea7-421c-97f0-8f86b763ce75",
-    });
+    return db.client.db("ProjectX").collection(collection).deleteMany({});
   });
 
   return Promise.all(promises).then(console.log);
