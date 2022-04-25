@@ -13,12 +13,6 @@ const DEFAULT_USER_EXPERIENCE = {
   xp_max: 240,
 };
 
-function calcHealth(fortitude, level_value) {
-  return Math.round((fortitude / 1.8) * (level_value / 1.2) + 100);
-}
-function calcMana(endurance, level_value) {
-  return Math.round((endurance / 1.8) * (level_value / 1.2) + 100);
-}
 function calcPointsBalance(records) {
   const balance = records.reduce((acc, record) => {
     if (record.type === "USER_POINTS_WITHDRAWAL") {
