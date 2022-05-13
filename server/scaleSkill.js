@@ -10,6 +10,7 @@ function scaleSkill(skill) {
     ...scale(skill, "health_other"),
     ...scale(skill, "mana_self"),
     ...scale(skill, "mana_other"),
+    ...scale(skill, "amount"),
   };
 }
 
