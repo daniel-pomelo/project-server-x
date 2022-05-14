@@ -1,3 +1,4 @@
+const { romanize } = require("romans");
 const scaleSkill = require("../scaleSkill");
 
 const BASE_URL = process.env.BACKEND_URL;
@@ -16,9 +17,10 @@ const getProfileSkills = (db) => async (req, res) => {
       ...skillFromCatalog,
       skill_level_value: skill.skill_level_value,
     });
+
     return {
       reach: asd.reach,
-      name: asd.name,
+      name: `${asd.name}-${romanize(skill.skill_level_value || 1)}`,
       icon: asd.icon,
       mana_self: asd.mana_self,
       mana_other: asd.mana_other,
