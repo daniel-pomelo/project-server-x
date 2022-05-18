@@ -124,7 +124,7 @@ describe("Given I need to provide the skills of the users", () => {
 
       res.contains("skills", [
         {
-          name: "Fire Beam",
+          name: "Fire Beam-I",
         },
       ]);
     });
@@ -191,7 +191,7 @@ describe("Given I need to provide the skills of the users", () => {
       res.contains("skills", [
         {
           reach: 0,
-          name: "Fire Beam",
+          name: "Fire Beam-I",
           icon: "40032c3a-79a9-f91f-8af3-0fd250f8a0b8",
           mana_self: -50,
           mana_other: 0,
@@ -289,10 +289,10 @@ describe("Given I need to provide the skills of the users", () => {
       );
       res.contains("skills", [
         {
-          name: "Fire Beam",
+          name: "Fire Beam-I",
         },
         {
-          name: "Ice Wing",
+          name: "Ice Wing-I",
         },
       ]);
     });
@@ -372,7 +372,7 @@ describe("Given I need to provide the skills of the users", () => {
       res.contains("next", undefined);
       res.contains("skills", [
         {
-          name: "Mega Punch",
+          name: "Mega Punch-I",
         },
       ]);
     });
