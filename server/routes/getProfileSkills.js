@@ -15,7 +15,7 @@ const getProfileSkills = (db) => async (req, res) => {
     );
     const asd = scaleSkill({
       ...skillFromCatalog,
-      skill_level_value: skill.skill_level_value,
+      skill_level_value: skill.skill_level_value || 1,
     });
 
     return {
