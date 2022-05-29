@@ -25,6 +25,9 @@ const getPlayers = require("./routes/getPlayers");
 const getPoints = require("./routes/getPoints");
 const togglePlayer = require("./routes/togglePlayer");
 const saveUser = require("./routes/saveUser");
+const getInviteUrl = require("./routes/getInviteUrl");
+const registerInvitado = require("./routes/registerInvitado");
+const getInvitation = require("./routes/getInvitation");
 
 const PORT = process.env.PORT || 3001;
 
@@ -103,6 +106,13 @@ class MyServer {
     app.get("/api/skills/:id", getProfileSkills(db));
     app.get("/api/players", getPlayers(db));
     app.get("/api/points/:id", getPoints(db));
+
+    app.post("/api/invite", asyncHandler(getInviteUrl(tokens, UI_URL, db)));
+    app.get("/api/invite/:id", asyncHandler(getInvitation(tokens, db)));
+    app.post(
+      "/api/register/:id",
+      asyncHandler(registerInvitado(db, tokens, UI_URL))
+    );
 
     app.use((error, req, res, next) => {
       const custom = responses[error.message];

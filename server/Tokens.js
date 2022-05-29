@@ -13,6 +13,9 @@ class Tokens {
   getUserIdFromToken(token) {
     return map.get(token);
   }
+  removeFromId(id) {
+    map.delete(id);
+  }
 }
 
 module.exports = Tokens;
