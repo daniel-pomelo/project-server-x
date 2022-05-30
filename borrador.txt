@@ -1,0 +1,16 @@
+Crear Invitación
+
+Requisitos:
+- Ser invocado por un Bridge válido.
+- Invitado (user-id) no debe ser un usuario registrado.
+
+Argumentos:
+- Invitador (invite-id)
+- Invitado  (user-id)
+
+Output:
+- Invitación
+
+Que puede hacer una Invitación ?
+- invitacion.estaCreadaPor("pepe sanchez")
+- invitacion.estaDirigidaA("juan perez")
