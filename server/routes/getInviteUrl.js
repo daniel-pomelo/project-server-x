@@ -2,6 +2,7 @@ const { timestamp } = require("../../time");
 
 const getInviteUrl = (tokens, UI_URL, db) => async (req, res) => {
   try {
+    console.log(req.headers);
     const invitation = await createInvitation(db, req);
     const hashCode = tokens.getTokenForProfile(invitation);
 
@@ -20,6 +21,10 @@ const getInviteUrl = (tokens, UI_URL, db) => async (req, res) => {
 async function createInvitation(db, req) {
   const invitador = req.headers["invite-id"];
   const invitado = req.headers["user-id"];
+
+  if (!invitado || !invitador) {
+    throw new Error("Invitado and Invitador are required");
+  }
 
   const [invitation, userToInviteIsStored] = await Promise.all([
     db.findOne("Invitations", {
