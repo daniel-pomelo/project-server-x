@@ -1,3 +1,5 @@
+const { timestamp } = require("../../time");
+
 module.exports = (db, tokens, UI_URL) => async (req, res) => {
   const invitation = tokens.getUserIdFromToken(req.params.id);
 
@@ -8,6 +10,15 @@ module.exports = (db, tokens, UI_URL) => async (req, res) => {
   await db.save("Users", User.from(id, req.body));
 
   tokens.removeFromId(req.params.id);
+
+  await db.updateOne(
+    "Invitations",
+    {
+      invitador: invitation.invitador,
+      invitado: invitation.invitado,
+    },
+    { invitado_at: timestamp() }
+  );
 
   const url = returnUrlToProfile(tokens, id, UI_URL);
 
