@@ -7,7 +7,14 @@ describe("Ignite", () => {
   };
   it("cuando la inteligencia es el valor inicial (10) el amount no se ve afectado", () => {
     const player = {
+      strength: 10,
+      fortitude: 10,
       intelligence: 10,
+      will: 10,
+      perception: 10,
+      agility: 10,
+      endurance: 10,
+      absorption: 10,
     };
     const expected = {
       amount: -15,
@@ -19,10 +26,17 @@ describe("Ignite", () => {
   });
   it("el amount se multiplica por la inteligencia / el valor inicial (10)", () => {
     const player = {
+      strength: 10,
+      fortitude: 10,
       intelligence: 20,
+      will: 10,
+      perception: 10,
+      agility: 10,
+      endurance: 10,
+      absorption: 10,
     };
     const expected = {
-      amount: -30,
+      amount: -22,
     };
 
     const actual = useSkill(player, ignite);
@@ -51,7 +65,7 @@ describe("Heal", () => {
       intelligence: 20,
     };
     const expected = {
-      health_self: 100,
+      health_self: 75,
     };
 
     const actual = useSkill(player, heal);
@@ -80,7 +94,7 @@ describe("Restore", () => {
       intelligence: 20,
     };
     const expected = {
-      mana_other: 100,
+      mana_other: 75,
     };
 
     const actual = useSkill(player, restore);

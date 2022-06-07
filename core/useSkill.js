@@ -1,5 +1,14 @@
 function useSkill(player, skill) {
-  const intelligence = player.intelligence / 10;
+  const totalPoints = Object.keys(player).reduce((acc, statName) => {
+    return acc + (player[statName] - 10);
+  }, 0);
+
+  const intelligence = (player.intelligence - 10) / totalPoints;
+
+  if (totalPoints === 0) {
+    return skill;
+  }
+
   return {
     ...skill,
     ...scale(skill, "amount", intelligence),
@@ -8,9 +17,10 @@ function useSkill(player, skill) {
   };
 }
 
-function scale(skill, propName, factor) {
+function scale(skill, propName, intelligence) {
+  const factor = (intelligence / 2) * intelligence * skill[propName];
   return skill[propName]
-    ? { [propName]: Math.ceil(skill[propName] * factor) }
+    ? { [propName]: Math.ceil(skill[propName] + factor) }
     : {};
 }
 
