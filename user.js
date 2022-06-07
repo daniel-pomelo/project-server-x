@@ -106,6 +106,34 @@ function reduce(stats, level_value) {
   };
 }
 
+async function getUserStats(db, id) {
+  const stats = await db.find("UserStats", { user_id: id });
+
+  const props = {
+    strength: 10,
+    fortitude: 10,
+    intelligence: 10,
+    will: 10,
+    perception: 10,
+    agility: 10,
+    endurance: 10,
+    absorption: 10,
+  };
+
+  return stats.reduce((acc, stat) => {
+    return Object.entries(stat).reduce((initial, [name, value]) => {
+      if (initial[name] !== undefined && initial[name] !== null) {
+        return {
+          ...initial,
+          [name]: initial[name] + value,
+        };
+      } else {
+        return initial;
+      }
+    }, acc);
+  }, props);
+}
+
 async function findUserPointsByUserId(db, id) {
   const records = await db.find("UserPoints", { user_id: id });
   const balance = records.reduce((acc, record) => {
@@ -124,4 +152,5 @@ module.exports = {
   findUserById,
   findAllUser,
   findUserPointsByUserId,
+  getUserStats,
 };

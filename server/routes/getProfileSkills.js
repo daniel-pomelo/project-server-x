@@ -1,5 +1,7 @@
 const { romanize } = require("romans");
 const scaleSkill = require("../scaleSkill");
+const { getUserStats } = require("../../user");
+const { useSkill } = require("../../core/useSkill");
 
 const BASE_URL = process.env.BACKEND_URL;
 
@@ -8,6 +10,9 @@ const getProfileSkills = (db) => async (req, res) => {
   const { page = 1 } = req.query;
   const skillsCatalog = await db.find("Skills");
   const userSkills = await db.find("UserSkills", { user_id: id });
+  const userStats = await getUserStats(db, id);
+
+  console.log("userStats: ", userStats);
 
   const skills = (userSkills[0] ? userSkills[0].skills : []).map((skill) => {
     const skillFromCatalog = skillsCatalog.find(
@@ -18,7 +23,7 @@ const getProfileSkills = (db) => async (req, res) => {
       skill_level_value: skill.skill_level_value || 1,
     });
 
-    return {
+    const userSkill = {
       reach: asd.reach,
       name: `${asd.name}-${romanize(skill.skill_level_value || 1)}`,
       icon: asd.icon,
@@ -32,6 +37,10 @@ const getProfileSkills = (db) => async (req, res) => {
       cooldown: asd.cooldown,
       target: asd.target,
     };
+
+    console.log("userToReturn: ", useSkill(userStats, userSkill));
+
+    return useSkill(userStats, userSkill);
   });
   const hasMore = skills.length > (page - 1) * 2 + 2;
 

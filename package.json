@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "test": "ENV_NAME=dev nyc mocha --timeout 5000",
+    "test": "ENV_NAME=dev mocha --timeout 5000",
     "start": "node server/start.js"
   },
   "dependencies": {
