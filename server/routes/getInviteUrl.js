@@ -2,7 +2,6 @@ const { timestamp } = require("../../time");
 
 const getInviteUrl = (tokens, UI_URL, db) => async (req, res) => {
   try {
-    console.log(req.headers);
     const invitation = await createInvitation(db, req);
     const hashCode = tokens.getTokenForProfile(invitation);
 
