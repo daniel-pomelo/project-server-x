@@ -13,8 +13,13 @@ function useSkill(stats, skill, totalPoints) {
 function scale(skill, propName, intelligence) {
   const factor = intelligence / 2;
   return skill[propName]
-    ? { [propName]: Math.ceil(skill[propName] + factor) }
+    ? { [propName]: getTotal(skill[propName], factor) }
     : {};
+}
+
+function getTotal(value, factor) {
+  const total = value < 0 ? value - factor : value + factor;
+  return Math.ceil(total);
 }
 
 module.exports = {
