@@ -1,8 +1,4 @@
-function useSkill(player, skill) {
-  const totalPoints = Object.keys(player).reduce((acc, statName) => {
-    return acc + (player[statName] - 10);
-  }, 0);
-
+function useSkill(player, skill, totalPoints) {
   const intelligence = (player.intelligence - 10) / totalPoints;
 
   if (totalPoints === 0) {
