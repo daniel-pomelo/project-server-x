@@ -152,10 +152,9 @@ async function findUserPointsByUserId(db, id) {
   return { balance };
 }
 
-const getSkills = async (db, id) => {
+const getSkills = async (db, user) => {
   const skillsCatalog = await db.find("Skills");
-  const userSkills = await db.find("UserSkills", { user_id: id });
-  const user = await findUserById(db, id);
+  const userSkills = await db.find("UserSkills", { user_id: user.id });
 
   const level_value = (user && user.level_value) || 1;
   const stats = (user && user.stats) || {};

@@ -1,4 +1,4 @@
-const { getSkills } = require("../../user");
+const { getSkills, findUserById } = require("../../user");
 
 const BASE_URL = process.env.BACKEND_URL;
 
@@ -6,7 +6,9 @@ const getProfileSkills = (db) => async (req, res) => {
   const { id } = req.params;
   const { page = 1 } = req.query;
 
-  const { skills } = await getSkills(db, id);
+  const user = await findUserById(db, id);
+
+  const { skills } = await getSkills(db, user);
 
   const hasMore = skills.length > (page - 1) * 2 + 2;
   res.send({

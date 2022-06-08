@@ -1,20 +1,17 @@
-function useSkill(player, skill, totalPoints) {
-  const intelligence = (player.intelligence - 10) / totalPoints;
-
+function useSkill(stats, skill, totalPoints) {
   if (totalPoints === 0) {
     return skill;
   }
-
   return {
     ...skill,
-    ...scale(skill, "amount", intelligence),
-    ...scale(skill, "health_self", intelligence),
-    ...scale(skill, "mana_other", intelligence),
+    ...scale(skill, "amount", stats.intelligence),
+    ...scale(skill, "health_self", stats.intelligence),
+    ...scale(skill, "mana_other", stats.intelligence),
   };
 }
 
 function scale(skill, propName, intelligence) {
-  const factor = (intelligence / 2) * intelligence * skill[propName];
+  const factor = intelligence / 2;
   return skill[propName]
     ? { [propName]: Math.ceil(skill[propName] + factor) }
     : {};

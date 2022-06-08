@@ -28,6 +28,7 @@ const saveUser = require("./routes/saveUser");
 const getInviteUrl = require("./routes/getInviteUrl");
 const registerInvitado = require("./routes/registerInvitado");
 const getInvitation = require("./routes/getInvitation");
+const userModule = require("../user");
 
 const PORT = process.env.PORT || 3001;
 
@@ -74,6 +75,29 @@ class MyServer {
     app.get("/api/users", findUsers(db));
     app.get("/api/users/:id", logBridgeId, returnUserById(db));
     app.post("/api/users/:id/stats", asyncHandler(assignPointsToStats(db)));
+    app.post(
+      "/api/users/:id/calc/skills",
+      asyncHandler(async (req, res) => {
+        const { id } = req.params;
+        const stats = req.body;
+
+        const user = await userModule.findUserById(db, id);
+
+        const updatedStats = Object.keys(stats).reduce((acc, statName) => {
+          acc[statName] = acc[statName] + stats[statName];
+          return acc;
+        }, user.stats);
+
+        const { skills } = await userModule.getSkills(db, {
+          ...user,
+          stats: updatedStats,
+        });
+
+        res.send({
+          skills,
+        });
+      })
+    );
     app.post("/register/:id", registerUser(db, systemEvents));
     app.post("/api/bridge", saveBridge(db));
     app.get("/api/bridges", listBridges(db));
