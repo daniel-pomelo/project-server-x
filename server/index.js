@@ -74,6 +74,12 @@ class MyServer {
     app.set("view engine", "ejs");
     app.get("/api/users", findUsers(db));
     app.get("/api/users/:id", logBridgeId, returnUserById(db));
+    app.delete("/api/users/:id", async (req, res) => {
+      const id = req.params.id;
+      await db.deleteOne("Users", { id });
+      console.log("User of id %s deleted.", id);
+      res.send({});
+    });
     app.post("/api/users/:id/stats", asyncHandler(assignPointsToStats(db)));
     app.post(
       "/api/users/:id/calc/skills",
