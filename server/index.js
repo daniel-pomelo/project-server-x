@@ -81,6 +81,18 @@ class MyServer {
       res.send({});
     });
     app.post("/api/users/:id/stats", asyncHandler(assignPointsToStats(db)));
+    app.get("/api/users/:id/materials", (req, res) => {
+      res.send([
+        {
+          type: "wheat",
+          quantity: 22,
+        },
+        {
+          type: "mushroom",
+          quantity: 10,
+        },
+      ]);
+    });
     app.post(
       "/api/users/:id/calc/skills",
       asyncHandler(async (req, res) => {
