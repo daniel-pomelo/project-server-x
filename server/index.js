@@ -29,6 +29,7 @@ const getInviteUrl = require("./routes/getInviteUrl");
 const registerInvitado = require("./routes/registerInvitado");
 const getInvitation = require("./routes/getInvitation");
 const userModule = require("../user");
+const { UserMaterials } = require("../core/UserMaterials");
 
 const PORT = process.env.PORT || 3001;
 
@@ -81,17 +82,10 @@ class MyServer {
       res.send({});
     });
     app.post("/api/users/:id/stats", asyncHandler(assignPointsToStats(db)));
-    app.get("/api/users/:id/materials", (req, res) => {
-      res.send([
-        {
-          type: "wheat",
-          quantity: 22,
-        },
-        {
-          type: "mushroom",
-          quantity: 10,
-        },
-      ]);
+    app.get("/api/users/:id/materials", async (req, res) => {
+      const user_id = req.params.id;
+      const materials = await db.find("UserMaterials", { user_id });
+      res.send(UserMaterials.from(materials));
     });
     app.post(
       "/api/users/:id/calc/skills",
