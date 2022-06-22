@@ -1,9 +1,10 @@
-const getUrlToProfile = (tokens, UI_URL) => (req, res) => {
+const axios = require("axios").default;
+
+const getUrlToProfile = async (req, res) => {
   const userId = req.params.id;
-  const token = tokens.getTokenForProfile(userId);
-  const url = UI_URL + "/auth/" + token;
+  const response = await axios.get("http://localhost:3006/api/auth/" + userId);
   res.send({
-    url,
+    url: response.data.url,
   });
 };
 

@@ -133,12 +133,12 @@ class MyServer {
         next(error);
       }
     });
-    app.get("/api/profile/:token", asyncHandler(getUserProfile(db, tokens)));
+    app.get("/api/profile/:token", asyncHandler(getUserProfile(db)));
     app.post(
       "/api/profile/:token/skills",
       asyncHandler(updateUserSkills(db, tokens))
     );
-    app.get("/api/auth/:id", getUrlToProfile(tokens, UI_URL));
+    app.get("/api/auth/:id", getUrlToProfile);
     app.get("/api/skills/:id", getProfileSkills(db));
     app.get("/api/players", getPlayers(db));
     app.get("/api/points/:id", getPoints(db));
