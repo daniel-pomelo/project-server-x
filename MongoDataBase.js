@@ -88,6 +88,15 @@ class MongoDataBase {
       return acc;
     }, {});
   }
+  savePickUpMaterials(materials) {
+    const operations = materials.map((material) => {
+      return { insertOne: { document: material } };
+    });
+    return this.client
+      .db("ProjectX")
+      .collection("UserMaterials")
+      .bulkWrite(operations);
+  }
   async saveUserExperience(collectionName, operations) {
     operations = operations.map(({ isFirstAssignment, newUserExperience }) => {
       if (isFirstAssignment) {

@@ -30,6 +30,7 @@ const registerInvitado = require("./routes/registerInvitado");
 const getInvitation = require("./routes/getInvitation");
 const userModule = require("../user");
 const { UserMaterials } = require("../core/UserMaterials");
+const pickUpUserMaterials = require("./routes/pickUpUserMaterials");
 
 const PORT = process.env.PORT || 3001;
 
@@ -149,6 +150,8 @@ class MyServer {
       "/api/register/:id",
       asyncHandler(registerInvitado(db, tokens, UI_URL))
     );
+
+    app.post("/api/pickup", asyncHandler(pickUpUserMaterials(db)));
 
     app.use((error, req, res, next) => {
       const custom = responses[error.message];
