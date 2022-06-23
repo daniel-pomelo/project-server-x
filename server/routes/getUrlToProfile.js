@@ -1,7 +1,8 @@
-const getUrlToProfile = (tokens, UI_URL) => (req, res) => {
+const { getPlayerToken } = require("../../auth");
+
+const getUrlToProfile = async (req, res) => {
   const userId = req.params.id;
-  const token = tokens.getTokenForProfile(userId);
-  const url = UI_URL + "/auth/" + token;
+  const url = await getPlayerToken(userId);
   res.send({
     url,
   });
