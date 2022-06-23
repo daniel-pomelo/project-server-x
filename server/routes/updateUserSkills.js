@@ -1,8 +1,8 @@
-const { getUserIdFromToken } = require("../../getUserIdFromToken");
+const { getUserIdFromToken } = require("../../auth");
 const { timestamp } = require("../../time");
 const { findUserById } = require("../../user");
 
-const updateUserSkills = (db, tokens) => async (req, res) => {
+const updateUserSkills = (db) => async (req, res) => {
   const token = req.params.token;
   const userId = await getUserIdFromToken(token);
   const user = await findUserById(db, userId);

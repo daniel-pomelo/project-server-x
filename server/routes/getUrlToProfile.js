@@ -1,10 +1,10 @@
-const axios = require("axios").default;
+const { getPlayerToken } = require("../../auth");
 
 const getUrlToProfile = async (req, res) => {
   const userId = req.params.id;
-  const response = await axios.get("http://localhost:3006/api/auth/" + userId);
+  const url = await getPlayerToken(userId);
   res.send({
-    url: response.data.url,
+    url,
   });
 };
 

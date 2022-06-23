@@ -1,5 +1,5 @@
 const { findUserById } = require("../../user");
-const { getUserIdFromToken } = require("../../getUserIdFromToken");
+const { getUserIdFromToken } = require("../../auth");
 
 module.exports = (db) => async (req, res) => {
   const token = req.params.token;
