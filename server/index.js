@@ -151,7 +151,22 @@ class MyServer {
       asyncHandler(registerInvitado(db, tokens, UI_URL))
     );
 
-    app.post("/api/pickup", asyncHandler(pickUpUserMaterials(db)));
+    const assertBridgeCanPickUpMaterials = (db) => {
+      return async (req, res, next) => {
+        const id = req["headers"]["bridge-id"];
+        const bridge = await db.findOne("Bridges", { id });
+        if (!bridge.enabled) {
+          throw new Error("Bridge invalid");
+        }
+        next();
+      };
+    };
+
+    app.post(
+      "/api/pickup",
+      asyncHandler(assertBridgeCanPickUpMaterials(db)),
+      asyncHandler(pickUpUserMaterials(db))
+    );
 
     app.use((error, req, res, next) => {
       const custom = responses[error.message];

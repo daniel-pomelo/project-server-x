@@ -2,7 +2,8 @@ const { timestamp } = require("../../time");
 
 const pickUpUserMaterials = (db) => async (req, res) => {
   const pickUp = req.body;
-
+  console.log(req);
+  console.log("pickUp: ", pickUp);
   const userMaterials = {
     type: "pick_up",
     quantity: 1,
