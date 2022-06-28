@@ -37,6 +37,17 @@ class SystemEvents {
         .catch((err) => console.log("Error saving EventRecords: ", err));
     }
   }
+  async notifyThatUserHasTrained(userId, bridge) {
+    try {
+      console.log(
+        `Send {user-id: ${userId}} to ${bridge.id} with URL ${bridge.url}.`
+      );
+      const res = await axios.post(bridge.url, { "user-id": userId });
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 
 module.exports = SystemEvents;

@@ -82,7 +82,10 @@ class MyServer {
       console.log("User of id %s deleted.", id);
       res.send({});
     });
-    app.post("/api/users/:id/stats", asyncHandler(assignPointsToStats(db)));
+    app.post(
+      "/api/users/:id/stats",
+      asyncHandler(assignPointsToStats(db, systemEvents))
+    );
     app.get("/api/users/:id/materials", async (req, res) => {
       const user_id = req.params.id;
       const materials = await db.find("UserMaterials", { user_id });
@@ -122,11 +125,6 @@ class MyServer {
     app.get("/api/skills/:skill_id/toggle", asyncHandler(toggleSkill(db)));
     app.get("/api/bridges/:bridge_id/toggle", asyncHandler(toggleBridge(db)));
     app.get("/api/players/:player_id/toggle", asyncHandler(togglePlayer(db)));
-    app.get("/register/:id", function (req, res) {
-      res.sendFile(
-        path.resolve(path.join(__dirname, "/../view/register.html"))
-      );
-    });
     app.post("/register/:id", async (req, res, next) => {
       try {
         await saveUser(db, systemEvents)(req, res);
@@ -139,7 +137,7 @@ class MyServer {
       "/api/profile/:token/skills",
       asyncHandler(updateUserSkills(db, tokens))
     );
-    app.get("/api/auth/:id", getUrlToProfile);
+    app.get("/api/auth/:id", getUrlToProfile(db));
     app.get("/api/skills/:id", getProfileSkills(db));
     app.get("/api/players", getPlayers(db));
     app.get("/api/points/:id", getPoints(db));
@@ -155,7 +153,7 @@ class MyServer {
       return async (req, res, next) => {
         const id = req["headers"]["bridge-id"];
         const bridge = await db.findOne("Bridges", { id });
-        if (!bridge.enabled) {
+        if (!bridge || !bridge.enabled) {
           throw new Error("Bridge invalid");
         }
         next();
