@@ -42,7 +42,12 @@ class SystemEvents {
       console.log(
         `Send {user-id: ${userId}} to ${bridge.id} with URL ${bridge.url}.`
       );
-      const res = await axios.post(bridge.url, { "user-id": userId });
+      const res = await axios.post(bridge.url, {
+        command: "CHARACTER_UPDATED",
+        data: {
+          "user-id": userId,
+        },
+      });
       console.log(res);
     } catch (error) {
       console.log(error);

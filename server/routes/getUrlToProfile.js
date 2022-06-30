@@ -1,16 +1,19 @@
 const { getPlayerToken } = require("../../auth");
 const { timestamp } = require("../../time");
 
+const assertRequestComesFromBridgeEnabled = async (db, bridgeId) => {
+  const bridge = await db.findOne("Bridges", { id: bridgeId });
+  if (!bridge || !bridge.enabled) {
+    throw new Error("Bridge invalid");
+  }
+  return bridge;
+};
+
 const getUrlToProfile = (db) => async (req, res) => {
-  const bridgeId = req["headers"]["bridge-id"];
-  console.log(req["headers"]);
   const userId = req.params.id;
-  await db.save("UserBridges", {
-    user_id: userId,
-    bridge_id: bridgeId,
-    timestamp: timestamp(),
-  });
-  console.log(`Save { user_id: ${userId}, bridge_id: ${bridgeId} }`);
+  const bridgeId = req["headers"]["bridge-id"];
+  await assertRequestComesFromBridgeEnabled(db, bridgeId);
+  await db.saveUserAtBridge(userId, bridgeId, timestamp());
   const url = await getPlayerToken(userId);
   res.send({
     url,

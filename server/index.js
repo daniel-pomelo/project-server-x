@@ -10,7 +10,6 @@ const assignExperience = require("./routes/assignExperience");
 const getUserProfile = require("./routes/getUserProfile");
 const assignPointsToStats = require("./routes/assignPointsToStats");
 const returnUserById = require("./routes/returnUserById");
-const registerUser = require("./routes/registerUser");
 const getUrlToProfile = require("./routes/getUrlToProfile");
 const getSkills = require("./routes/getSkills");
 const saveSkills = require("./routes/saveSkills");
@@ -24,7 +23,6 @@ const toggleBridge = require("./routes/toggleBridge");
 const getPlayers = require("./routes/getPlayers");
 const getPoints = require("./routes/getPoints");
 const togglePlayer = require("./routes/togglePlayer");
-const saveUser = require("./routes/saveUser");
 const getInviteUrl = require("./routes/getInviteUrl");
 const registerInvitado = require("./routes/registerInvitado");
 const getInvitation = require("./routes/getInvitation");
@@ -62,6 +60,15 @@ class MyServer {
     this.app = app;
   }
   static start(db, systemEvents, tokens, UI_URL) {
+    const assertBridgeIsEnabled = (db) => async (req, res, next) => {
+      const id = req["headers"]["bridge-id"];
+      const bridge = await db.findOne("Bridges", { id });
+      if (!bridge || !bridge.enabled) {
+        throw new Error("Bridge invalid");
+      }
+      next();
+    };
+
     const app = express();
 
     app.use(express.static("public"));
@@ -114,7 +121,6 @@ class MyServer {
         });
       })
     );
-    app.post("/register/:id", registerUser(db, systemEvents));
     app.post("/api/bridge", saveBridge(db));
     app.get("/api/bridges", listBridges(db));
     app.post("/api/bridges", saveBridges(db));
@@ -125,44 +131,30 @@ class MyServer {
     app.get("/api/skills/:skill_id/toggle", asyncHandler(toggleSkill(db)));
     app.get("/api/bridges/:bridge_id/toggle", asyncHandler(toggleBridge(db)));
     app.get("/api/players/:player_id/toggle", asyncHandler(togglePlayer(db)));
-    app.post("/register/:id", async (req, res, next) => {
-      try {
-        await saveUser(db, systemEvents)(req, res);
-      } catch (error) {
-        next(error);
-      }
-    });
     app.get("/api/profile/:token", asyncHandler(getUserProfile(db)));
     app.post(
       "/api/profile/:token/skills",
       asyncHandler(updateUserSkills(db, tokens))
     );
-    app.get("/api/auth/:id", getUrlToProfile(db));
+    app.get("/api/auth/:id", asyncHandler(getUrlToProfile(db)));
     app.get("/api/skills/:id", getProfileSkills(db));
     app.get("/api/players", getPlayers(db));
     app.get("/api/points/:id", getPoints(db));
 
-    app.post("/api/invite", asyncHandler(getInviteUrl(tokens, UI_URL, db)));
+    app.post(
+      "/api/invite",
+      asyncHandler(assertBridgeIsEnabled(db)),
+      asyncHandler(getInviteUrl(tokens, UI_URL, db))
+    );
     app.get("/api/invite/:id", asyncHandler(getInvitation(tokens, db)));
     app.post(
       "/api/register/:id",
       asyncHandler(registerInvitado(db, tokens, UI_URL))
     );
 
-    const assertBridgeCanPickUpMaterials = (db) => {
-      return async (req, res, next) => {
-        const id = req["headers"]["bridge-id"];
-        const bridge = await db.findOne("Bridges", { id });
-        if (!bridge || !bridge.enabled) {
-          throw new Error("Bridge invalid");
-        }
-        next();
-      };
-    };
-
     app.post(
       "/api/pickup",
-      asyncHandler(assertBridgeCanPickUpMaterials(db)),
+      asyncHandler(assertBridgeIsEnabled(db)),
       asyncHandler(pickUpUserMaterials(db))
     );
 

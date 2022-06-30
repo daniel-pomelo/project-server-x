@@ -46,6 +46,51 @@ class MongoDataBase {
       .collection(collectionName)
       .insertOne(data);
   }
+  updateInvitationTimestamp(invitation, timestamp) {
+    return db.updateOne(
+      "Invitations",
+      {
+        invitador: invitation.invitador,
+        invitado: invitation.invitado,
+      },
+      { invitado_at: timestamp }
+    );
+  }
+  async findUserBridge(userId) {
+    const { bridge_id } = await this.findOne("UserBridges", {
+      user_id: userId,
+    });
+    return this.findOne("Bridges", { id: bridge_id });
+  }
+  async saveUserAtBridge(userId, bridgeId, timestamp) {
+    const data = {
+      user_id: userId,
+      bridge_id: bridgeId,
+      timestamp,
+    };
+    try {
+      await this.updateOne(
+        "UserBridges",
+        {
+          user_id: userId,
+        },
+        data
+      );
+      console.log(`Saved ${JSON.stringify(data)}`);
+    } catch (error) {
+      console.log(
+        `Error Saving ${JSON.stringify(data)}, due: ${error.message}`
+      );
+      await this.save("Errors", {
+        collection: "UserBridges",
+        error: {
+          message: error.message,
+          stack: error.stack,
+        },
+        timestamp,
+      });
+    }
+  }
   updateOne(collectionName, criteria, document) {
     return this.client.db("ProjectX").collection(collectionName).updateOne(
       criteria,

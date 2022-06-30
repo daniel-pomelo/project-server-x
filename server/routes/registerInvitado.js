@@ -1,6 +1,7 @@
+const { getPlayerToken } = require("../../auth");
 const { timestamp } = require("../../time");
 
-module.exports = (db, tokens, UI_URL) => async (req, res) => {
+module.exports = (db, tokens) => async (req, res) => {
   const invitation = tokens.getUserIdFromToken(req.params.id);
 
   const id = invitation.invitado;
@@ -11,16 +12,9 @@ module.exports = (db, tokens, UI_URL) => async (req, res) => {
 
   tokens.removeFromId(req.params.id);
 
-  await db.updateOne(
-    "Invitations",
-    {
-      invitador: invitation.invitador,
-      invitado: invitation.invitado,
-    },
-    { invitado_at: timestamp() }
-  );
+  await db.updateInvitationTimestamp(invitation, timestamp());
 
-  const url = returnUrlToProfile(tokens, id, UI_URL);
+  const url = await getPlayerToken(id);
 
   res.status(201).send({ url });
 };
@@ -47,9 +41,4 @@ async function verifyUserIsNotRegistered(db, id) {
   if (user) {
     throw new Error("USER_ALREADY_EXISTS");
   }
-}
-
-function returnUrlToProfile(tokens, id, UI_URL) {
-  const token = tokens.getTokenForProfile(id);
-  return UI_URL + "/auth/" + token;
 }

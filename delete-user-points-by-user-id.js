@@ -16,5 +16,9 @@ MongoDataBase.init().then((db) => {
 
   // return Promise.all(promises).then(console.log);
 
-  db.client.db("ProjectX").collection("UserMaterials").deleteMany({});
+  db.client
+    .db("ProjectX")
+    .collection("UserBridges")
+    .deleteMany({})
+    .then(() => process.exit());
 });
