@@ -47,7 +47,7 @@ class MongoDataBase {
       .insertOne(data);
   }
   updateInvitationTimestamp(invitation, timestamp) {
-    return db.updateOne(
+    return this.updateOne(
       "Invitations",
       {
         invitador: invitation.invitador,

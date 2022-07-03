@@ -3,7 +3,6 @@ const { timestamp } = require("../../time");
 
 module.exports = (db, tokens) => async (req, res) => {
   const invitation = tokens.getUserIdFromToken(req.params.id);
-
   const id = invitation.invitado;
 
   await verifyUserIsNotRegistered(db, id);

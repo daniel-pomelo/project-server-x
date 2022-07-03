@@ -159,6 +159,7 @@ class MyServer {
     );
 
     app.use((error, req, res, next) => {
+      console.log(error.stack);
       const custom = responses[error.message];
       res
         .status((custom && custom.status) || 500)
