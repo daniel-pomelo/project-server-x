@@ -3,7 +3,6 @@ require("dotenv").config();
 const path = require("path");
 const cors = require("cors");
 const express = require("express");
-const { logBridgeId } = require("./logBridgeId");
 const findUsers = require("./routes/findUsers");
 const saveBridge = require("./routes/saveBridge");
 const assignExperience = require("./routes/assignExperience");
@@ -81,8 +80,17 @@ class MyServer {
     app.use(express.json());
     app.set("views", path.resolve(path.join(__dirname, "..", "view")));
     app.set("view engine", "ejs");
-    app.get("/api/users", findUsers(db));
-    app.get("/api/users/:id", logBridgeId, returnUserById(db));
+    app.get(
+      "/api/users",
+      asyncHandler(assertBridgeIsEnabled(db)),
+      asyncHandler(findUsers(db))
+    );
+    app.get(
+      "/api/users/:id",
+      asyncHandler(assertBridgeIsEnabled(db)),
+      asyncHandler(returnUserById(db))
+    );
+
     app.delete("/api/users/:id", async (req, res) => {
       const id = req.params.id;
       await db.deleteOne("Users", { id });
