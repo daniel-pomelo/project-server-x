@@ -41,7 +41,8 @@ async function findUserById(db, id) {
       db.find("UserPoints", { user_id: id }),
       db.find("UserStats", { user_id: id }),
       db.find("UserSkillPoints", { user_id: id }),
-      db.find("UserSkills", { user_id: id }),
+      // db.find("UserSkills", { user_id: id }),
+      getSkills(db, user),
     ]).then(([experience, userPoints, stats, skillPoints, userSkills]) => {
       const userExperience = experience || DEFAULT_USER_EXPERIENCE;
       return [
@@ -49,7 +50,8 @@ async function findUserById(db, id) {
         calcPointsBalance(userPoints),
         reduce(stats, userExperience.level_value),
         calcPointsBalance(skillPoints),
-        (userSkills[0] && userSkills[0].skills) || [],
+        // (userSkills[0] && userSkills[0].skills) || [],
+        userSkills.skills,
       ];
     });
 
@@ -171,6 +173,7 @@ const getSkills = async (db, user) => {
     });
 
     const userSkill = {
+      id: asd.id,
       reach: asd.reach,
       name: `${asd.name}-${romanize(skill.skill_level_value || 1)}`,
       icon: asd.icon,
@@ -183,6 +186,8 @@ const getSkills = async (db, user) => {
       duration: asd.duration,
       cooldown: asd.cooldown,
       target: asd.target,
+      user_level_value: skill.user_level_value,
+      skill_level_value: asd.skill_level_value,
     };
 
     return useSkill(stats, userSkill, totalPoints);
