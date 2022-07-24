@@ -15,6 +15,8 @@ module.exports = (db, tokens) => async (req, res) => {
 
   const url = await getPlayerToken(id);
 
+  await db.registerUserMeterAsPending(id);
+
   res.status(201).send({ url });
 };
 

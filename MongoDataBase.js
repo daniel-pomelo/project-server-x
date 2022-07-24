@@ -1,5 +1,6 @@
 require("dotenv").config();
 const { MongoClient } = require("mongodb");
+const { timestamp } = require("./time");
 const { MONGO_DB_USERNAME, MONGO_DB_PASSWORD } = process.env;
 const uri = `mongodb+srv://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@cluster0.jvhhw.mongodb.net/ProjectX?retryWrites=true&w=majority`;
 
@@ -45,6 +46,18 @@ class MongoDataBase {
       .db("ProjectX")
       .collection(collectionName)
       .insertOne(data);
+  }
+  async registerUserMeterAsPending(userId) {
+    const found = await this.findOne("UserMeters", {
+      user_id: userId,
+    });
+    if (!found) {
+      return this.save("UserMeters", {
+        user_id: userId,
+        status: "pending",
+        timestamp: timestamp(),
+      });
+    }
   }
   updateInvitationTimestamp(invitation, timestamp) {
     return this.updateOne(
