@@ -1,0 +1,2 @@
+empty state en skills
+Pongamos el Absorption en 0 por default, o el hit damage inicial en 20
