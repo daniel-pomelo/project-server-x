@@ -1,4 +1,4 @@
-const { getPlayerToken } = require("../../auth");
+const { getProfileUrl } = require("../../auth");
 const { timestamp } = require("../../time");
 
 const assertRequestComesFromBridgeEnabled = async (db, bridgeId) => {
@@ -14,7 +14,7 @@ const getUrlToProfile = (db) => async (req, res) => {
   const bridgeId = req["headers"]["bridge-id"];
   await assertRequestComesFromBridgeEnabled(db, bridgeId);
   await db.saveUserAtBridge(userId, bridgeId, timestamp());
-  const url = await getPlayerToken(userId);
+  const url = await getProfileUrl(userId);
   res.send({
     url,
   });

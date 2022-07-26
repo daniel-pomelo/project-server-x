@@ -1,4 +1,4 @@
-const { getPlayerToken } = require("../../auth");
+const { getProfileUrl } = require("../../auth");
 const { timestamp } = require("../../time");
 
 module.exports = (db, tokens) => async (req, res) => {
@@ -13,7 +13,7 @@ module.exports = (db, tokens) => async (req, res) => {
 
   await db.updateInvitationTimestamp(invitation, timestamp());
 
-  const url = await getPlayerToken(id);
+  const url = await getProfileUrl(id);
 
   await db.registerUserMeterAsPending(id);
 
