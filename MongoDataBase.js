@@ -59,6 +59,26 @@ class MongoDataBase {
       });
     }
   }
+  async registerUserMeterAsActive(userId) {
+    const found = await this.findOne("UserMeters", {
+      user_id: userId,
+    });
+    if (found && found.status === "pending") {
+      return this.updateOne(
+        "UserMeters",
+        {
+          user_id: userId,
+        },
+        { status: "active", updated_at: timestamp() }
+      );
+    } else if (!found) {
+      return this.save("UserMeters", {
+        user_id: userId,
+        status: "active",
+        timestamp: timestamp(),
+      });
+    }
+  }
   updateInvitationTimestamp(invitation, timestamp) {
     return this.updateOne(
       "Invitations",
