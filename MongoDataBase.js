@@ -94,15 +94,17 @@ class MongoDataBase {
       console.log(
         `Error Saving ${JSON.stringify(data)}, due: ${error.message}`
       );
-      await this.save("Errors", {
-        collection: "UserBridges",
-        error: {
-          message: error.message,
-          stack: error.stack,
-        },
-        timestamp,
-      });
+      this.registerError(error);
     }
+  }
+  async registerError(error) {
+    await this.save("Errors", {
+      error: {
+        message: error.message,
+        stack: error.stack,
+      },
+      timestamp: timestamp(),
+    });
   }
   updateOne(collectionName, criteria, document) {
     return this.client.db("ProjectX").collection(collectionName).updateOne(

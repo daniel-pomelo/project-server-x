@@ -167,7 +167,7 @@ class MyServer {
     );
 
     app.use((error, req, res, next) => {
-      console.log(error.stack);
+      db.registerError(error);
       const custom = responses[error.message];
       res
         .status((custom && custom.status) || 500)
