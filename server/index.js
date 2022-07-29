@@ -22,15 +22,14 @@ const toggleBridge = require("./routes/toggleBridge");
 const getPlayers = require("./routes/getPlayers");
 const getPoints = require("./routes/getPoints");
 const togglePlayer = require("./routes/togglePlayer");
-const getInviteUrl = require("./routes/getInviteUrl");
 const registerInvitado = require("./routes/registerInvitado");
 const getInvitation = require("./routes/getInvitation");
 const userModule = require("../user");
 const { UserMaterials } = require("../core/UserMaterials");
-const pickUpUserMaterials = require("./routes/pickUpUserMaterials");
 const assertBridgeIsEnabled = require("./routes/assertBridgeIsEnabled");
 const asyncHandler = require("./routes/asyncHandler");
 const crafting = require("./crafting");
+const enrollment = require("./enrollment");
 
 const PORT = process.env.PORT || 3001;
 
@@ -135,16 +134,13 @@ class MyServer {
     app.get("/api/players", getPlayers(db));
     app.get("/api/points/:id", getPoints(db));
 
-    app.post(
-      "/api/invite",
-      asyncHandler(assertBridgeIsEnabled(db)),
-      asyncHandler(getInviteUrl(tokens, UI_URL, db))
-    );
     app.get("/api/invite/:id", asyncHandler(getInvitation(tokens, db)));
     app.post(
       "/api/register/:id",
       asyncHandler(registerInvitado(db, tokens, UI_URL))
     );
+
+    enrollment.invite(app, db, tokens, UI_URL);
 
     crafting.pickup(app, db);
 
