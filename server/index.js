@@ -28,6 +28,9 @@ const getInvitation = require("./routes/getInvitation");
 const userModule = require("../user");
 const { UserMaterials } = require("../core/UserMaterials");
 const pickUpUserMaterials = require("./routes/pickUpUserMaterials");
+const assertBridgeIsEnabled = require("./routes/assertBridgeIsEnabled");
+const asyncHandler = require("./routes/asyncHandler");
+const crafting = require("./crafting");
 
 const PORT = process.env.PORT || 3001;
 
@@ -46,28 +49,11 @@ const responses = {
   },
 };
 
-const asyncHandler = (handler) => async (req, res, next) => {
-  try {
-    await handler(req, res, next);
-  } catch (error) {
-    next(error);
-  }
-};
-
 class MyServer {
   constructor(app) {
     this.app = app;
   }
   static start(db, systemEvents, tokens, UI_URL) {
-    const assertBridgeIsEnabled = (db) => async (req, res, next) => {
-      const id = req["headers"]["bridge-id"];
-      const bridge = await db.findOne("Bridges", { id });
-      if (!bridge || !bridge.enabled) {
-        throw new Error("Bridge invalid");
-      }
-      next();
-    };
-
     const app = express();
 
     app.use(express.static("public"));
@@ -160,11 +146,7 @@ class MyServer {
       asyncHandler(registerInvitado(db, tokens, UI_URL))
     );
 
-    app.post(
-      "/api/pickup",
-      asyncHandler(assertBridgeIsEnabled(db)),
-      asyncHandler(pickUpUserMaterials(db))
-    );
+    crafting.pickup(app, db);
 
     app.use((error, req, res, next) => {
       db.registerError(error);

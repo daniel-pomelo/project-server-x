@@ -168,7 +168,7 @@ class MongoDataBase {
       return acc;
     }, {});
   }
-  savePickUpMaterials(userMaterials) {
+  saveUserPickUpMaterial(userMaterials) {
     return this.save("UserMaterials", userMaterials);
   }
   async saveUserExperience(collectionName, operations) {
