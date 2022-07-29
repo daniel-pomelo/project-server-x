@@ -84,11 +84,6 @@ class MyServer {
       "/api/users/:id/stats",
       asyncHandler(assignPointsToStats(db, systemEvents))
     );
-    app.get("/api/users/:id/materials", async (req, res) => {
-      const user_id = req.params.id;
-      const materials = await db.find("UserMaterials", { user_id });
-      res.send(UserMaterials.from(materials));
-    });
     app.post(
       "/api/users/:id/calc/skills",
       asyncHandler(async (req, res) => {
@@ -137,6 +132,7 @@ class MyServer {
     enrollment.register(app, db, tokens, UI_URL);
 
     crafting.pickup(app, db);
+    crafting.user_materials(app, db);
 
     app.use((error, req, res, next) => {
       db.registerError(error);
