@@ -5,7 +5,6 @@ const cors = require("cors");
 const express = require("express");
 const findUsers = require("./routes/findUsers");
 const saveBridge = require("./routes/saveBridge");
-const assignExperience = require("./routes/assignExperience");
 const getUserProfile = require("./routes/getUserProfile");
 const assignPointsToStats = require("./routes/assignPointsToStats");
 const returnUserById = require("./routes/returnUserById");
@@ -23,11 +22,11 @@ const getPlayers = require("./routes/getPlayers");
 const getPoints = require("./routes/getPoints");
 const togglePlayer = require("./routes/togglePlayer");
 const userModule = require("../user");
-const { UserMaterials } = require("../core/UserMaterials");
 const assertBridgeIsEnabled = require("./routes/assertBridgeIsEnabled");
 const asyncHandler = require("./routes/asyncHandler");
 const crafting = require("./crafting");
 const enrollment = require("./enrollment");
+const experience = require("./experience");
 
 const PORT = process.env.PORT || 3001;
 
@@ -110,7 +109,6 @@ class MyServer {
     app.post("/api/bridge", saveBridge(db));
     app.get("/api/bridges", listBridges(db));
     app.post("/api/bridges", saveBridges(db));
-    app.post("/api/xp", asyncHandler(assignExperience(db, systemEvents)));
     app.get("/api/skills", asyncHandler(getSkills(db)));
     app.post("/api/skills", asyncHandler(saveSkills(db)));
     app.delete("/api/skills/:id", asyncHandler(deleteSkill(db)));
@@ -126,6 +124,8 @@ class MyServer {
     app.get("/api/skills/:id", getProfileSkills(db));
     app.get("/api/players", getPlayers(db));
     app.get("/api/points/:id", getPoints(db));
+
+    experience.reward(app, db, systemEvents);
 
     enrollment.invite(app, db, tokens, UI_URL);
     enrollment.invitation(app, db, tokens);
