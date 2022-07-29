@@ -27,6 +27,7 @@ const asyncHandler = require("./routes/asyncHandler");
 const crafting = require("./crafting");
 const enrollment = require("./enrollment");
 const experience = require("./experience");
+const bridges = require("./bridges");
 
 const PORT = process.env.PORT || 3001;
 
@@ -106,14 +107,10 @@ class MyServer {
         });
       })
     );
-    app.post("/api/bridge", saveBridge(db));
-    app.get("/api/bridges", listBridges(db));
-    app.post("/api/bridges", saveBridges(db));
     app.get("/api/skills", asyncHandler(getSkills(db)));
     app.post("/api/skills", asyncHandler(saveSkills(db)));
     app.delete("/api/skills/:id", asyncHandler(deleteSkill(db)));
     app.get("/api/skills/:skill_id/toggle", asyncHandler(toggleSkill(db)));
-    app.get("/api/bridges/:bridge_id/toggle", asyncHandler(toggleBridge(db)));
     app.get("/api/players/:player_id/toggle", asyncHandler(togglePlayer(db)));
     app.get("/api/profile/:token", asyncHandler(getUserProfile(db)));
     app.post(
@@ -124,6 +121,11 @@ class MyServer {
     app.get("/api/skills/:id", getProfileSkills(db));
     app.get("/api/players", getPlayers(db));
     app.get("/api/points/:id", getPoints(db));
+
+    bridges.update(app, db);
+    bridges.list(app, db);
+    bridges.save(app, db);
+    bridges.toggle(app, db);
 
     experience.reward(app, db, systemEvents);
 
