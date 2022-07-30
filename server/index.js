@@ -58,15 +58,18 @@ class MyServer {
       "/api/users/:id/stats",
       asyncHandler(assignPointsToStats(db, systemEvents))
     );
+    //SKILLS
     app.get("/api/skills", asyncHandler(getSkills(db)));
     app.post("/api/skills", asyncHandler(saveSkills(db)));
     app.delete("/api/skills/:id", asyncHandler(deleteSkill(db)));
     app.get("/api/skills/:skill_id/toggle", asyncHandler(toggleSkill(db)));
-    app.get("/api/profile/:token", asyncHandler(getUserProfile(db)));
     app.post(
       "/api/profile/:token/skills",
       asyncHandler(updateUserSkills(db, tokens))
     );
+
+    //PROFILE
+    app.get("/api/profile/:token", asyncHandler(getUserProfile(db)));
     app.get("/api/auth/:id", asyncHandler(getUrlToProfile(db)));
     app.get("/api/skills/:id", getProfileSkills(db));
     app.get("/api/points/:id", getPoints(db));
