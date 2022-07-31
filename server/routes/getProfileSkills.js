@@ -8,7 +8,7 @@ const getProfileSkills = (db) => async (req, res) => {
 
   const user = await findUserById(db, id);
 
-  const { skills } = await getSkills(db, user);
+  const { skills } = await getSkills(db, user, user.stats, user.level_value);
 
   const hasMore = skills.length > (page - 1) * 2 + 2;
   res.send({

@@ -35,25 +35,25 @@ async function findUserById(db, id) {
   if (!user) {
     return null;
   }
-  const [experience, userPoints, stats, skillPoints, userSkills] =
-    await Promise.all([
-      db.findOne("UserExperience", { user_id: id }),
-      db.find("UserPoints", { user_id: id }),
-      db.find("UserStats", { user_id: id }),
-      db.find("UserSkillPoints", { user_id: id }),
-      // db.find("UserSkills", { user_id: id }),
-      getSkills(db, user),
-    ]).then(([experience, userPoints, stats, skillPoints, userSkills]) => {
-      const userExperience = experience || DEFAULT_USER_EXPERIENCE;
-      return [
-        userExperience,
-        calcPointsBalance(userPoints),
-        reduce(stats, userExperience.level_value),
-        calcPointsBalance(skillPoints),
-        // (userSkills[0] && userSkills[0].skills) || [],
-        userSkills.skills,
-      ];
+  const experience = await db
+    .findOne("UserExperience", { user_id: id })
+    .then((experience) => {
+      return experience || DEFAULT_USER_EXPERIENCE;
     });
+  const stats = await db
+    .find("UserStats", { user_id: id })
+    .then((stats) => reduce(stats, experience.level_value));
+  const [userPoints, skillPoints, userSkills] = await Promise.all([
+    db.find("UserPoints", { user_id: id }),
+    db.find("UserSkillPoints", { user_id: id }),
+    getSkills(db, user, stats, experience.level_value),
+  ]).then(([userPoints, skillPoints, userSkills]) => {
+    return [
+      calcPointsBalance(userPoints),
+      calcPointsBalance(skillPoints),
+      userSkills.skills,
+    ];
+  });
 
   return {
     ...user,
@@ -106,7 +106,7 @@ function reduce(stats, level_value) {
 
   return {
     ...userStats,
-    hit_damage: HitDamage.calc(userStats.strength, level_value),
+    hit_damage: HitDamage.calc(userStats.strength, level_value) + 10,
     hit_absorption: HitAbsorption.calc(userStats.absorption, level_value),
     hit_speed: HitSpeed.calc(userStats),
   };
@@ -154,13 +154,9 @@ async function findUserPointsByUserId(db, id) {
   return { balance };
 }
 
-const getSkills = async (db, user) => {
+const getSkills = async (db, user, stats, level_value) => {
   const skillsCatalog = await db.find("Skills");
   const userSkills = await db.find("UserSkills", { user_id: user.id });
-
-  const level_value = (user && user.level_value) || 1;
-  const stats = (user && user.stats) || {};
-
   const totalPoints = (level_value - 1) * 10;
 
   const skills = (userSkills[0] ? userSkills[0].skills : []).map((skill) => {
