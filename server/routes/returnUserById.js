@@ -4,7 +4,7 @@ const returnUserById = (db) => async (req, res, next) => {
   try {
     const userId = req.params.id;
     await getUser(db)(req, res);
-    await db.registerUserMeterAsActive(userId);
+    await db.activeUserMeter(userId);
   } catch (error) {
     next(error);
   }

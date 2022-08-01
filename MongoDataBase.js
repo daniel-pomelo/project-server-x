@@ -55,11 +55,11 @@ class MongoDataBase {
       return this.save("UserMeters", {
         user_id: userId,
         status: "pending",
-        timestamp: timestamp(),
+        created_at: timestamp(),
       });
     }
   }
-  async registerUserMeterAsActive(userId) {
+  async activeUserMeter(userId) {
     const found = await this.findOne("UserMeters", {
       user_id: userId,
     });
@@ -69,13 +69,13 @@ class MongoDataBase {
         {
           user_id: userId,
         },
-        { status: "active", updated_at: timestamp() }
+        { status: "active", active_since: timestamp() }
       );
     } else if (!found) {
       return this.save("UserMeters", {
         user_id: userId,
         status: "active",
-        timestamp: timestamp(),
+        active_since: timestamp(),
       });
     }
   }
