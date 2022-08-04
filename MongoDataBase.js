@@ -190,11 +190,8 @@ class MongoDataBase {
       .collection(collectionName)
       .bulkWrite(operations);
   }
-  registerAssignExperience(experienceToAssign, timestamp) {
-    return this.save("UserExperienceRecords", {
-      experiences: experienceToAssign,
-      timestamp,
-    });
+  registerAssignExperience(record) {
+    return this.save("UserExperienceRecords", record);
   }
   saveUserPoints(operations) {
     operations = operations.map((operation) => {

@@ -1,4 +1,3 @@
-const { findBridgeById } = require("../../bridge");
 const { timestamp } = require("../../time");
 
 const firstLevelMaxXP = 240;
@@ -18,6 +17,7 @@ const INITIAL_USER_EXPERIENCE = {
 };
 
 const assignExperience = (db, systemEvents) => async (req, res) => {
+  const bridgeId = req.headers["bridge-id"];
   const experienceToAssign = [...req.body];
 
   const userIds = experienceToAssign.map(({ user_id }) => user_id);
@@ -46,7 +46,19 @@ const assignExperience = (db, systemEvents) => async (req, res) => {
 
   res.send({});
 
-  await db.registerAssignExperience(experienceToAssign, timestamp());
+  const record = { timestamp: timestamp() };
+  const promisesOfUserExperienceRecords = experienceToAssign.map(
+    ({ user_id, xp }) => {
+      return db.registerAssignExperience({
+        bridge_id: bridgeId,
+        ...record,
+        user_id,
+        xp,
+      });
+    }
+  );
+
+  await Promise.all(promisesOfUserExperienceRecords);
 
   const usersThatLevelUp = operations.filter((operation) => {
     const { userExperience, newUserExperience } = operation;
