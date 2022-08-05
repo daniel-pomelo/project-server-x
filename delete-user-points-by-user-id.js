@@ -54,6 +54,7 @@ async function showLastError(db) {
   if (!lastError) {
     console.log("No errors.");
   } else {
+    console.log(lastError.timestamp);
     console.log(lastError.error.message);
     lastError.error.stack.split("\n").forEach((line) => console.log(line));
   }

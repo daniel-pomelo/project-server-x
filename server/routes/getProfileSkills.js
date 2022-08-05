@@ -1,4 +1,5 @@
-const { getSkills, findUserById } = require("../../user");
+const { findUserById } = require("../../user");
+const { getSkills } = require("../../skills");
 
 const BASE_URL = process.env.BACKEND_URL;
 
