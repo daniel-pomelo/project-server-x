@@ -47,6 +47,13 @@ class MongoDataBase {
       .collection(collectionName)
       .insertOne(data);
   }
+  saveUserSkills(skills, user_id, timestamp) {
+    return this.save("UserSkills", {
+      skills,
+      user_id,
+      timestamp,
+    });
+  }
   async registerUserMeterAsPending(userId) {
     const found = await this.findOne("UserMeters", {
       user_id: userId,
@@ -89,11 +96,33 @@ class MongoDataBase {
       { invitado_at: timestamp }
     );
   }
-  async findUserBridge(userId) {
-    const { bridge_id } = await this.findOne("UserBridges", {
-      user_id: userId,
+  async findNewest(collectionName, criteria) {
+    const options = {
+      sorting: "desc",
+      limit: 1,
+    };
+    const results = await this.find(collectionName, criteria, options);
+    return results[0];
+  }
+  saveUserSkillPointsWithdrawal(points, user_id, timestamp) {
+    return this.save("UserSkillPoints", {
+      type: "USER_POINTS_WITHDRAWAL",
+      points,
+      user_id,
+      timestamp,
     });
-    return this.findOne("Bridges", { id: bridge_id });
+  }
+  characterUpdatedFromWeb(userId, systemEvents) {
+    this.findUserBridge(userId).then((bridge) => {
+      systemEvents.notifyThatUserHasTrained(userId, bridge);
+    });
+  }
+  async findUserBridge(userId) {
+    const criteria = {
+      user_id: userId,
+    };
+    const userBridge = await this.findNewest("UserBridges", criteria);
+    return this.findOne("Bridges", { id: userBridge.bridge_id });
   }
   async saveUserAtBridge(userId, bridgeId, timestamp) {
     const data = {
@@ -136,21 +165,20 @@ class MongoDataBase {
     );
   }
   find(collectionName, criteria, options = {}) {
-    const { sorting } = options;
+    const { sorting, limit } = options;
+
     if (collectionName === "UserSkills") {
       return this.client
         .db("ProjectX")
         .collection(collectionName)
-        .find(criteria)
-        .sort({ timestamp: -1 })
+        .find(criteria, { sort: { timestamp: -1 } })
         .toArray();
     }
     if (sorting && sorting === "desc") {
       return this.client
         .db("ProjectX")
         .collection(collectionName)
-        .find(criteria)
-        .sort({ timestamp: -1 })
+        .find(criteria, { sort: { timestamp: -1 }, limit })
         .toArray();
     }
     return this.client

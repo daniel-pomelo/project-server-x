@@ -65,7 +65,7 @@ class MyServer {
     app.get("/api/skills/:skill_id/toggle", asyncHandler(toggleSkill(db)));
     app.post(
       "/api/profile/:token/skills",
-      asyncHandler(updateUserSkills(db, tokens))
+      asyncHandler(updateUserSkills(db, systemEvents))
     );
 
     //PROFILE

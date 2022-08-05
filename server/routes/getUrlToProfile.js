@@ -1,13 +1,6 @@
 const { getProfileUrl } = require("../../auth");
 const { timestamp } = require("../../time");
-
-const assertRequestComesFromBridgeEnabled = async (db, bridgeId) => {
-  const bridge = await db.findOne("Bridges", { id: bridgeId });
-  if (!bridge || !bridge.enabled) {
-    throw new Error("Bridge invalid");
-  }
-  return bridge;
-};
+const { assertRequestComesFromBridgeEnabled } = require("../../bridge");
 
 const getUrlToProfile = (db) => async (req, res) => {
   const userId = req.params.id;

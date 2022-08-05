@@ -2,29 +2,25 @@ const { getUserIdFromToken } = require("../../auth");
 const { timestamp } = require("../../time");
 const { findUserById } = require("../../user");
 
-const updateUserSkills = (db) => async (req, res) => {
+const EMPTY_RESPONSE = {};
+
+const updateUserSkills = (db, systemEvents) => async (req, res) => {
   const token = req.params.token;
   const userId = await getUserIdFromToken(token);
   const user = await findUserById(db, userId);
   const { skills } = req.body;
+  const { skill_points } = user;
 
-  if (user.skill_points <= 0) {
+  if (skill_points <= 0) {
     throw new Error("Insufficient points");
   }
 
-  await db.save("UserSkillPoints", {
-    type: "USER_POINTS_WITHDRAWAL",
-    points: user.skill_points,
-    user_id: userId,
-    timestamp: timestamp(),
-  });
-  await db.save("UserSkills", {
-    skills,
-    user_id: userId,
-    timestamp: timestamp(),
-  });
+  await db.saveUserSkillPointsWithdrawal(skill_points, userId, timestamp());
+  await db.saveUserSkills(skills, userId, timestamp());
 
-  res.send({});
+  res.send(EMPTY_RESPONSE);
+
+  db.characterUpdatedFromWeb(userId, systemEvents);
 };
 
 module.exports = updateUserSkills;
