@@ -1,7 +1,3 @@
-const { romanize } = require("romans");
-const scaleSkill = require("./server/scaleSkill");
-const { useSkill } = require("./core/useSkill");
-
 const {
   HitDamage,
   HitAbsorption,
@@ -9,6 +5,7 @@ const {
   Health,
   Mana,
 } = require("@origin-la/user-stats");
+const { getSkills } = require("./skills");
 
 const DEFAULT_USER_EXPERIENCE = {
   level_value: 1,
@@ -154,47 +151,9 @@ async function findUserPointsByUserId(db, id) {
   return { balance };
 }
 
-const getSkills = async (db, user, stats, level_value) => {
-  const skillsCatalog = await db.find("Skills");
-  const userSkills = await db.find("UserSkills", { user_id: user.id });
-  const totalPoints = (level_value - 1) * 10;
-
-  const skills = (userSkills[0] ? userSkills[0].skills : []).map((skill) => {
-    const skillFromCatalog = skillsCatalog.find(
-      (skillFromCatalog) => skillFromCatalog.id === skill.id
-    );
-    const asd = scaleSkill({
-      ...skillFromCatalog,
-      skill_level_value: skill.skill_level_value || 1,
-    });
-
-    const userSkill = {
-      id: asd.id,
-      reach: asd.reach,
-      name: `${asd.name}-${romanize(skill.skill_level_value || 1)}`,
-      icon: asd.icon,
-      mana_self: asd.mana_self,
-      mana_other: asd.mana_other,
-      health_self: asd.health_self,
-      health_other: asd.health_other,
-      effect: asd.effect,
-      amount: asd.amount,
-      duration: asd.duration,
-      cooldown: asd.cooldown,
-      target: asd.target,
-      user_level_value: skill.user_level_value,
-      skill_level_value: asd.skill_level_value,
-    };
-
-    return useSkill(stats, userSkill, totalPoints);
-  });
-  return { skills, stats };
-};
-
 module.exports = {
   findUserById,
   findAllUser,
   findUserPointsByUserId,
   getUserStats,
-  getSkills,
 };

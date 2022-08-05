@@ -1,5 +1,5 @@
 const MongoDataBase = require("./MongoDataBase");
-const { getSkills } = require("./user");
+const { getSkills } = require("./skills");
 
 MongoDataBase.init().then(async (db) => {
   const { skills, stats } = await getSkills(
