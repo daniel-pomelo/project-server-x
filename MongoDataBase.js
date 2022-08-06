@@ -54,6 +54,19 @@ class MongoDataBase {
       timestamp,
     });
   }
+  saveGrowingFactors(data) {
+    return this.save("GrowingFactors", data);
+  }
+  getCharacterGrowingFactor() {
+    return this.findNewest("GrowingFactors", {
+      type: "character_growing_factor",
+    });
+  }
+  getSkillGrowingFactor() {
+    return this.findNewest("GrowingFactors", {
+      type: "skill_growing_factor",
+    });
+  }
   async registerUserMeterAsPending(userId) {
     const found = await this.findOne("UserMeters", {
       user_id: userId,

@@ -6,7 +6,7 @@ MongoDataBase.init().then(async (db) => {
   // const userId2 = "fdcd2886-4a08-4a56-bc09-30c5f362817f";
   // const res = await getUserExperienceRecordsByUserId(myDb, userId);
   // console.log(res);
-  // deleteUserProgressByUserId(myDb, userId);
+  deleteUserProgressByUserId(myDb, userId);
   showLastError(myDb);
 });
 

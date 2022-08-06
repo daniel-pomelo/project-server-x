@@ -19,6 +19,7 @@ const enrollment = require("./enrollment");
 const experience = require("./experience");
 const bridges = require("./bridges");
 const users = require("./users");
+const scaling = require("./scaling");
 
 const PORT = process.env.PORT || 3001;
 
@@ -93,6 +94,8 @@ class MyServer {
 
     crafting.pickup(app, db);
     crafting.user_materials(app, db);
+
+    scaling.updateGrowingFactors(app, db);
 
     app.use((error, req, res, next) => {
       db.registerError(error);
