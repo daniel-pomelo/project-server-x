@@ -70,6 +70,16 @@ class MongoDataBase {
   getDefaultStats() {
     return this.findNewest("DefaultStats");
   }
+  async updateDefaultStats(defaultStats) {
+    const firstDocument = await this.findNewest("DefaultStats");
+    return this.updateOne(
+      "DefaultStats",
+      {
+        _id: firstDocument._id,
+      },
+      defaultStats
+    );
+  }
   async registerUserMeterAsPending(userId) {
     const found = await this.findOne("UserMeters", {
       user_id: userId,

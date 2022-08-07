@@ -99,6 +99,7 @@ class MyServer {
     scaling.updateGrowingFactors(app, db);
 
     stats.readDefaultStats(app, db);
+    stats.updateDefaultStats(app, db);
 
     app.use((error, req, res, next) => {
       db.registerError(error);
