@@ -20,6 +20,7 @@ const experience = require("./experience");
 const bridges = require("./bridges");
 const users = require("./users");
 const scaling = require("./scaling");
+const stats = require("./stats");
 
 const PORT = process.env.PORT || 3001;
 
@@ -97,13 +98,7 @@ class MyServer {
 
     scaling.updateGrowingFactors(app, db);
 
-    app.get(
-      "/api/stats",
-      asyncHandler(async (req, res) => {
-        const stats = await db.getDefaultStats();
-        res.send({ stats });
-      })
-    );
+    stats.readDefaultStats(app, db);
 
     app.use((error, req, res, next) => {
       db.registerError(error);
