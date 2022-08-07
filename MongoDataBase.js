@@ -67,6 +67,9 @@ class MongoDataBase {
       type: "skill_growing_factor",
     });
   }
+  getDefaultStats() {
+    return this.findNewest("DefaultStats");
+  }
   async registerUserMeterAsPending(userId) {
     const found = await this.findOne("UserMeters", {
       user_id: userId,

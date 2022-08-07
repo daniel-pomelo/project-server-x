@@ -39,7 +39,7 @@ async function findUserById(db, id) {
     });
   const stats = await db
     .find("UserStats", { user_id: id })
-    .then((stats) => reduce(stats, experience.level_value));
+    .then((stats) => reduce(stats, experience.level_value, db));
   const [userPoints, skillPoints, userSkills] = await Promise.all([
     db.find("UserPoints", { user_id: id }),
     db.find("UserSkillPoints", { user_id: id }),
@@ -76,17 +76,8 @@ async function findAllUser(db, userIds = []) {
   return db.find("Users", criteria);
 }
 
-function reduce(stats, level_value) {
-  const props = {
-    strength: 10,
-    fortitude: 10,
-    intelligence: 10,
-    will: 10,
-    perception: 10,
-    agility: 10,
-    endurance: 10,
-    absorption: 10,
-  };
+async function reduce(stats, level_value, db) {
+  const defaultStats = await db.getDefaultStats();
 
   const userStats = stats.reduce((acc, stat) => {
     return Object.entries(stat).reduce((initial, [name, value]) => {
@@ -99,7 +90,7 @@ function reduce(stats, level_value) {
         return initial;
       }
     }, acc);
-  }, props);
+  }, defaultStats);
 
   return {
     ...userStats,
