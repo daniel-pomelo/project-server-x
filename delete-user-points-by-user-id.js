@@ -7,7 +7,7 @@ MongoDataBase.init().then(async (db) => {
   // const res = await getUserExperienceRecordsByUserId(myDb, userId);
   // console.log(res);
   deleteUserProgressByUserId(myDb, userId);
-  showLastError(myDb);
+  // showLastError(myDb);
 });
 
 function getUserExperienceRecordsByUserId(db, userId) {

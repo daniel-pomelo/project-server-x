@@ -97,6 +97,14 @@ class MyServer {
 
     scaling.updateGrowingFactors(app, db);
 
+    app.get(
+      "/api/stats",
+      asyncHandler(async (req, res) => {
+        const stats = await db.getDefaultStats();
+        res.send({ stats });
+      })
+    );
+
     app.use((error, req, res, next) => {
       db.registerError(error);
       const custom = responses[error.message];
