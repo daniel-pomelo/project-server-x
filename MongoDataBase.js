@@ -73,6 +73,16 @@ class MongoDataBase {
   findScalingFactors() {
     return this.findOne("ScalingFactors", {});
   }
+  async updateScalingFactors(scalingFactors) {
+    const firstDocument = await this.findNewest("ScalingFactors");
+    return this.updateOne(
+      "ScalingFactors",
+      {
+        _id: firstDocument._id,
+      },
+      scalingFactors
+    );
+  }
   async updateDefaultStats(defaultStats) {
     const firstDocument = await this.findNewest("DefaultStats");
     return this.updateOne(

@@ -13,4 +13,12 @@ module.exports = {
       })
     );
   },
+  updateScalingFactors: (app, db) => {
+    app.post(
+      URL_SCALING_FACTORS,
+      asyncHandler((req, res) => {
+        db.updateScalingFactors(req.body).then(() => res.send({}));
+      })
+    );
+  },
 };
