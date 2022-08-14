@@ -73,6 +73,22 @@ class MongoDataBase {
   findScalingFactors() {
     return this.findOne("ScalingFactors", {});
   }
+  async assertUserCreateAClan(userId) {
+    const results = await this.find("UserClans", { user_id: userId });
+    if (results.length !== 0) {
+      throw new Error("User reached clan creation limit.");
+    }
+  }
+  async saveUserClan(clanName, userId) {
+    const clan = await this.save("Clans", {
+      name: clanName,
+      created_at: timestamp(),
+    });
+    return this.save("UserClans", {
+      clan_id: clan.insertedId,
+      user_id: userId,
+    });
+  }
   async updateScalingFactors(scalingFactors) {
     const firstDocument = await this.findNewest("ScalingFactors");
     return this.updateOne(

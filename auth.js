@@ -5,6 +5,9 @@ const UI_URL = process.env.URL_TO_UI;
 
 async function getUserIdFromToken(token) {
   const response = await axios.get(URL + "/api/token/" + token);
+  if (!response.data || !response.data.userId) {
+    throw new Error("Session expired.");
+  }
   return response.data.userId;
 }
 
@@ -15,7 +18,13 @@ async function getProfileUrl(userId) {
   return url;
 }
 
+async function getUserIdFromRequest(req) {
+  const authorization = req.headers["authorization"];
+  return getUserIdFromToken(authorization);
+}
+
 module.exports = {
   getUserIdFromToken,
   getProfileUrl,
+  getUserIdFromRequest,
 };

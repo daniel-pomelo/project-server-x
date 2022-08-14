@@ -21,6 +21,7 @@ const bridges = require("./bridges");
 const users = require("./users");
 const scaling = require("./scaling");
 const stats = require("./stats");
+const clans = require("./clans");
 
 const PORT = process.env.PORT || 3001;
 
@@ -101,6 +102,8 @@ class MyServer {
 
     stats.readDefaultStats(app, db);
     stats.updateDefaultStats(app, db);
+
+    clans.save(app, db);
 
     app.use((error, req, res, next) => {
       db.registerError(error);
