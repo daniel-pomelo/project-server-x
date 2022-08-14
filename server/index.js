@@ -96,7 +96,7 @@ class MyServer {
     crafting.pickup(app, db);
     crafting.user_materials(app, db);
 
-    scaling.updateGrowingFactors(app, db);
+    scaling.getScalingFactors(app, db);
 
     stats.readDefaultStats(app, db);
     stats.updateDefaultStats(app, db);

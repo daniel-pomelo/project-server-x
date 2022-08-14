@@ -70,6 +70,9 @@ class MongoDataBase {
   getDefaultStats() {
     return this.findNewest("DefaultStats");
   }
+  findScalingFactors() {
+    return this.findOne("ScalingFactors", {});
+  }
   async updateDefaultStats(defaultStats) {
     const firstDocument = await this.findNewest("DefaultStats");
     return this.updateOne(
