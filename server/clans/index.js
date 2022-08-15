@@ -2,6 +2,7 @@ const { getUserIdFromRequest } = require("../../auth");
 const asyncHandler = require("../routes/asyncHandler");
 
 const CLANS_URL = "/api/clans";
+const CLANS_INVITE_URL = "/api/clans/invite";
 
 function saveClan(db) {
   return async (req, res) => {
@@ -21,8 +22,27 @@ function getClanName(req) {
   return clanName;
 }
 
+function inviteToMyClan(db) {
+  return async (req, res) => {
+    const invitadorId = getInvitadorId(req);
+    const invitadoId = getInvitadoId(req);
+    await db.inviteToUserClan(invitadorId, invitadoId);
+    res.status(201).send({});
+  };
+}
+
+function getInvitadorId(req) {
+  return req.headers["invitador-id"];
+}
+function getInvitadoId(req) {
+  return req.headers["invitado-id"];
+}
+
 module.exports = {
   save(app, db) {
     app.post(CLANS_URL, asyncHandler(saveClan(db)));
+  },
+  sendInvitationToMyClan(app, db) {
+    app.post(CLANS_INVITE_URL, asyncHandler(inviteToMyClan(db)));
   },
 };

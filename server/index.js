@@ -104,6 +104,7 @@ class MyServer {
     stats.updateDefaultStats(app, db);
 
     clans.save(app, db);
+    clans.sendInvitationToMyClan(app, db);
 
     app.use((error, req, res, next) => {
       db.registerError(error);

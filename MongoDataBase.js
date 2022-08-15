@@ -109,6 +109,31 @@ class MongoDataBase {
       defaultStats
     );
   }
+  async inviteToUserClan(invitadorId, invitadoId) {
+    const userClan = await this.findOne("UserClans", { user_id: invitadorId });
+    if (!userClan) {
+      throw new Error("Invitador doesnt have a clan.");
+    }
+    const clan = await this.findOne("Clans", {
+      _id: userClan.clan_id,
+    });
+    if (!clan) {
+      throw new Error("Clan wasnt found.");
+    }
+    const member = await this.findOne("UserClanMembers", {
+      member_id: invitadoId,
+      clan_id: userClan.clan_id,
+    });
+    if (member) {
+      throw new Error("Invitado is already a member.");
+    }
+    return this.save("UserClanMembers", {
+      member_id: invitadoId,
+      clan_id: userClan.clan_id,
+      status: "invited",
+      timestamp: timestamp(),
+    });
+  }
   async registerUserMeterAsPending(userId) {
     const found = await this.findOne("UserMeters", {
       user_id: userId,
