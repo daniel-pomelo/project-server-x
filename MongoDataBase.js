@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 const { timestamp } = require("./time");
 const { MONGO_DB_USERNAME, MONGO_DB_PASSWORD } = process.env;
 const uri = `mongodb+srv://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@cluster0.jvhhw.mongodb.net/ProjectX?retryWrites=true&w=majority`;
@@ -109,7 +109,7 @@ class MongoDataBase {
       defaultStats
     );
   }
-  async inviteToUserClan(invitadorId, invitadoId) {
+  async inviteToClan(invitadorId, invitadoId) {
     const userClan = await this.findOne("UserClans", { user_id: invitadorId });
     if (!userClan) {
       throw new Error("Invitador doesnt have a clan.");
@@ -124,14 +124,138 @@ class MongoDataBase {
       member_id: invitadoId,
       clan_id: userClan.clan_id,
     });
+    if (member && member.status === "brokeup") {
+      throw new Error("Invitado left the clan.");
+    }
     if (member) {
       throw new Error("Invitado is already a member.");
     }
-    return this.save("UserClanMembers", {
-      member_id: invitadoId,
+    const invitation = await this.findOne("UserClanInvitations", {
+      invitador_id: invitadorId,
+      invitado_id: invitadoId,
       clan_id: userClan.clan_id,
-      status: "invited",
+    });
+    if (invitation) {
+      throw new Error("Invitado is already a invitated.");
+    }
+    return this.save("UserClanInvitations", {
+      invitado_id: invitadoId,
+      invitador_id: invitadorId,
+      clan_id: userClan.clan_id,
+      status: "pending",
       timestamp: timestamp(),
+    });
+  }
+  async leaveClan(clanId, userId) {
+    const membership = await this.findOne("UserClanMembers", {
+      clan_id: new ObjectId(clanId),
+      member_id: userId,
+    });
+    if (!membership) {
+      throw new Error("User membership not found.");
+    }
+    await this.updateOne(
+      "UserClanMembers",
+      {
+        clan_id: new ObjectId(clanId),
+        member_id: userId,
+      },
+      {
+        leave_at: timestamp(),
+        status: "brokeup",
+      }
+    );
+  }
+  async getClans() {
+    return await this.client
+      .db("ProjectX")
+      .collection("UserClans")
+      .aggregate([
+        {
+          $lookup: {
+            from: "Users",
+            localField: "user_id",
+            foreignField: "id",
+            as: "admins",
+            pipeline: [
+              { $project: { newRoot: { name: "$name" } } },
+              { $replaceRoot: { newRoot: "$newRoot" } },
+            ],
+          },
+        },
+        {
+          $lookup: {
+            from: "Clans",
+            localField: "clan_id",
+            foreignField: "_id",
+            as: "clan_facts",
+            pipeline: [
+              {
+                $project: {
+                  newRoot: {
+                    name: "$name",
+                    type: "basic_data",
+                    created_at: "$created_at",
+                  },
+                },
+              },
+              { $replaceRoot: { newRoot: "$newRoot" } },
+            ],
+          },
+        },
+        {
+          $lookup: {
+            from: "UserClanMembers",
+            localField: "clan_id",
+            foreignField: "clan_id",
+            as: "members",
+            pipeline: [
+              {
+                $lookup: {
+                  from: "Users",
+                  localField: "member_id",
+                  foreignField: "id",
+                  as: "member",
+                  pipeline: [
+                    { $project: { newRoot: { name: "$name" } } },
+                    { $replaceRoot: { newRoot: "$newRoot" } },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      ])
+      .toArray();
+  }
+  async joinClan(invitationId, userId) {
+    const invitation = await this.findOne("UserClanInvitations", {
+      _id: new ObjectId(invitationId),
+    });
+    if (!invitation) {
+      throw new Error("Invitation not found.");
+    }
+    if (invitation.invitado_id !== userId) {
+      throw new Error("Invitation not allowed.");
+    }
+    if (invitation.status !== "pending") {
+      throw new Error(`Invitation is ${invitation.status}.`);
+    }
+    await this.updateOne(
+      "UserClanInvitations",
+      {
+        _id: new ObjectId(invitationId),
+      },
+      {
+        updated_at: timestamp(),
+        status: "accepted",
+      }
+    );
+    await this.save("UserClanMembers", {
+      member_id: userId,
+      clan_id: invitation.clan_id,
+      joined_at: timestamp(),
+      status: "active",
     });
   }
   async registerUserMeterAsPending(userId) {
