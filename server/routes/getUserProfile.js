@@ -15,20 +15,22 @@ module.exports = (db) => async (req, res) => {
         invitado_id: userId,
         status: "pending",
       }),
-      db.findOne("UserClanMembers", { member_id: userId }).then((membership) =>
-        membership
-          ? db
-              .findOne("Clans", { _id: new ObjectId(membership.clan_id) })
-              .then((clan) => {
-                return {
-                  ...clan,
-                  status: membership.status,
-                };
-              })
-          : Promise.resolve()
-      ),
+      db
+        .findOne("UserClanMembers", { member_id: userId, status: "active" })
+        .then((membership) =>
+          membership
+            ? db
+                .findOne("Clans", { _id: new ObjectId(membership.clan_id) })
+                .then((clan) => {
+                  return {
+                    ...clan,
+                    status: membership.status,
+                  };
+                })
+            : Promise.resolve()
+        ),
     ]);
-  // const clan = await db.findOne("Clans", { _id: userClan.clan_id });
+  const clan = await db.findOne("Clans", { _id: userClan.clan_id });
   if (!user) {
     return res.status(404).send({});
   }
@@ -52,9 +54,9 @@ module.exports = (db) => async (req, res) => {
     ...user,
     clan_invitations,
     clan_membership: clanMembership,
-    // clan: {
-    //   name: clan.name,
-    // },
+    clan: {
+      ...clan,
+    },
     meter: {
       status: meterStatus,
     },
