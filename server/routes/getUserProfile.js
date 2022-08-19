@@ -6,11 +6,37 @@ module.exports = (db) => async (req, res) => {
   const token = req.params.token;
   const userId = await getUserIdFromToken(token);
   const user = await findUserById(db, userId);
-  const [skillsCatalog, userMeter, userClan, clanInvitations, clanMembership] =
+  const [skillsCatalog, userMeter, clan, clanInvitations, clanMembership] =
     await Promise.all([
       db.find("Skills"),
       db.findOne("UserMeters", { user_id: userId }),
-      db.findOne("UserClans", { user_id: userId }),
+      db.findOne("UserClans", { user_id: userId }).then((userClan) => {
+        if (userClan) {
+          return db.findOne("Clans", { _id: userClan.clan_id }).then((clan) => {
+            if (clan) {
+              return db
+                .find("UserClanMembers", {
+                  clan_id: new ObjectId(clan._id),
+                })
+                .then((memberships) =>
+                  Promise.all(
+                    memberships.map((membership) =>
+                      db.findOne("Users", { id: membership.member_id })
+                    )
+                  )
+                )
+                .then((members) => {
+                  return {
+                    ...clan,
+                    members,
+                  };
+                });
+            }
+            return clan;
+          });
+        }
+        return userClan;
+      }),
       db.find("UserClanInvitations", {
         invitado_id: userId,
         status: "pending",
@@ -30,7 +56,7 @@ module.exports = (db) => async (req, res) => {
             : Promise.resolve()
         ),
     ]);
-  const clan = await db.findOne("Clans", { _id: userClan.clan_id });
+
   if (!user) {
     return res.status(404).send({});
   }
@@ -50,13 +76,12 @@ module.exports = (db) => async (req, res) => {
       };
     })
   );
+
   res.send({
     ...user,
     clan_invitations,
     clan_membership: clanMembership,
-    clan: {
-      ...clan,
-    },
+    clan,
     meter: {
       status: meterStatus,
     },
