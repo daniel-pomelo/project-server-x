@@ -35,10 +35,10 @@ function inviteToMyClan(db) {
 }
 
 function getInvitadorId(req) {
-  return req.headers["invitador-id"];
+  return req.headers["master-id"];
 }
 function getInvitadoId(req) {
-  return req.headers["invitado-id"];
+  return req.headers["disciple-id"];
 }
 
 function joinToClan(db) {
