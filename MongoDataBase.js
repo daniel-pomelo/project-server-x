@@ -443,6 +443,73 @@ class MongoDataBase {
       .collection("UserSkillPoints")
       .bulkWrite(operations);
   }
+  getSkillsCatalog() {
+    return this.find("Skills");
+  }
+  getUserMeterStatus(userId) {
+    return this.findOne("UserMeters", { user_id: userId }).then((userMeter) =>
+      userMeter ? userMeter.status : "pending"
+    );
+  }
+  getUserClanDetails(userId) {
+    return this.findOne("UserClans", { user_id: userId }).then((userClan) =>
+      userClan
+        ? this.findOne("Clans", { _id: userClan.clan_id }).then((clan) =>
+            clan
+              ? this.find("UserClanMembers", {
+                  clan_id: new ObjectId(clan._id),
+                })
+                  .then((memberships) =>
+                    Promise.all(
+                      memberships.map((membership) =>
+                        this.findOne("Users", { id: membership.member_id })
+                      )
+                    )
+                  )
+                  .then((members) => ({
+                    ...clan,
+                    members,
+                  }))
+              : clan
+          )
+        : userClan
+    );
+  }
+  async getClanInvitations(userId) {
+    const clanInvitations = await this.find("UserClanInvitations", {
+      invitado_id: userId,
+      status: "pending",
+    });
+    return Promise.all(
+      clanInvitations.map(async (clanInvitation) => {
+        const clan = await db.findOne("Clans", { _id: clanInvitation.clan_id });
+        const invitador = await db.findOne("Users", {
+          id: clanInvitation.invitador_id,
+        });
+        return {
+          id: clanInvitation._id,
+          invitador: invitador.name,
+          clanName: clan.name,
+          timestamp: clanInvitation.timestamp,
+        };
+      })
+    );
+  }
+  getClanMembership(userId) {
+    return this.findOne("UserClanMembers", {
+      member_id: userId,
+      status: "active",
+    }).then((membership) =>
+      membership
+        ? db
+            .findOne("Clans", { _id: new ObjectId(membership.clan_id) })
+            .then((clan) => ({
+              ...clan,
+              status: membership.status,
+            }))
+        : membership
+    );
+  }
 }
 
 module.exports = MongoDataBase;
