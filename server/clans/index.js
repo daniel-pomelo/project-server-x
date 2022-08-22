@@ -12,7 +12,8 @@ function saveClan(db) {
     const userId = await getUserIdFromRequest(req);
     await db.assertUserCreateAClan(userId);
     const clanName = getClanName(req);
-    await db.saveUserClan(clanName, userId);
+    const clanDescription = getClanDescription(req);
+    await db.saveUserClan(clanName, clanDescription, userId);
     res.status(200).send({});
   };
 }
@@ -20,9 +21,16 @@ function saveClan(db) {
 function getClanName(req) {
   const clanName = req.body.name;
   if (!clanName) {
-    throw new Error("Clan name is not valid.");
+    throw new Error("Clan name is required.");
   }
   return clanName;
+}
+function getClanDescription(req) {
+  const clanDescription = req.body.description;
+  if (!clanDescription) {
+    throw new Error("Clan description is required.");
+  }
+  return clanDescription;
 }
 
 function inviteToMyClan(db) {

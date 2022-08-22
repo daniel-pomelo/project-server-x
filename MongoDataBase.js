@@ -79,9 +79,11 @@ class MongoDataBase {
       throw new Error("User reached clan creation limit.");
     }
   }
-  async saveUserClan(clanName, userId) {
+  async saveUserClan(clanName, clanDescription, userId) {
     const clan = await this.save("Clans", {
       name: clanName,
+      description: clanDescription,
+      status: "inactive",
       created_at: timestamp(),
     });
     return this.save("UserClans", {
