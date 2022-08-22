@@ -484,8 +484,10 @@ class MongoDataBase {
     });
     return Promise.all(
       clanInvitations.map(async (clanInvitation) => {
-        const clan = await db.findOne("Clans", { _id: clanInvitation.clan_id });
-        const invitador = await db.findOne("Users", {
+        const clan = await this.findOne("Clans", {
+          _id: clanInvitation.clan_id,
+        });
+        const invitador = await this.findOne("Users", {
           id: clanInvitation.invitador_id,
         });
         return {
