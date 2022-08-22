@@ -6,6 +6,7 @@ const CLANS_INVITE_URL = "/api/clans/invite";
 const CLANS_JOIN_URL = "/api/clans/join/:invitationId";
 const CLANS_LEAVE_URL = "/api/clans/leave";
 const CLANS_MANAGEMENT_URL = "/api/management/clans";
+const CLANS_USER_INFO_URL = "/api/users/:userId/clans";
 
 function saveClan(db) {
   return async (req, res) => {
@@ -74,6 +75,37 @@ function managementClans(db) {
   };
 }
 
+function getUserInfo(db) {
+  return async (req, res) => {
+    const { userId } = req.params;
+    const clan = await db.getUserClanDetails(userId);
+    if (clan) {
+      return res.status(200).send({
+        id: clan.name.toLowerCase(),
+        name: clan.name,
+        status:
+          clan.status === "inactive" ? 0 : clan.status === "active" ? 1 : -1,
+        can_invite: true,
+      });
+    }
+    const membership = await db.getClanMembership(userId);
+    if (membership) {
+      return res.status(200).send({
+        id: membership.name.toLowerCase(),
+        name: membership.name,
+        status:
+          membership.status === "inactive"
+            ? 0
+            : membership.status === "active"
+            ? 1
+            : -1,
+        can_invite: false,
+      });
+    }
+    res.status(404).send({});
+  };
+}
+
 module.exports = {
   save(app, db) {
     app.post(CLANS_URL, asyncHandler(saveClan(db)));
@@ -89,5 +121,8 @@ module.exports = {
   },
   management(app, db) {
     app.get(CLANS_MANAGEMENT_URL, asyncHandler(managementClans(db)));
+  },
+  userInfo(app, db) {
+    app.get(CLANS_USER_INFO_URL, asyncHandler(getUserInfo(db)));
   },
 };

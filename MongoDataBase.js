@@ -503,12 +503,7 @@ class MongoDataBase {
       status: "active",
     }).then((membership) =>
       membership
-        ? db
-            .findOne("Clans", { _id: new ObjectId(membership.clan_id) })
-            .then((clan) => ({
-              ...clan,
-              status: membership.status,
-            }))
+        ? this.findOne("Clans", { _id: new ObjectId(membership.clan_id) })
         : membership
     );
   }

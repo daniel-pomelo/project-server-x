@@ -108,6 +108,7 @@ class MyServer {
     clans.join(app, db);
     clans.leave(app, db);
     clans.management(app, db);
+    clans.userInfo(app, db);
 
     app.use((error, req, res, next) => {
       db.registerError(error);
