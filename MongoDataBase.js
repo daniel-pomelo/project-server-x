@@ -482,7 +482,7 @@ class MongoDataBase {
       invitado_id: userId,
       status: "pending",
     });
-    return Promise.all(
+    const invitations = await Promise.all(
       clanInvitations.map(async (clanInvitation) => {
         const clan = await this.findOne("Clans", {
           _id: clanInvitation.clan_id,
@@ -490,6 +490,9 @@ class MongoDataBase {
         const invitador = await this.findOne("Users", {
           id: clanInvitation.invitador_id,
         });
+        if (!clan || !invitador) {
+          return false;
+        }
         return {
           id: clanInvitation._id,
           invitador: invitador.name,
@@ -498,6 +501,7 @@ class MongoDataBase {
         };
       })
     );
+    return invitations.filter((invitation) => invitation);
   }
   getClanMembership(userId) {
     return this.findOne("UserClanMembers", {
