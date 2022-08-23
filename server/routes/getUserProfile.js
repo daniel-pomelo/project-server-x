@@ -16,9 +16,12 @@ module.exports = (db) => async (req, res) => {
       db.getClanInvitations(userId),
       db.getClanMembership(userId),
     ]);
-
+  const plan = {
+    name: "free",
+  };
   res.send({
     ...user,
+    plan,
     clan_invitations: clanInvitations,
     clan_membership: clanMembership,
     clan,
