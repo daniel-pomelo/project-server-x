@@ -22,6 +22,17 @@ class MongoDataBase {
       });
     });
   }
+  initialize() {
+    this.client = new MongoClient(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    this.client.connect(async (err) => {
+      if (err) {
+        console.log("Error: ", err);
+      }
+    });
+  }
   deleteOne(collectionName, criteria) {
     return this.client
       .db("ProjectX")
