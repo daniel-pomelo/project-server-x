@@ -44,7 +44,7 @@ class MyServer {
   constructor(app) {
     this.app = app;
   }
-  static start(db, systemEvents, tokens, UI_URL) {
+  static start() {
     const app = express();
 
     app.use(express.static("public"));
@@ -57,6 +57,11 @@ class MyServer {
     app.use(express.json());
     app.set("views", path.resolve(path.join(__dirname, "..", "view")));
     app.set("view engine", "ejs");
+
+    return new MyServer(app);
+  }
+  setDB(db, systemEvents, tokens, UI_URL) {
+    const app = this.app;
     app.post(
       "/api/users/:id/stats",
       asyncHandler(assignPointsToStats(db, systemEvents))
@@ -111,13 +116,13 @@ class MyServer {
     clans.userInfo(app, db);
 
     app.use((error, req, res, next) => {
+      console.log(error);
       db.registerError(error);
       const custom = responses[error.message];
       res
         .status((custom && custom.status) || 500)
         .send({ message: (custom && custom.message) || error.message });
     });
-    return new MyServer(app);
   }
   listen() {
     this.server = this.app.listen(PORT, () => {
