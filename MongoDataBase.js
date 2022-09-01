@@ -180,7 +180,7 @@ class MongoDataBase {
     );
   }
   async getClans() {
-    return await this.client
+    const clans = await this.client
       .db("ProjectX")
       .collection("UserClans")
       .aggregate([
@@ -240,6 +240,21 @@ class MongoDataBase {
         },
       ])
       .toArray();
+
+    return clans.map((clan) => {
+      return {
+        id: clan.clan_id,
+        admins: clan.admins,
+        created_at: clan.clan_facts[0].created_at,
+        name: clan.clan_facts[0].name,
+        members: clan.members.map((member) => {
+          return {
+            name: member.member[0].name,
+            status: member.status,
+          };
+        }),
+      };
+    });
   }
   async joinClan(invitationId, userId) {
     const invitation = await this.findOne("UserClanInvitations", {
@@ -264,12 +279,16 @@ class MongoDataBase {
         status: "accepted",
       }
     );
-    await this.save("UserClanMembers", {
+    await this.joinMemberToClan(userId, invitation.clan_id);
+  }
+  joinMemberToClan(userId, clanId) {
+    const data = {
       member_id: userId,
-      clan_id: invitation.clan_id,
+      clan_id: clanId,
       joined_at: timestamp(),
       status: "active",
-    });
+    };
+    return this.save("UserClanMembers", data);
   }
   async registerUserMeterAsPending(userId) {
     const found = await this.findOne("UserMeters", {
@@ -480,7 +499,10 @@ class MongoDataBase {
                     )
                   )
                   .then((members) => ({
-                    ...clan,
+                    name: clan.name,
+                    description: clan.description,
+                    status: clan.status,
+                    created_at: clan.created_at,
                     members,
                   }))
               : clan
@@ -522,6 +544,20 @@ class MongoDataBase {
       membership
         ? this.findOne("Clans", { _id: new ObjectId(membership.clan_id) })
         : membership
+    );
+  }
+  async playersWithoutClan() {
+    const [users, userClans, membersIds] = await Promise.all([
+      this.find("Users"),
+      this.find("UserClans").then((userClans) =>
+        userClans.map((userClan) => userClan.user_id)
+      ),
+      this.find("UserClanMembers").then((members) =>
+        members.map((member) => member.member_id)
+      ),
+    ]);
+    return users.filter(
+      (user) => !membersIds.includes(user.id) && !userClans.includes(user.id)
     );
   }
 }

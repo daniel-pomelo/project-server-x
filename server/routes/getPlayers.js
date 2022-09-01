@@ -1,5 +1,4 @@
 const getPlayers = (db) => async (req, res) => {
-  console.log("hola pepe");
   try {
     const [users, isDisabled] = await Promise.all([
       db.find("Users"),
