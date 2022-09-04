@@ -560,6 +560,57 @@ class MongoDataBase {
       (user) => !membersIds.includes(user.id) && !userClans.includes(user.id)
     );
   }
+  async getClanRelationships(userId) {
+    const userClan = await this.findOne("UserClans", { user_id: userId });
+    if (!userClan) {
+      return {
+        allies: [],
+        enemies: [],
+      };
+    }
+    const relationships = await this.client
+      .db("ProjectX")
+      .collection("ClanRelationships")
+      .aggregate([
+        {
+          $lookup: {
+            from: "Clans",
+            localField: "target_clan_id",
+            foreignField: "_id",
+            as: "target_clan",
+            pipeline: [
+              {
+                $project: {
+                  newRoot: {
+                    name: "$name",
+                  },
+                },
+              },
+              { $replaceRoot: { newRoot: "$newRoot" } },
+            ],
+          },
+        },
+      ])
+      .toArray();
+    const allies = relationships.filter(
+      (relationship) => relationship.type === "Ally"
+    );
+    const enemies = relationships.filter(
+      (relationship) => relationship.type === "Enemy"
+    );
+    return {
+      allies: allies.map((relationship) => {
+        return {
+          name: relationship.target_clan[0].name,
+        };
+      }),
+      enemies: enemies.map((relationship) => {
+        return {
+          name: relationship.target_clan[0].name,
+        };
+      }),
+    };
+  }
 }
 
 module.exports = MongoDataBase;

@@ -8,14 +8,21 @@ module.exports = (db) => async (req, res) => {
   if (!user) {
     return res.status(404).send({});
   }
-  const [skillsCatalog, meterStatus, clan, clanInvitations, clanMembership] =
-    await Promise.all([
-      db.getSkillsCatalog(),
-      db.getUserMeterStatus(userId),
-      db.getUserClanDetails(userId),
-      db.getClanInvitations(userId),
-      db.getClanMembership(userId),
-    ]);
+  const [
+    skillsCatalog,
+    meterStatus,
+    clan,
+    clanInvitations,
+    clanMembership,
+    relationships,
+  ] = await Promise.all([
+    db.getSkillsCatalog(),
+    db.getUserMeterStatus(userId),
+    db.getUserClanDetails(userId),
+    db.getClanInvitations(userId),
+    db.getClanMembership(userId),
+    db.getClanRelationships(userId),
+  ]);
   const plan = {
     name: "free",
   };
@@ -29,5 +36,6 @@ module.exports = (db) => async (req, res) => {
       status: meterStatus,
     },
     skills_catalog: skillsCatalog,
+    ...relationships,
   });
 };

@@ -25,14 +25,16 @@ const clans = require("./clans");
 const management = require("./management");
 const MongoDataBase = require("../MongoDataBase");
 const Tokens = require("./Tokens");
+const SystemEvents = require("./SystemEvents");
 
 const UI_URL = process.env.URL_TO_UI;
 const PORT = process.env.PORT || 3001;
 const tokens = new Tokens();
-const systemEvents = {};
 const db = new MongoDataBase();
 
 db.initialize();
+
+const systemEvents = SystemEvents.init(db);
 
 const responses = {
   USER_ALREADY_EXISTS: {
@@ -62,10 +64,6 @@ app.use(express.json());
 app.set("views", path.resolve(path.join(__dirname, "..", "view")));
 app.set("view engine", "ejs");
 
-app.post(
-  "/api/users/:id/stats",
-  asyncHandler(assignPointsToStats(db, systemEvents))
-);
 //SKILLS
 app.get("/api/skills", asyncHandler(getSkills(db)));
 app.post("/api/skills", asyncHandler(saveSkills(db)));
@@ -81,6 +79,10 @@ app.get("/api/profile/:token", asyncHandler(getUserProfile(db)));
 app.get("/api/auth/:id", asyncHandler(getUrlToProfile(db)));
 app.get("/api/skills/:id", getProfileSkills(db));
 app.get("/api/points/:id", getPoints(db));
+app.post(
+  "/api/users/:id/stats",
+  asyncHandler(assignPointsToStats(db, systemEvents))
+);
 
 users.all(app, db);
 users.single(app, db);
