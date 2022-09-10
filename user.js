@@ -76,6 +76,17 @@ async function findAllUser(db, userIds = []) {
   return db.find("Users", criteria);
 }
 
+const statsNames = [
+  "strength",
+  "fortitude",
+  "intelligence",
+  "will",
+  "perception",
+  "agility",
+  "endurance",
+  "absorption",
+];
+
 async function reduce(stats, level_value, db) {
   const defaultStats = await db.getDefaultStats();
 
@@ -94,6 +105,7 @@ async function reduce(stats, level_value, db) {
 
   return {
     ...userStats,
+    _id: undefined,
     hit_damage: HitDamage.calc(userStats.strength, level_value) + 10,
     hit_absorption: HitAbsorption.calc(userStats.absorption, level_value),
     hit_speed: HitSpeed.calc(userStats),
