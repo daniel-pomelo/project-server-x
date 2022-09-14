@@ -22,6 +22,7 @@ const users = require("./users");
 const scaling = require("./scaling");
 const stats = require("./stats");
 const clans = require("./clans");
+const pages = require("./pages");
 const management = require("./management");
 const MongoDataBase = require("../MongoDataBase");
 const Tokens = require("./Tokens");
@@ -119,6 +120,8 @@ clans.userInfo(app, db);
 
 management.joinMembers(app, db);
 management.playersWithoutClan(app, db);
+
+pages.getClansPageInfo(app, db);
 
 app.use((error, req, res, next) => {
   console.log(error);
