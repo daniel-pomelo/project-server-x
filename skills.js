@@ -37,9 +37,11 @@ const skillMapper = (userSkill, skillsCatalog, totalPoints, stats) => {
   }
   return {
     ...userSkill2,
-    ...scale2(userSkill2, "amount", stats.intelligence),
-    ...scale2(userSkill2, "health_self", stats.intelligence),
-    ...scale2(userSkill2, "mana_other", stats.intelligence),
+    ...scaleByIntelligence(userSkill2, "amount", stats.intelligence),
+    ...scaleByIntelligence(userSkill2, "health_self", stats.intelligence),
+    ...scaleByIntelligence(userSkill2, "health_other", stats.intelligence),
+    ...scaleByIntelligence(userSkill2, "mana_self", stats.intelligence),
+    ...scaleByIntelligence(userSkill2, "mana_other", stats.intelligence),
   };
 };
 
@@ -88,7 +90,7 @@ function scale(skill, propName) {
     : {};
 }
 
-function scale2(skill, propName, intelligence) {
+function scaleByIntelligence(skill, propName, intelligence) {
   const factor = intelligence / 2;
   return skill[propName]
     ? { [propName]: getTotal(skill[propName], factor) }
