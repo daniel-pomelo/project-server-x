@@ -40,6 +40,10 @@ const responses = {
     status: 400,
     message: "Attempt not found",
   },
+  BRIDGE_INVALID: {
+    status: 400,
+    message: "Bad Request",
+  },
 };
 
 class MyServer {
@@ -123,7 +127,6 @@ class MyServer {
     pages.getClansPageInfo(app, db);
 
     app.use((error, req, res, next) => {
-      console.log(error);
       db.registerError(error);
       const custom = responses[error.message];
       res

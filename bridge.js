@@ -12,10 +12,17 @@ function findBridgeById(db, id) {
   return db.findOne(BRIDGE_COLLECTION_NAME, { id });
 }
 
-const assertRequestComesFromBridgeEnabled = async (db, bridgeId) => {
+const assertRequestComesFromBridgeEnabled = async (db, req) => {
+  const bridgeId = req["headers"]["bridge-id"];
   const bridge = await db.findOne("Bridges", { id: bridgeId });
   if (!bridge || !bridge.enabled) {
-    throw new Error("Bridge invalid");
+    const e = new Error("BRIDGE_INVALID");
+    const payload = {
+      headers: req.headers,
+    };
+    e.kind = "BRIDGE_INVALID";
+    e.payload = payload;
+    throw e;
   }
   return bridge;
 };

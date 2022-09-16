@@ -5,7 +5,7 @@ const { assertRequestComesFromBridgeEnabled } = require("../../bridge");
 const getUrlToProfile = (db) => async (req, res) => {
   const userId = req.params.id;
   const bridgeId = req["headers"]["bridge-id"];
-  await assertRequestComesFromBridgeEnabled(db, bridgeId);
+  await assertRequestComesFromBridgeEnabled(db, req);
   await db.saveUserAtBridge(userId, bridgeId, timestamp());
   const url = await getProfileUrl(userId);
   res.send({

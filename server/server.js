@@ -124,7 +124,6 @@ management.playersWithoutClan(app, db);
 pages.getClansPageInfo(app, db);
 
 app.use((error, req, res, next) => {
-  console.log(error);
   db.registerError(error);
   const custom = responses[error.message];
   res

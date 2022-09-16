@@ -1,20 +1,14 @@
 const { timestamp } = require("../../time");
 
 const getInviteUrl = (tokens, UI_URL, db) => async (req, res) => {
-  try {
-    const invitation = await createInvitation(db, req);
-    const hashCode = tokens.getTokenForProfile(invitation);
+  const invitation = await createInvitation(db, req);
+  const hashCode = tokens.getTokenForProfile(invitation);
 
-    const url = UI_URL + "/register/" + hashCode;
+  const url = UI_URL + "/register/" + hashCode;
 
-    res.send({
-      url,
-    });
-  } catch (error) {
-    res.status(400).send({
-      message: error.message,
-    });
-  }
+  res.send({
+    url,
+  });
 };
 
 async function createInvitation(db, req) {
@@ -22,7 +16,10 @@ async function createInvitation(db, req) {
   const invitado = req.headers["user-id"];
 
   if (!invitado || !invitador) {
-    throw new Error("Invitado and Invitador are required");
+    const e = new Error("Invitado and Invitador are required");
+    e.kind = "INVITE_BAD_REQUEST";
+    e.payload = req.headers;
+    throw e;
   }
 
   const [invitation, userToInviteIsStored] = await Promise.all([

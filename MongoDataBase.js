@@ -332,13 +332,17 @@ class MongoDataBase {
       { invitado_at: timestamp }
     );
   }
-  async findNewest(collectionName, criteria) {
+  async findNewest(collectionName, criteria, customOptions = {}) {
     const options = {
       sorting: "desc",
       limit: 1,
+      ...customOptions,
     };
     const results = await this.find(collectionName, criteria, options);
-    return results[0];
+    if (options.limit === 1) {
+      return results[0];
+    }
+    return results;
   }
   saveUserSkillPointsWithdrawal(points, user_id, timestamp) {
     return this.save("UserSkillPoints", {
@@ -384,6 +388,8 @@ class MongoDataBase {
   }
   async registerError(error) {
     await this.save("Errors", {
+      type: error.kind || "KIND_MISSING",
+      payload: error.payload || {},
       error: {
         message: error.message,
         stack: error.stack,
