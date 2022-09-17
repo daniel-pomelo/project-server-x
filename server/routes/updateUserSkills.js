@@ -20,7 +20,10 @@ const updateUserSkills = (db, systemEvents) => async (req, res) => {
 
   res.send(EMPTY_RESPONSE);
 
-  db.characterUpdatedFromWeb(userId, systemEvents);
+  const bridge = await db.findUserBridge(userId);
+  if (bridge) {
+    systemEvents.notifyThatUserHasTrained(userId, bridge);
+  }
 };
 
 module.exports = updateUserSkills;

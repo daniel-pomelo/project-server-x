@@ -1,15 +1,15 @@
 const { getProfileUrl } = require("../../auth");
 const { timestamp } = require("../../time");
 
-module.exports = (db, tokens) => async (req, res) => {
-  const invitation = tokens.getUserIdFromToken(req.params.id);
+module.exports = (db) => async (req, res) => {
+  const invitationKey = req.params.id;
+  const invitation = await db.findOne("Invitations", { key: invitationKey });
+
   const id = invitation.invitado;
 
   await verifyUserIsNotRegistered(db, id);
 
   await db.save("Users", User.from(id, req.body));
-
-  tokens.removeFromId(req.params.id);
 
   await db.updateInvitationTimestamp(invitation, timestamp());
 

@@ -1,7 +1,7 @@
 {
   "scripts": {
     "test": "ENV_NAME=dev mocha --timeout 5000",
-    "start": "node server/server.js"
+    "start": "node server/start.js"
   },
   "dependencies": {
     "@origin-la/user-stats": "0.0.8",

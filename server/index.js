@@ -40,6 +40,14 @@ const responses = {
     status: 400,
     message: "Attempt not found",
   },
+  BRIDGE_INVALID: {
+    status: 400,
+    message: "Bad Request",
+  },
+  BAD_REQUEST: {
+    status: 400,
+    message: "Bad Request",
+  },
 };
 
 class MyServer {
@@ -97,9 +105,10 @@ class MyServer {
 
     experience.reward(app, db, systemEvents);
 
-    enrollment.invite(app, db, tokens, UI_URL);
+    enrollment.invite(app, db, UI_URL);
     enrollment.invitation(app, db, tokens);
     enrollment.register(app, db, tokens, UI_URL);
+    enrollment.invitations(app, db);
 
     crafting.pickup(app, db);
     crafting.user_materials(app, db);
@@ -123,7 +132,6 @@ class MyServer {
     pages.getClansPageInfo(app, db);
 
     app.use((error, req, res, next) => {
-      console.log(error);
       db.registerError(error);
       const custom = responses[error.message];
       res

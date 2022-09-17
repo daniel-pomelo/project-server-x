@@ -1,5 +1,6 @@
 const getInvitation = (tokens, db) => async (req, res) => {
-  const invitation = tokens.getUserIdFromToken(req.params.id);
+  const invitationKey = req.params.id;
+  const invitation = await db.findOne("Invitations", { key: invitationKey });
 
   if (!invitation) {
     return res.status(410).send({});
