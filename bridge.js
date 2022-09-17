@@ -20,7 +20,7 @@ const assertRequestComesFromBridgeEnabled = async (db, req) => {
     const payload = {
       headers: req.headers,
     };
-    e.kind = "BRIDGE_INVALID";
+    e.context = "BRIDGE_INVALID";
     e.payload = payload;
     throw e;
   }

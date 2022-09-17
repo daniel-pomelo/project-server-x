@@ -352,17 +352,25 @@ class MongoDataBase {
       timestamp,
     });
   }
-  characterUpdatedFromWeb(userId, systemEvents) {
-    this.findUserBridge(userId).then((bridge) => {
-      systemEvents.notifyThatUserHasTrained(userId, bridge);
-    });
-  }
   async findUserBridge(userId) {
     const criteria = {
       user_id: userId,
     };
     const userBridge = await this.findNewest("UserBridges", criteria);
-    return this.findOne("Bridges", { id: userBridge.bridge_id });
+    if (userBridge) {
+      return this.findOne("Bridges", { id: userBridge.bridge_id });
+    }
+    const bridges = await this.find("Bridges");
+    if (bridges.length === 1) {
+      return bridges[0];
+    }
+    await this.save("Alerts", {
+      timestamp: timestamp(),
+      context: "Failure at finding bridge to update user info",
+      payload: {
+        user_id: userId,
+      },
+    });
   }
   async saveUserAtBridge(userId, bridgeId, timestamp) {
     const data = {
@@ -388,7 +396,8 @@ class MongoDataBase {
   }
   async registerError(error) {
     await this.save("Errors", {
-      type: error.kind || "KIND_MISSING",
+      context: error.context || "MISSING_CONTEXT",
+      reason: error.reason || "MISSING_REASON",
       payload: error.payload || {},
       error: {
         message: error.message,
@@ -616,6 +625,39 @@ class MongoDataBase {
         };
       }),
     };
+  }
+  getInvitations() {
+    return this.client
+      .db("ProjectX")
+      .collection("Invitations")
+      .aggregate([
+        { $sort: { timestamp: -1 } },
+        {
+          $lookup: {
+            from: "Users",
+            localField: "invitador",
+            foreignField: "id",
+            as: "invitador_data",
+            pipeline: [
+              { $project: { newRoot: { name: "$name" } } },
+              { $replaceRoot: { newRoot: "$newRoot" } },
+            ],
+          },
+        },
+        {
+          $lookup: {
+            from: "Users",
+            localField: "invitado",
+            foreignField: "id",
+            as: "invitado_data",
+            pipeline: [
+              { $project: { newRoot: { name: "$name" } } },
+              { $replaceRoot: { newRoot: "$newRoot" } },
+            ],
+          },
+        },
+      ])
+      .toArray();
   }
 }
 
