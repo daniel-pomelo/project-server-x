@@ -131,12 +131,9 @@ class MongoDataBase {
       _id: userClan.clan_id,
     });
     if (!clan) {
-      throw new Error("Clan wasnt found.");
+      throw new Error("Clan wasn't found.");
     }
-    const member = await this.findOne("UserClanMembers", {
-      member_id: invitadoId,
-      clan_id: userClan.clan_id,
-    });
+    const member = await this.getClanMembership(invitadoId);
     if (member && member.status === "brokeup") {
       throw new Error("Invitado left the clan.");
     }
@@ -146,6 +143,7 @@ class MongoDataBase {
     const invitation = await this.findOne("UserClanInvitations", {
       invitador_id: invitadorId,
       invitado_id: invitadoId,
+      status: "pending",
       clan_id: userClan.clan_id,
     });
     if (invitation) {
@@ -167,17 +165,13 @@ class MongoDataBase {
     if (!membership) {
       throw new Error("User membership not found.");
     }
-    await this.updateOne(
-      "UserClanMembers",
-      {
-        clan_id: new ObjectId(clanId),
-        member_id: userId,
-      },
-      {
-        leave_at: timestamp(),
-        status: "brokeup",
-      }
-    );
+    await this.save("UserClanMembers", {
+      clan_id: new ObjectId(clanId),
+      member_id: userId,
+      timestamp: timestamp(),
+      status: "brokeup",
+      version: membership.version + 1,
+    });
   }
   async getClans() {
     const clans = await this.client
@@ -281,12 +275,24 @@ class MongoDataBase {
     );
     await this.joinMemberToClan(userId, invitation.clan_id);
   }
-  joinMemberToClan(userId, clanId) {
+  async joinMemberToClan(userId, clanId) {
+    const memberships = await this.find(
+      "UserClanMembers",
+      {
+        member_id: userId,
+        clan_id: clanId,
+      },
+      {
+        sorting: "desc",
+      }
+    );
+    const version = memberships[0] ? memberships[0].version + 1 : 1;
     const data = {
       member_id: userId,
       clan_id: clanId,
-      joined_at: timestamp(),
-      status: "active",
+      timestamp: timestamp(),
+      status: "joined",
+      version,
     };
     return this.save("UserClanMembers", data);
   }
@@ -552,14 +558,25 @@ class MongoDataBase {
     return invitations.filter((invitation) => invitation);
   }
   getClanMembership(userId) {
-    return this.findOne("UserClanMembers", {
-      member_id: userId,
-      status: "active",
-    }).then((membership) =>
-      membership
-        ? this.findOne("Clans", { _id: new ObjectId(membership.clan_id) })
-        : membership
-    );
+    return this.find(
+      "UserClanMembers",
+      {
+        member_id: userId,
+      },
+      {
+        sorting: "desc",
+      }
+    ).then((memberships) => {
+      if (memberships.length === 0) {
+        return null;
+      }
+      const membership = memberships[0];
+
+      if (membership && membership.status === "joined") {
+        return this.findOne("Clans", { _id: new ObjectId(membership.clan_id) });
+      }
+      return null;
+    });
   }
   async playersWithoutClan() {
     const [users, userClans, membersIds] = await Promise.all([
