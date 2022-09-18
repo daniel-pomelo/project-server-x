@@ -241,12 +241,14 @@ class MongoDataBase {
         admins: clan.admins,
         created_at: clan.clan_facts[0].created_at,
         name: clan.clan_facts[0].name,
-        members: clan.members.map((member) => {
-          return {
-            name: member.member[0].name,
-            status: member.status,
-          };
-        }),
+        members: clan.members
+          .filter((member) => member.member.length > 0)
+          .map((member) => {
+            return {
+              name: member.member[0].name,
+              status: member.status,
+            };
+          }),
       };
     });
   }
