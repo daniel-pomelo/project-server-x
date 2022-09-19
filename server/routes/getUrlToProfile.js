@@ -9,6 +9,7 @@ const getUrlToProfile = (db) => async (req, res) => {
   await db.saveUserAtBridge(userId, bridgeId, timestamp());
   const url = await getProfileUrl(userId);
   res.send({
+    user_id: userId,
     url,
   });
 };
