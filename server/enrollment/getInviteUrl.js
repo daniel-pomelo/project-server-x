@@ -8,8 +8,13 @@ const getInviteUrl = (UI_URL, db) => async (req, res) => {
 
   const url = UI_URL + "/register/" + hashCode;
 
+  const invitador = req.headers["invite-id"];
+  const invitado = req.headers["user-id"];
+
   res.send({
     url,
+    invite_id: invitador,
+    user_id: invitado,
   });
 };
 
