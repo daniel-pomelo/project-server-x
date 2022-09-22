@@ -84,14 +84,13 @@ class MongoDataBase {
   findScalingFactors() {
     return this.findOne("ScalingFactors", {});
   }
-  async assertUserCreateAClan(user_id) {
-    const results = await this.find("UserClans", {
-      user_id,
+  async userFunctionalClans(user_id) {
+    const userClans = await this.find("UserClans", { user_id });
+    const userClanIds = userClans.map((userClan) => userClan.clan_id);
+    return this.find("Clans", {
+      _id: { $in: userClanIds.map((id) => new ObjectId(id)) },
       status: { $ne: "disabled" },
     });
-    if (results.length !== 0) {
-      throw new Error("User reached clan creation limit.");
-    }
   }
   async saveUserClan(clanName, clanDescription, userId) {
     const clan = await this.save("Clans", {

@@ -3,13 +3,27 @@ const { getUserIdFromRequest } = require("../../auth");
 function saveClan(db) {
   return async (req, res) => {
     const userId = await getUserIdFromRequest(req);
-    await db.assertUserCreateAClan(userId);
+    await assertUserCreateAClan(db, userId);
     const clanName = getClanName(req);
     const clanDescription = getClanDescription(req);
     await db.saveUserClan(clanName, clanDescription, userId);
     res.status(200).send({});
   };
 }
+
+async function assertUserCreateAClan(db, userId) {
+  const clans = await db.userFunctionalClans(userId);
+  if (clans.length > 1) {
+    const e = new Error("User reached clan creation limit.");
+    e.context = "CREATING_USER_CLAN";
+    e.reason = "USER_CLAN_LIMIT";
+    e.payload = {
+      user_id: userId,
+    };
+    throw e;
+  }
+}
+
 function getClanName(req) {
   const clanName = req.body.name;
   if (!clanName) {
