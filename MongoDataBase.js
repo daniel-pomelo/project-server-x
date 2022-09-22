@@ -84,8 +84,11 @@ class MongoDataBase {
   findScalingFactors() {
     return this.findOne("ScalingFactors", {});
   }
-  async assertUserCreateAClan(userId) {
-    const results = await this.find("UserClans", { user_id: userId });
+  async assertUserCreateAClan(user_id) {
+    const results = await this.find("UserClans", {
+      user_id,
+      status: { $ne: "disabled" },
+    });
     if (results.length !== 0) {
       throw new Error("User reached clan creation limit.");
     }

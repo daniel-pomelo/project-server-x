@@ -27,7 +27,7 @@ module.exports = (db) => async (req, res) => {
     ...user,
     clan_invitations: clanInvitations,
     clan_membership: clanMembership,
-    clan,
+    clan: clan.status === "disabled" ? null : clan,
     meter: {
       status: meterStatus,
     },
