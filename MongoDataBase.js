@@ -508,31 +508,28 @@ class MongoDataBase {
       userMeter ? userMeter.status : "pending"
     );
   }
-  getUserClanDetails(userId) {
-    return this.findOne("UserClans", { user_id: userId }).then((userClan) =>
-      userClan
-        ? this.findOne("Clans", { _id: userClan.clan_id }).then((clan) =>
-            clan
-              ? this.find("UserClanMembers", {
-                  clan_id: new ObjectId(clan._id),
-                })
-                  .then((memberships) =>
-                    Promise.all(
-                      memberships.map((membership) =>
-                        this.findOne("Users", { id: membership.member_id })
-                      )
-                    )
-                  )
-                  .then((members) => ({
-                    name: clan.name,
-                    description: clan.description,
-                    status: clan.status,
-                    created_at: clan.created_at,
-                    members,
-                  }))
-              : clan
-          )
-        : userClan
+  async getUserClanDetails(userId) {
+    const userClans = await this.userFunctionalClans(userId);
+    return Promise.resolve(userClans[0]).then((clan) =>
+      clan
+        ? this.find("UserClanMembers", {
+            clan_id: new ObjectId(clan._id),
+          })
+            .then((memberships) =>
+              Promise.all(
+                memberships.map((membership) =>
+                  this.findOne("Users", { id: membership.member_id })
+                )
+              )
+            )
+            .then((members) => ({
+              name: clan.name,
+              description: clan.description,
+              status: clan.status,
+              created_at: clan.created_at,
+              members,
+            }))
+        : clan
     );
   }
   async getClanInvitations(userId) {
