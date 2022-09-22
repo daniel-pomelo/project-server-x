@@ -125,6 +125,7 @@ class MyServer {
     clans.leave(app, db);
     clans.management(app, db);
     clans.userInfo(app, db);
+    clans.managementDeleteClan(app, db);
 
     management.joinMembers(app, db);
     management.playersWithoutClan(app, db);

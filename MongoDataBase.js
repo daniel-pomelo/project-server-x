@@ -678,6 +678,17 @@ class MongoDataBase {
       ])
       .toArray();
   }
+  async deleteClan(id) {
+    await this.updateOne(
+      "Clans",
+      {
+        _id: new ObjectId(id),
+      },
+      {
+        status: "disabled",
+      }
+    );
+  }
 }
 
 module.exports = MongoDataBase;
