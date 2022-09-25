@@ -27,7 +27,7 @@ module.exports = (db) => async (req, res) => {
     ...user,
     clan_invitations: clanInvitations,
     clan_membership: clanMembership,
-    clan: clan && clan.status === "disabled" ? null : clan,
+    clan: getClanAdminResponse(clan),
     meter: {
       status: meterStatus,
     },
@@ -35,3 +35,12 @@ module.exports = (db) => async (req, res) => {
     ...relationships,
   });
 };
+
+function getClanAdminResponse(clan) {
+  return (clan && clan.status === "disabled") || !clan
+    ? null
+    : {
+        ...clan,
+        status: clan.members.length >= 10 ? "active" : "inactive",
+      };
+}
