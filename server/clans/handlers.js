@@ -43,7 +43,11 @@ function inviteToMyClan(db) {
     const invitadorId = getInvitadorId(req);
     const invitadoId = getInvitadoId(req);
     await db.inviteToClan(invitadorId, invitadoId);
-    res.status(201).send({});
+    res.status(201).send({
+      master_id: invitadorId,
+      disciple_id: invitadoId,
+      clan_name: "sarasa",
+    });
   };
 }
 function getInvitadorId(req) {
