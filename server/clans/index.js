@@ -10,7 +10,7 @@ const {
 } = require("./handlers");
 
 const CLANS_URL = "/api/clans";
-const CLANS_INVITE_URL = "/api/clans/invite";
+const CLANS_INVITE_URL = "/api/clan/invite";
 const CLANS_JOIN_URL = "/api/clans/join/:invitationId";
 const CLANS_LEAVE_URL = "/api/clans/leave";
 const CLANS_MANAGEMENT_URL = "/api/management/clans";
