@@ -26,7 +26,7 @@ module.exports = (db) => async (req, res) => {
   res.send({
     ...user,
     clan_invitations: clanInvitations,
-    clan_membership: clanMembership,
+    clan_membership: getClanAdminResponse(clanMembership),
     clan: getClanAdminResponse(clan),
     meter: {
       status: meterStatus,
