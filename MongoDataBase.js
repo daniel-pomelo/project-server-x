@@ -1,5 +1,6 @@
 require("dotenv").config();
 const { MongoClient, ObjectId } = require("mongodb");
+const filterExMembers = require("./core/filterExMembers");
 const { timestamp } = require("./time");
 const { MONGO_DB_USERNAME, MONGO_DB_PASSWORD } = process.env;
 const uri = `mongodb+srv://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@cluster0.jvhhw.mongodb.net/ProjectX?retryWrites=true&w=majority`;
@@ -512,27 +513,47 @@ class MongoDataBase {
   }
   async getUserClanDetails(userId) {
     const userClans = await this.userFunctionalClans(userId);
-    return Promise.resolve(userClans[0]).then((clan) =>
+    const result = await Promise.resolve(userClans[0]).then((clan) =>
       clan
-        ? this.find("UserClanMembers", {
-            clan_id: new ObjectId(clan._id),
-          })
+        ? this.find(
+            "UserClanMembers",
+            {
+              clan_id: new ObjectId(clan._id),
+            },
+            {
+              sorting: "desc",
+            }
+          )
             .then((memberships) =>
               Promise.all(
-                memberships.map((membership) =>
-                  this.findOne("Users", { id: membership.member_id })
+                filterExMembers(memberships).map((membership) =>
+                  this.findOne("Users", { id: membership.member_id }).then(
+                    (user) => {
+                      return {
+                        name: user.name,
+                        breed: user.breed,
+                        type: user.type,
+                        level_name: user.level_name,
+                        level_value: user.level_value,
+                        status: membership.status,
+                      };
+                    }
+                  )
                 )
               )
             )
-            .then((members) => ({
-              name: clan.name,
-              description: clan.description,
-              status: clan.status,
-              created_at: clan.created_at,
-              members,
-            }))
+            .then((members) => {
+              return {
+                name: clan.name,
+                description: clan.description,
+                status: clan.status,
+                created_at: clan.created_at,
+                members,
+              };
+            })
         : clan
     );
+    return result;
   }
   async getClanInvitations(userId) {
     const clanInvitations = await this.find("UserClanInvitations", {
