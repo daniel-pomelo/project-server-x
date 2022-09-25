@@ -203,6 +203,7 @@ class MongoDataBase {
                 $project: {
                   newRoot: {
                     name: "$name",
+                    status: "$status",
                     type: "basic_data",
                     created_at: "$created_at",
                   },
@@ -243,8 +244,9 @@ class MongoDataBase {
         admins: clan.admins,
         created_at: clan.clan_facts[0].created_at,
         name: clan.clan_facts[0].name,
+        status: clan.clan_facts[0].status,
         members: clan.members
-          .filter((member) => member.member.length > 0)
+          .filter((member) => member.member.length === 0)
           .map((member) => {
             return {
               name: member.member[0].name,
