@@ -597,7 +597,12 @@ class MongoDataBase {
       const membership = memberships[0];
 
       if (membership && membership.status === "joined") {
-        return this.findOne("Clans", { _id: new ObjectId(membership.clan_id) });
+        return this.findOne("UserClans", {
+          clan_id: new ObjectId(membership.clan_id),
+        }).then((userClan) => {
+          console.log(userClan);
+          return this.getUserClanDetails(userClan.user_id);
+        });
       }
       return null;
     });
@@ -608,9 +613,15 @@ class MongoDataBase {
       this.find("UserClans").then((userClans) =>
         userClans.map((userClan) => userClan.user_id)
       ),
-      this.find("UserClanMembers").then((members) =>
-        members.map((member) => member.member_id)
-      ),
+      this.find(
+        "UserClanMembers",
+        {},
+        {
+          sorting: "desc",
+        }
+      )
+        .then((memberships) => filterExMembers(memberships))
+        .then((members) => members.map((member) => member.member_id)),
     ]);
     return users.filter(
       (user) => !membersIds.includes(user.id) && !userClans.includes(user.id)

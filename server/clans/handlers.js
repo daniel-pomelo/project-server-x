@@ -82,8 +82,7 @@ function getUserInfo(db) {
       return res.status(200).send({
         id: clan.name.toLowerCase(),
         name: clan.name,
-        status:
-          clan.status === "inactive" ? 0 : clan.status === "active" ? 1 : -1,
+        status: clan.members.length >= 10 ? 1 : 0,
         can_invite: true,
       });
     }
@@ -92,12 +91,7 @@ function getUserInfo(db) {
       return res.status(200).send({
         id: membership.name.toLowerCase(),
         name: membership.name,
-        status:
-          membership.status === "inactive"
-            ? 0
-            : membership.status === "active"
-            ? 1
-            : -1,
+        status: membership.members.length >= 10 ? 1 : 0,
         can_invite: false,
       });
     }
