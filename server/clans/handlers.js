@@ -88,6 +88,7 @@ function getUserInfo(db) {
         name: clan.name,
         status: clan.members.length >= 10 ? 1 : 0,
         can_invite: true,
+        user_id: userId,
       });
     }
     const membership = await db.getClanMembership(userId);
@@ -97,6 +98,7 @@ function getUserInfo(db) {
         name: membership.name,
         status: membership.members.length >= 10 ? 1 : 0,
         can_invite: false,
+        user_id: userId,
       });
     }
     res.status(404).send({});
