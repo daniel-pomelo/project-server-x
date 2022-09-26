@@ -10,6 +10,8 @@ module.exports = (db) => async (req, res) => {
       skills_url: `${process.env.BACKEND_URL}/api/skills/${userId}`,
     });
   } else {
-    res.status(404).send({});
+    res.status(404).send({
+      user_id: userId,
+    });
   }
 };

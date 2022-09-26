@@ -250,7 +250,7 @@ class MongoDataBase {
           .filter((member) => member.member.length === 0)
           .map((member) => {
             return {
-              name: member.member[0].name,
+              name: member.member[0] && member.member[0].name,
               status: member.status,
             };
           }),
