@@ -529,26 +529,29 @@ class MongoDataBase {
                 filterExMembers(memberships).map((membership) =>
                   this.findOne("Users", { id: membership.member_id }).then(
                     (user) => {
-                      return {
-                        name: user.name,
-                        breed: user.breed,
-                        type: user.type,
-                        level_name: user.level_name,
-                        level_value: user.level_value,
-                        status: membership.status,
-                      };
+                      return user
+                        ? {
+                            name: user.name,
+                            breed: user.breed,
+                            type: user.type,
+                            level_name: user.level_name,
+                            level_value: user.level_value,
+                            status: membership.status,
+                          }
+                        : false;
                     }
                   )
                 )
               )
             )
             .then((members) => {
+              console.log(members);
               return {
                 name: clan.name,
                 description: clan.description,
                 status: clan.status,
                 created_at: clan.created_at,
-                members,
+                members: members.filter((m) => !m),
               };
             })
         : clan
@@ -600,7 +603,6 @@ class MongoDataBase {
         return this.findOne("UserClans", {
           clan_id: new ObjectId(membership.clan_id),
         }).then((userClan) => {
-          console.log(userClan);
           return this.getUserClanDetails(userClan.user_id);
         });
       }
