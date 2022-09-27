@@ -407,8 +407,9 @@ class MongoDataBase {
       this.registerError(error);
     }
   }
-  async registerError(error) {
+  async registerError(error, requestId) {
     await this.save("Errors", {
+      request_id: requestId,
       context: error.context || "MISSING_CONTEXT",
       reason: error.reason || "MISSING_REASON",
       payload: error.payload || {},
@@ -416,6 +417,12 @@ class MongoDataBase {
         message: error.message,
         stack: error.stack,
       },
+      timestamp: timestamp(),
+    });
+  }
+  async setRequestLog(requestData) {
+    return this.save("Requests", {
+      ...requestData,
       timestamp: timestamp(),
     });
   }

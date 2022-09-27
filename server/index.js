@@ -24,6 +24,7 @@ const stats = require("./stats");
 const clans = require("./clans");
 const pages = require("./pages");
 const management = require("./management");
+const uuid = require("uuid");
 
 const PORT = process.env.PORT || 3001;
 
@@ -72,6 +73,27 @@ class MyServer {
   }
   setDB(db, systemEvents, tokens, UI_URL) {
     const app = this.app;
+
+    app.use((req, res, next) => {
+      const id = uuid.v4();
+      const requestData = {
+        id,
+        url: req.url,
+        method: req.method,
+        headers: req.headers,
+        body: req.body,
+        ip: req.ip,
+      };
+      req["id"] = id;
+      console.log("Created Request-Id: ", req.id);
+      next();
+      db.setRequestLog(requestData);
+    });
+    app.use((req, res, next) => {
+      console.log("Request-Id: ", req.id);
+      next();
+    });
+
     app.post(
       "/api/users/:id/stats",
       asyncHandler(assignPointsToStats(db, systemEvents))
@@ -133,7 +155,7 @@ class MyServer {
     pages.getClansPageInfo(app, db);
 
     app.use((error, req, res, next) => {
-      db.registerError(error);
+      db.registerError(error, req.id);
       const custom = responses[error.message];
       res
         .status((custom && custom.status) || 500)
