@@ -238,7 +238,6 @@ class MongoDataBase {
         },
       ])
       .toArray();
-
     return clans.map((clan) => {
       return {
         id: clan.clan_id,
@@ -247,7 +246,7 @@ class MongoDataBase {
         name: clan.clan_facts[0].name,
         status: clan.clan_facts[0].status,
         members: clan.members
-          .filter((member) => member.member.length === 0)
+          .filter((member) => member.member.length > 0)
           .map((member) => {
             return {
               name: member.member[0] && member.member[0].name,
@@ -551,16 +550,13 @@ class MongoDataBase {
                 )
               )
             )
-            .then((members) => {
-              console.log(members);
-              return {
-                name: clan.name,
-                description: clan.description,
-                status: clan.status,
-                created_at: clan.created_at,
-                members: members.filter((m) => !m),
-              };
-            })
+            .then((members) => ({
+              name: clan.name,
+              description: clan.description,
+              status: clan.status,
+              created_at: clan.created_at,
+              members: members.filter((member) => member !== false),
+            }))
         : clan
     );
     return result;
