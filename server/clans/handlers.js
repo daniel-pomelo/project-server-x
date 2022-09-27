@@ -100,7 +100,9 @@ function getUserInfo(db) {
         user_id: userId,
       });
     }
-    res.status(404).send({});
+    res.status(404).send({
+      user_id: userId,
+    });
   };
 }
 function deleteClan(db) {
