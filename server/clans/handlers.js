@@ -67,8 +67,7 @@ function joinToClan(db) {
 function leaveToClan(db) {
   return async (req, res) => {
     const userId = await getUserIdFromRequest(req);
-    const clanId = req.body._id;
-    await db.leaveClan(clanId, userId);
+    await db.leaveClan(userId);
     res.status(200).send({});
   };
 }

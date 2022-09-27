@@ -160,21 +160,30 @@ class MongoDataBase {
       timestamp: timestamp(),
     });
   }
-  async leaveClan(clanId, userId) {
+  async leaveClan(userId) {
     const membership = await this.findOne("UserClanMembers", {
-      clan_id: new ObjectId(clanId),
       member_id: userId,
+      status: "joined",
     });
     if (!membership) {
-      throw new Error("User membership not found.");
+      const e = new Error("BAD_REQUEST");
+      e.context = "LEAVING_CLAN";
+      e.reason = "USER_HAS_NO_MEMBERSHIP";
+      e.payload = {
+        member_id: userId,
+      };
+      throw e;
     }
-    await this.save("UserClanMembers", {
-      clan_id: new ObjectId(clanId),
-      member_id: userId,
-      timestamp: timestamp(),
-      status: "brokeup",
-      version: membership.version + 1,
-    });
+    await this.updateOne(
+      "UserClanMembers",
+      {
+        member_id: userId,
+      },
+      {
+        brokeup_at: timestamp(),
+        status: "brokeup",
+      }
+    );
   }
   async getClans() {
     const clans = await this.client
