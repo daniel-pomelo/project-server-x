@@ -82,20 +82,28 @@ function getUserInfo(db) {
     const { userId } = req.params;
     const clan = await db.getUserClanDetails(userId);
     if (clan) {
+      if (clan.members.length < 10) {
+        return res.status(404).send({
+          user_id: userId,
+        });
+      }
       return res.status(200).send({
         id: clan.name.toLowerCase(),
         name: clan.name,
-        status: clan.members.length >= 10 ? 1 : 0,
         can_invite: true,
         user_id: userId,
       });
     }
     const membership = await db.getClanMembership(userId);
     if (membership) {
+      if (membership.members.length < 10) {
+        return res.status(404).send({
+          user_id: userId,
+        });
+      }
       return res.status(200).send({
         id: membership.name.toLowerCase(),
         name: membership.name,
-        status: membership.members.length >= 10 ? 1 : 0,
         can_invite: false,
         user_id: userId,
       });
