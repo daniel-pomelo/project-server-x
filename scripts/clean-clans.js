@@ -6,7 +6,7 @@ const deleteAll = require("./deleteAll");
 // -> Contains clan data.
 //
 // <UserClans>
-// user_id: id, clan_id: id
+// user_id: id, clan_id: id, deleted_at: timestamp, deleted_by: user_id
 // -> Relationship 1:1 between a clan an his admin.
 //
 // <UserClanInvitations>
@@ -19,7 +19,8 @@ const deleteAll = require("./deleteAll");
 // status: string, brokeup_at: timestamp
 //
 // <ClanRelationships>
-//
+// clan_id: id, target_clan_id: id, type: string, payload: object
+// -> Contains data about an event that define if a clan is ally or enemy of a target clan.
 //
 
 MongoDataBase.init({ database: "ProjectX" }).then(async (db) => {

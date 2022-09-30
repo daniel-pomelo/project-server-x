@@ -121,6 +121,13 @@ function deleteClan(db) {
     res.send({});
   };
 }
+function adminPutClanDown(db) {
+  return async (req, res) => {
+    const userId = await getUserIdFromRequest(req);
+    await db.adminPutClanDown(userId);
+    res.send({});
+  };
+}
 
 module.exports = {
   saveClan,
@@ -130,4 +137,5 @@ module.exports = {
   managementClans,
   getUserInfo,
   deleteClan,
+  adminPutClanDown,
 };

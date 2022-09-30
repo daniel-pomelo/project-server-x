@@ -7,6 +7,7 @@ const {
   managementClans,
   getUserInfo,
   deleteClan,
+  adminPutClanDown,
 } = require("./handlers");
 
 const CLANS_URL = "/api/clans";
@@ -16,6 +17,7 @@ const CLANS_LEAVE_URL = "/api/clans/leave";
 const CLANS_MANAGEMENT_URL = "/api/management/clans";
 const DELETE_CLANS_MANAGEMENT_URL = "/api/management/clans/:id";
 const CLANS_USER_INFO_URL = "/api/users/:userId/clans";
+const ADMIN_PUT_DOWN_CLAN_URL = "/api/me/clan";
 
 module.exports = {
   save(app, db) {
@@ -38,5 +40,8 @@ module.exports = {
   },
   managementDeleteClan(app, db) {
     app.delete(DELETE_CLANS_MANAGEMENT_URL, asyncHandler(deleteClan(db)));
+  },
+  adminPutClanDown(app, db) {
+    app.delete(ADMIN_PUT_DOWN_CLAN_URL, asyncHandler(adminPutClanDown(db)));
   },
 };
