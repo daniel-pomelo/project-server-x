@@ -138,7 +138,14 @@ class MongoDataBase {
       e.context = "INVITING_USER_TO_MY_CLAN";
       e.reason = "MASTER_DOES_NOT_HAVE_A_CLAN";
       e.payload = {
-        query: { user_id: invitadorId },
+        query: {
+          user_id: invitadorId,
+          deleted_at: null,
+        },
+        params: {
+          master_id: invitadorId,
+          disciple_id: invitadoId,
+        },
       };
       throw e;
     }
@@ -320,7 +327,7 @@ class MongoDataBase {
       };
     });
   }
-  async joinClan(invitationId, userId) {
+  async acceptClanInvitation(invitationId, userId) {
     const invitation = await this.findOne("UserClanInvitations", {
       _id: new ObjectId(invitationId),
     });
@@ -343,29 +350,55 @@ class MongoDataBase {
         status: "accepted",
       }
     );
-    await this.joinMemberToClan(userId, invitation.clan_id);
+    return invitation;
   }
-  async joinMemberToClan(userId, clanId) {
-    const memberships = await this.find(
-      "UserClanMembers",
-      {
-        member_id: userId,
-        clan_id: clanId,
-        status: "joined",
-      },
-      {
-        sorting: "desc",
-      }
-    );
+  async joinClan(invitationId, userId, numberOfMembersToActivate) {
+    const invitation = await this.acceptClanInvitation(invitationId, userId);
+    await this.joinMemberToClan(userId, invitation.clan_id);
+    await this.tryToActivateClan(invitation.clan_id, numberOfMembersToActivate);
+  }
+  async tryToActivateClan(clanId, numberOfMembersToActivate) {
+    const members = await this.find("UserClanMembers", {
+      clan_id: clanId,
+      status: "joined",
+    });
+    if (members.length >= numberOfMembersToActivate) {
+      const upsert = false;
+      await this.updateOne(
+        "Clans",
+        {
+          _id: new ObjectId(clanId),
+          status: "inactive",
+        },
+        {
+          status: "active",
+          activated_at: timestamp(),
+        },
+        upsert
+      );
+    }
+  }
+  async assertIsAlreadyAMember(userId) {
+    const memberships = await this.find("UserClanMembers", {
+      member_id: userId,
+      status: "joined",
+    });
     if (memberships.length > 0) {
       const e = new Error("BAD_REQUEST");
       e.context = "JOINING_MEMBER_TO_MY_CLAN";
-      e.reason = "USER_IS_JOINED_TO_OTHER_CLAN";
+      e.reason = "DISCIPLE_IS_ALREADY_A_JOINED_MEMBER";
       e.payload = {
+        query: {
+          member_id: userId,
+          status: "joined",
+        },
         memberships,
       };
       throw e;
     }
+  }
+  async joinMemberToClan(userId, clanId) {
+    await this.assertIsAlreadyAMember(userId);
     const data = {
       member_id: userId,
       clan_id: clanId,
@@ -497,22 +530,22 @@ class MongoDataBase {
       timestamp: timestamp(),
     });
   }
-  updateOne(collectionName, criteria, document) {
+  updateOne(collectionName, criteria, document, upsert = true) {
     return this.client.db("ProjectX").collection(collectionName).updateOne(
       criteria,
       {
         $set: document,
       },
-      { upsert: true }
+      { upsert }
     );
   }
-  updateMany(collectionName, criteria, document) {
+  updateMany(collectionName, criteria, document, upsert = true) {
     return this.client.db("ProjectX").collection(collectionName).updateMany(
       criteria,
       {
         $set: document,
       },
-      { upsert: true }
+      { upsert }
     );
   }
   find(collectionName, criteria, options = {}) {
@@ -844,24 +877,39 @@ class MongoDataBase {
       };
       throw e;
     }
-    await this.updateOne(
-      "UserClans",
-      { _id: userClan._id },
-      {
-        deleted_at: timestamp(),
-        deleted_by: userId,
-        status: "deleted",
-      }
-    );
-    await this.updateMany(
-      "UserClanMembers",
-      { clan_id: userClan.clan_id },
-      {
-        status: "deleted",
-        deleted_at: timestamp(),
-        deleted_by: userId,
-      }
-    );
+    const upsert = false;
+    await Promise.all([
+      this.updateOne(
+        "UserClans",
+        { _id: userClan._id },
+        {
+          deleted_at: timestamp(),
+          deleted_by: userId,
+          status: "deleted",
+        },
+        upsert
+      ),
+      this.updateOne(
+        "Clans",
+        { _id: new ObjectId(userClan.clan_id) },
+        {
+          deleted_at: timestamp(),
+          deleted_by: userId,
+          status: "deleted",
+        },
+        upsert
+      ),
+      this.updateMany(
+        "UserClanMembers",
+        { clan_id: userClan.clan_id },
+        {
+          status: "deleted",
+          deleted_at: timestamp(),
+          deleted_by: userId,
+        },
+        upsert
+      ),
+    ]);
   }
 }
 

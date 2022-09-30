@@ -1,4 +1,6 @@
 const { getUserIdFromRequest } = require("../../auth");
+const numberOfMembersToActivate =
+  parseInt(process.env.NUMBER_OF_MEMBERS_TO_ACTIVATE) || 10;
 
 function saveClan(db) {
   return async (req, res) => {
@@ -60,7 +62,7 @@ function joinToClan(db) {
   return async (req, res) => {
     const invitationId = req.params.invitationId;
     const userId = await getUserIdFromRequest(req);
-    await db.joinClan(invitationId, userId);
+    await db.joinClan(invitationId, userId, numberOfMembersToActivate);
     res.status(200).send({});
   };
 }
