@@ -18,7 +18,7 @@ const assignPointsToStats = (db) => async (req, res) => {
 
   res.send({});
 
-  await forceMeterUpdate(userId, db);
+  await forceMeterUpdate(userId, db, "ASSIGN_POINTS_TO_STATS");
 };
 
 module.exports = assignPointsToStats;

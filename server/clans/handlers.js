@@ -10,7 +10,7 @@ function saveClan(db) {
     const clanName = getClanName(req);
     const clanDescription = getClanDescription(req);
     await db.saveUserClan(clanName, clanDescription, userId);
-    await forceMeterUpdate(userId, db);
+    await forceMeterUpdate(userId, db, "CREATING_CLAN");
     res.status(200).send({});
   };
 }
@@ -69,14 +69,16 @@ function joinToClan(db) {
       userId,
       numberOfMembersToActivate
     );
-    console.log("membersToNotify: ");
-    console.log(JSON.stringify(membersToNotify, null, 2));
     await Promise.all(
       membersToNotify.map((member) => {
-        forceMeterUpdate(member.member_id, db);
+        forceMeterUpdate(
+          member.member_id,
+          db,
+          "MEMBER_ACCEPT_INVITATION_TO_JOIN"
+        );
       })
     );
-    await forceMeterUpdate(userId, db);
+    await forceMeterUpdate(userId, db, "MEMBER_ACCEPT_INVITATION_TO_JOIN");
     res.status(200).send({});
   };
 }
@@ -84,7 +86,7 @@ function leaveToClan(db) {
   return async (req, res) => {
     const userId = await getUserIdFromRequest(req);
     await db.leaveClan(userId);
-    await forceMeterUpdate(userId, db);
+    await forceMeterUpdate(userId, db, "MEMBER_LEAVE_CLAN");
     res.status(200).send({});
   };
 }
@@ -141,10 +143,10 @@ function adminPutClanDown(db) {
     const membersToNotify = await db.adminPutClanDown(userId);
     await Promise.all(
       membersToNotify.map((member) => {
-        forceMeterUpdate(member.member_id, db);
+        forceMeterUpdate(member.member_id, db, "ADMIN_PUT_CLAN_DOWN");
       })
     );
-    await forceMeterUpdate(userId, db);
+    await forceMeterUpdate(userId, db, "ADMIN_PUT_CLAN_DOWN");
     res.send({});
   };
 }

@@ -18,7 +18,7 @@ module.exports = (db) => async (req, res) => {
 
   res.status(201).send({ url });
 
-  await forceMeterUpdate(id, db);
+  await forceMeterUpdate(id, db, "USER_REGISTER");
 };
 
 class User {
