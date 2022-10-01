@@ -10,6 +10,7 @@ function saveClan(db) {
     const clanName = getClanName(req);
     const clanDescription = getClanDescription(req);
     await db.saveUserClan(clanName, clanDescription, userId);
+    await forceMeterUpdate(userId, db);
     res.status(200).send({});
   };
 }
