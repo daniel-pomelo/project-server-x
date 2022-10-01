@@ -111,7 +111,7 @@ async function reduce(stats, level_value, db) {
     ...userStats,
     _id: undefined,
     hit_damage: HitDamage.calc(userStats.strength, level_value) + 10,
-    hit_absorption: HitAbsorption.calc(userStats.absorption, level_value),
+    hit_absorption: HitAbsorption.calc(userStats.absorption, level_value) + 10,
     hit_speed: HitSpeed.calc(userStats),
   };
 }
