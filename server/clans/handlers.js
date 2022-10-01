@@ -1,4 +1,5 @@
 const { getUserIdFromRequest } = require("../../auth");
+const { forceMeterUpdate } = require("../../forceMeterUpdate");
 const numberOfMembersToActivate =
   parseInt(process.env.NUMBER_OF_MEMBERS_TO_ACTIVATE) || 10;
 
@@ -63,6 +64,7 @@ function joinToClan(db) {
     const invitationId = req.params.invitationId;
     const userId = await getUserIdFromRequest(req);
     await db.joinClan(invitationId, userId, numberOfMembersToActivate);
+    await forceMeterUpdate(userId, db);
     res.status(200).send({});
   };
 }
@@ -70,6 +72,7 @@ function leaveToClan(db) {
   return async (req, res) => {
     const userId = await getUserIdFromRequest(req);
     await db.leaveClan(userId);
+    await forceMeterUpdate(userId, db);
     res.status(200).send({});
   };
 }
@@ -126,7 +129,13 @@ function deleteClan(db) {
 function adminPutClanDown(db) {
   return async (req, res) => {
     const userId = await getUserIdFromRequest(req);
-    await db.adminPutClanDown(userId);
+    const membersToNotify = await db.adminPutClanDown(userId);
+    await Promise.all(
+      membersToNotify.map((member) => {
+        forceMeterUpdate(member.member_id, db);
+      })
+    );
+    await forceMeterUpdate(userId, db);
     res.send({});
   };
 }

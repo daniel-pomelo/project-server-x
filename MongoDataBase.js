@@ -935,6 +935,7 @@ class MongoDataBase {
         upsert
       ),
     ]);
+    return this.find("UserClanMembers", { clan_id: userClan.clan_id });
   }
 }
 
