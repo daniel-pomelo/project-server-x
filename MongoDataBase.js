@@ -719,9 +719,11 @@ class MongoDataBase {
       member_id: userId,
       status: "joined",
     }).then((membership) => {
-      return this.findOne("Clans", {
-        _id: new ObjectId(membership.clan_id),
-      });
+      return membership
+        ? this.findOne("Clans", {
+            _id: new ObjectId(membership.clan_id),
+          })
+        : membership;
     });
   }
   getClanMembership(userId) {
