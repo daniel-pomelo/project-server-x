@@ -355,7 +355,11 @@ class MongoDataBase {
   async joinClan(invitationId, userId, numberOfMembersToActivate) {
     const invitation = await this.acceptClanInvitation(invitationId, userId);
     await this.joinMemberToClan(userId, invitation.clan_id);
-    await this.tryToActivateClan(invitation.clan_id, numberOfMembersToActivate);
+    const members = await this.tryToActivateClan(
+      invitation.clan_id,
+      numberOfMembersToActivate
+    );
+    return members;
   }
   async tryToActivateClan(clanId, numberOfMembersToActivate) {
     const members = await this.find("UserClanMembers", {
@@ -376,7 +380,9 @@ class MongoDataBase {
         },
         upsert
       );
+      return members;
     }
+    return [];
   }
   async assertIsAlreadyAMember(userId) {
     const memberships = await this.find("UserClanMembers", {

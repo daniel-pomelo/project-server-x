@@ -64,7 +64,18 @@ function joinToClan(db) {
   return async (req, res) => {
     const invitationId = req.params.invitationId;
     const userId = await getUserIdFromRequest(req);
-    await db.joinClan(invitationId, userId, numberOfMembersToActivate);
+    const membersToNotify = await db.joinClan(
+      invitationId,
+      userId,
+      numberOfMembersToActivate
+    );
+    console.log("membersToNotify: ");
+    console.log(JSON.stringify(membersToNotify, null, 2));
+    await Promise.all(
+      membersToNotify.map((member) => {
+        forceMeterUpdate(member.member_id, db);
+      })
+    );
     await forceMeterUpdate(userId, db);
     res.status(200).send({});
   };
@@ -106,7 +117,7 @@ function getUserInfo(db) {
       return res.status(200).send({
         id: membership.name.toLowerCase(),
         name: membership.name,
-        status: clan.status === "active" ? 1 : 0,
+        status: membership.status === "active" ? 1 : 0,
         can_invite: false,
         user_id: userId,
       });
