@@ -85,9 +85,9 @@ class MongoDataBase {
   findScalingFactors() {
     return this.findOne("ScalingFactors", {});
   }
-  async userFunctionalClans(user_id) {
+  async userFunctionalClans(userId) {
     const userClans = await this.find("UserClans", {
-      user_id,
+      user_id: userId,
       deleted_at: null,
     });
     const userClanIds = userClans.map((userClan) => userClan.clan_id);
@@ -700,6 +700,29 @@ class MongoDataBase {
       })
     );
     return invitations.filter((invitation) => invitation);
+  }
+  getClanOfUser(userId) {
+    return this.findOne("UserClans", {
+      user_id: userId,
+      deleted_at: null,
+    }).then((userClan) => {
+      if (!userClan) {
+        return null;
+      }
+      return this.findOne("Clans", {
+        _id: new ObjectId(userClan.clan_id),
+      });
+    });
+  }
+  getClanOfJoinedMember(userId) {
+    return this.findOne("UserClanMembers", {
+      member_id: userId,
+      status: "joined",
+    }).then((membership) => {
+      return this.findOne("Clans", {
+        _id: new ObjectId(membership.clan_id),
+      });
+    });
   }
   getClanMembership(userId) {
     return this.findOne("UserClanMembers", {

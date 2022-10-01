@@ -2,7 +2,7 @@ const MongoDataBase = require("../MongoDataBase");
 const deleteAll = require("./deleteAll");
 
 // <Clans>
-// name: string, description: string, created_at: timestamp, disabled: boolean
+// name: string, description: string, created_at: timestamp, status: string
 // -> Contains clan data.
 //
 // <UserClans>

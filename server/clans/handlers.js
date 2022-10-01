@@ -82,9 +82,9 @@ function managementClans(db) {
 function getUserInfo(db) {
   return async (req, res) => {
     const { userId } = req.params;
-    const clan = await db.getUserClanDetails(userId);
+    const clan = await db.getClanOfUser(userId);
     if (clan) {
-      if (clan.members.length < 10) {
+      if (clan.status !== "active") {
         return res.status(404).send({
           user_id: userId,
         });
@@ -96,9 +96,9 @@ function getUserInfo(db) {
         user_id: userId,
       });
     }
-    const membership = await db.getClanMembership(userId);
+    const membership = await db.getClanOfJoinedMember(userId);
     if (membership) {
-      if (membership.members.length < 10) {
+      if (membership.status !== "active") {
         return res.status(404).send({
           user_id: userId,
         });
