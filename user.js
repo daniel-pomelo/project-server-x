@@ -4,7 +4,7 @@ const {
   HitSpeed,
   Health,
   Mana,
-} = require("@origin-la/user-stats");
+} = require("./user-stats");
 const { getSkills } = require("./skills");
 
 const DEFAULT_USER_EXPERIENCE = {
@@ -106,12 +106,11 @@ async function reduce(stats, level_value, db) {
       }
     }, acc);
   }, defaultStats);
-
   return {
     ...userStats,
     _id: undefined,
-    hit_damage: HitDamage.calc(userStats.strength, level_value) + 10,
-    hit_absorption: HitAbsorption.calc(userStats.absorption, level_value) + 10,
+    hit_damage: HitDamage.calc(userStats.strength, level_value),
+    hit_absorption: HitAbsorption.calc(userStats.absorption, level_value),
     hit_speed: HitSpeed.calc(userStats),
   };
 }

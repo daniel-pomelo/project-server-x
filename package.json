@@ -4,7 +4,6 @@
     "start": "node server/start.js"
   },
   "dependencies": {
-    "@origin-la/user-stats": "0.0.8",
     "axios": "^0.24.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
