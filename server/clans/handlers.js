@@ -64,20 +64,21 @@ function joinToClan(db) {
   return async (req, res) => {
     const invitationId = req.params.invitationId;
     const userId = await getUserIdFromRequest(req);
-    const membersToNotify = await db.joinClan(
-      invitationId,
-      userId,
-      numberOfMembersToActivate
-    );
-    await Promise.all(
-      membersToNotify.map((member) => {
-        forceMeterUpdate(
-          member.member_id,
-          db,
-          "MEMBER_ACCEPT_INVITATION_TO_JOIN"
-        );
-      })
-    );
+    await db.joinClan(invitationId, userId, numberOfMembersToActivate);
+    // const membersToNotify = await db.joinClan(
+    //   invitationId,
+    //   userId,
+    //   numberOfMembersToActivate
+    // );
+    // await Promise.all(
+    //   membersToNotify.map((member) => {
+    //     forceMeterUpdate(
+    //       member.member_id,
+    //       db,
+    //       "MEMBER_ACCEPT_INVITATION_TO_JOIN"
+    //     );
+    //   })
+    // );
     await forceMeterUpdate(userId, db, "MEMBER_ACCEPT_INVITATION_TO_JOIN");
     res.status(200).send({});
   };
@@ -140,12 +141,13 @@ function deleteClan(db) {
 function adminPutClanDown(db) {
   return async (req, res) => {
     const userId = await getUserIdFromRequest(req);
-    const membersToNotify = await db.adminPutClanDown(userId);
-    await Promise.all(
-      membersToNotify.map((member) => {
-        forceMeterUpdate(member.member_id, db, "ADMIN_PUT_CLAN_DOWN");
-      })
-    );
+    await db.adminPutClanDown(userId);
+    // const membersToNotify = await db.adminPutClanDown(userId);
+    // await Promise.all(
+    //   membersToNotify.map((member) => {
+    //     forceMeterUpdate(member.member_id, db, "ADMIN_PUT_CLAN_DOWN");
+    //   })
+    // );
     await forceMeterUpdate(userId, db, "ADMIN_PUT_CLAN_DOWN");
     res.send({});
   };
