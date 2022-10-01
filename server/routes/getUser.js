@@ -3,7 +3,13 @@ const { findUserById } = require("../../user");
 module.exports = (db) => async (req, res) => {
   const userId = req.params.id;
   const user = await findUserById(db, userId);
+
   if (user) {
+    if (user.isDisabled) {
+      return res.status(403).send({
+        user_id: userId,
+      });
+    }
     res.send({
       ...user,
       skills: [],

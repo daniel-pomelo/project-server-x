@@ -32,6 +32,10 @@ async function findUserById(db, id) {
   if (!user) {
     return null;
   }
+  const isDisabled = await db.findOne("DisabledUsers", { user_id: id });
+  if (isDisabled !== null) {
+    return { isDisabled: true };
+  }
   const experience = await db
     .findOne("UserExperience", { user_id: id })
     .then((experience) => {
