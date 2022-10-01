@@ -20,21 +20,44 @@ function getUserExperienceRecordsByUserId(db, userId) {
     .toArray();
 }
 
+const collections = [
+  "Alerts",
+  // "Bridges",
+  "ClanRelationships",
+  "Clans",
+  "CraftedObjects",
+  // "DefaultStats",
+  "DisabledUsers",
+  "Errors",
+  "EventRecords",
+  "Invitations",
+  "Materials",
+  "Objects",
+  "RegisterAttempts",
+  "Requests",
+  // "ScalingFactors",
+  // "Skills",
+  "UserBridges",
+  "UserClanInvitations",
+  "UserClanMembers",
+  "UserClans",
+  "UserExperience",
+  "UserExperienceRecords",
+  "UserMaterials",
+  "UserMeters",
+  "UserPoints",
+  "UserSkillPoints",
+  "UserSkills",
+  "UserStats",
+  // "Users",
+];
 function deleteUserProgressByUserId(db, userId) {
-  const collections = [
-    "UserExperience",
-    "UserExperienceRecords",
-    "UserPoints",
-    "UserSkillPoints",
-    "UserStats",
-    "UsersProps",
-    "UserSkills",
-    "UserMeters",
-  ];
-
+  const collections = ["Users"];
   const promises = collections.map((collection) => {
     return db.collection(collection).deleteMany({
-      user_id: userId,
+      id: {
+        $ne: "fdcd2886-4a08-4a56-bc09-30c5f362817f",
+      },
     });
   });
 

@@ -1,5 +1,19 @@
+const { default: axios } = require("axios");
 const { getProfileUrl } = require("../../auth");
 const { timestamp } = require("../../time");
+
+async function forceMeterUpdate(userId, db) {
+  const bridge = await db.findOne("Bridges");
+  console.log(
+    `Send {user-id: ${userId}} to ${bridge.id} with URL ${bridge.url}.`
+  );
+  await axios.post(bridge.url, {
+    command: "CHARACTER_UPDATED",
+    data: {
+      "user-id": userId,
+    },
+  });
+}
 
 module.exports = (db) => async (req, res) => {
   const invitationKey = req.params.id;
@@ -15,9 +29,9 @@ module.exports = (db) => async (req, res) => {
 
   const url = await getProfileUrl(id);
 
-  await db.registerUserMeterAsPending(id);
-
   res.status(201).send({ url });
+
+  await forceMeterUpdate(id, db);
 };
 
 class User {
