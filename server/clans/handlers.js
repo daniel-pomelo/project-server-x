@@ -88,14 +88,10 @@ function getUserInfo(db) {
     const { userId } = req.params;
     const clan = await db.getClanOfUser(userId);
     if (clan) {
-      if (clan.status !== "active") {
-        return res.status(404).send({
-          user_id: userId,
-        });
-      }
       return res.status(200).send({
         id: clan.name.toLowerCase(),
         name: clan.name,
+        status: clan.status === "active" ? 1 : 0,
         can_invite: true,
         user_id: userId,
       });
@@ -110,6 +106,7 @@ function getUserInfo(db) {
       return res.status(200).send({
         id: membership.name.toLowerCase(),
         name: membership.name,
+        status: clan.status === "active" ? 1 : 0,
         can_invite: false,
         user_id: userId,
       });
