@@ -1,19 +1,6 @@
-const { default: axios } = require("axios");
 const { getProfileUrl } = require("../../auth");
 const { timestamp } = require("../../time");
-
-async function forceMeterUpdate(userId, db) {
-  const bridge = await db.findOne("Bridges");
-  console.log(
-    `Send {user-id: ${userId}} to ${bridge.id} with URL ${bridge.url}.`
-  );
-  await axios.post(bridge.url, {
-    command: "CHARACTER_UPDATED",
-    data: {
-      "user-id": userId,
-    },
-  });
-}
+const { forceMeterUpdate } = require("../../forceMeterUpdate");
 
 module.exports = (db) => async (req, res) => {
   const invitationKey = req.params.id;

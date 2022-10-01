@@ -1,10 +1,10 @@
+const { forceMeterUpdate } = require("../../../forceMeterUpdate");
 const { findUserPointsByUserId } = require("../../../user");
 const { UserPoints, UserStats, isInsufficient, getTotal } = require("./util");
 
-const assignPointsToStats = (db, systemEvents) => async (req, res) => {
+const assignPointsToStats = (db) => async (req, res) => {
   const userId = req.params.id;
   const stats = req.body;
-  const bridge = await db.findUserBridge(userId);
   const { balance } = await findUserPointsByUserId(db, userId);
   const total = getTotal(stats);
 
@@ -16,9 +16,9 @@ const assignPointsToStats = (db, systemEvents) => async (req, res) => {
 
   await db.saveUserPoints([UserPoints.withdrawal(userId, balance)]);
 
-  systemEvents.notifyThatUserHasTrained(userId, bridge);
-
   res.send({});
+
+  await forceMeterUpdate(userId, db);
 };
 
 module.exports = assignPointsToStats;
