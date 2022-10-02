@@ -90,16 +90,16 @@ function scale(skill, propName) {
     : {};
 }
 
-function scaleByIntelligence(skill, propName, intelligence) {
-  const factor = intelligence / 2;
-  return skill[propName]
-    ? { [propName]: getTotal(skill[propName], factor) }
-    : {};
-}
+const skillFactor = 20;
+const intelligenceFactor = 10;
 
-function getTotal(value, factor) {
-  const total = value < 0 ? value - factor : value + factor;
-  return Math.ceil(total);
+function scaleByIntelligence(skill, propName, intelligence) {
+  const baseSkillValuePercentage = (skill[propName] / 100) * skillFactor;
+  const baseSkillValue = skill[propName];
+  const total =
+    baseSkillValue +
+    (intelligence / intelligenceFactor) * baseSkillValuePercentage;
+  return skill[propName] ? { [propName]: Math.ceil(total) } : {};
 }
 
 module.exports = {
