@@ -413,38 +413,6 @@ class MongoDataBase {
     };
     return this.save("UserClanMembers", data);
   }
-  async registerUserMeterAsPending(userId) {
-    const found = await this.findOne("UserMeters", {
-      user_id: userId,
-    });
-    if (!found) {
-      return this.save("UserMeters", {
-        user_id: userId,
-        status: "pending",
-        created_at: timestamp(),
-      });
-    }
-  }
-  async activeUserMeter(userId) {
-    const found = await this.findOne("UserMeters", {
-      user_id: userId,
-    });
-    if (found && found.status === "pending") {
-      return this.updateOne(
-        "UserMeters",
-        {
-          user_id: userId,
-        },
-        { status: "active", active_since: timestamp() }
-      );
-    } else if (!found) {
-      return this.save("UserMeters", {
-        user_id: userId,
-        status: "active",
-        active_since: timestamp(),
-      });
-    }
-  }
   updateInvitationTimestamp(invitation, timestamp) {
     return this.updateOne(
       "Invitations",
@@ -631,11 +599,6 @@ class MongoDataBase {
   }
   getSkillsCatalog() {
     return this.find("Skills");
-  }
-  getUserMeterStatus(userId) {
-    return this.findOne("UserMeters", { user_id: userId }).then((userMeter) =>
-      userMeter ? userMeter.status : "pending"
-    );
   }
   async getUserClanDetails(userId) {
     const userClans = await this.userFunctionalClans(userId);

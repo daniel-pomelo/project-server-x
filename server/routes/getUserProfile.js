@@ -1,6 +1,10 @@
 const { findUserById } = require("../../user");
 const { getUserIdFromToken } = require("../../auth");
 
+const meter = {
+  status: "active",
+};
+
 module.exports = (db) => async (req, res) => {
   const token = req.params.token;
   const userId = await getUserIdFromToken(token);
@@ -10,7 +14,6 @@ module.exports = (db) => async (req, res) => {
   }
   const [
     skillsCatalog,
-    meterStatus,
     clan,
     clanInvitations,
     clanMembership,
@@ -18,7 +21,6 @@ module.exports = (db) => async (req, res) => {
     clanInvitationsSent,
   ] = await Promise.all([
     db.getSkillsCatalog(),
-    db.getUserMeterStatus(userId),
     db.getUserClanDetails(userId),
     db.getClanInvitations(userId),
     db.getClanMembership(userId),
@@ -31,9 +33,7 @@ module.exports = (db) => async (req, res) => {
     clan_invitations_sent: clanInvitationsSent,
     clan_membership: clanMembership,
     clan,
-    meter: {
-      status: meterStatus,
-    },
+    meter,
     skills_catalog: skillsCatalog,
     ...relationships,
   });
