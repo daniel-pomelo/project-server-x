@@ -44,7 +44,6 @@ const collections = [
   "UserExperience",
   "UserExperienceRecords",
   "UserMaterials",
-  "UserMeters",
   "UserPoints",
   "UserSkillPoints",
   "UserSkills",
