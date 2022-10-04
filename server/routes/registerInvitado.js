@@ -11,6 +11,7 @@ module.exports = (db) => async (req, res) => {
   await verifyUserIsNotRegistered(db, id);
 
   await db.save("Users", User.from(id, req.body));
+  await db.giveUserSkillPointTo(id);
 
   await db.updateInvitationTimestamp(invitation, timestamp());
 

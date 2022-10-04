@@ -597,6 +597,14 @@ class MongoDataBase {
       .collection("UserSkillPoints")
       .bulkWrite(operations);
   }
+  giveUserSkillPointTo(userId) {
+    return this.save("UserSkillPoints", {
+      user_id: userId,
+      points: 1,
+      type: "USER_REGISTER_REWARD",
+      timestamp: timestamp(),
+    });
+  }
   getSkillsCatalog() {
     return this.find("Skills");
   }

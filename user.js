@@ -20,6 +20,8 @@ function calcPointsBalance(records) {
       return acc - record.points;
     } else if (record.type === "USER_LEVEL_UP_REWARD") {
       return acc + record.points;
+    } else if (record.type === "USER_REGISTER_REWARD") {
+      return acc + record.points;
     } else {
       return acc;
     }

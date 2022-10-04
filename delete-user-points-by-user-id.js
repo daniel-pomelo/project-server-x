@@ -3,11 +3,11 @@ const MongoDataBase = require("./MongoDataBase");
 MongoDataBase.init().then(async (db) => {
   const myDb = db.client.db("ProjectX");
   // const userId = "12f6538d-fea7-421c-97f0-8f86b763ce75";
-  const userId = "12f6538d-fea7-421c-97f0-8f86b763ce72";
-  // const userId2 = "fdcd2886-4a08-4a56-bc09-30c5f362817f";
+  // const userId = "12f6538d-fea7-421c-97f0-8f86b763ce75";
+  const userId2 = "fdcd2886-4a08-4a56-bc09-30c5f362817f";
   // const res = await getUserExperienceRecordsByUserId(myDb, userId);
   // console.log(res);
-  deleteUserProgressByUserId(myDb, userId);
+  deleteUserProgressByUserId(myDb, userId2);
   // showLastError(myDb);
 });
 
@@ -51,14 +51,26 @@ const collections = [
   // "Users",
 ];
 function deleteUserProgressByUserId(db, userId) {
-  const collections = ["Users"];
+  const collections = [
+    "DisabledUsers",
+    "UserExperience",
+    "UserExperienceRecords",
+    "UserPoints",
+    "UserSkillPoints",
+    "UserSkills",
+    "UserStats",
+  ];
   const promises = collections.map((collection) => {
     return db.collection(collection).deleteMany({
-      id: {
-        $ne: "fdcd2886-4a08-4a56-bc09-30c5f362817f",
-      },
+      user_id: userId,
     });
   });
+
+  promises.push(
+    db.collection("Users").deleteMany({
+      id: userId,
+    })
+  );
 
   return Promise.all(promises).then(console.log);
 }
