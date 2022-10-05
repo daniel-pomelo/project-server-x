@@ -477,11 +477,12 @@ class MongoDataBase {
         },
         data
       );
-      console.log(`Saved ${JSON.stringify(data)}`);
     } catch (error) {
-      console.log(
-        `Error Saving ${JSON.stringify(data)}, due: ${error.message}`
-      );
+      error.context = "SAVING_USER_BRIDGES";
+      error.reason = error.message;
+      error.payload = {
+        data,
+      };
       this.registerError(error);
     }
   }

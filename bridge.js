@@ -15,13 +15,24 @@ function findBridgeById(db, id) {
 const assertRequestComesFromBridgeEnabled = async (db, req) => {
   const bridgeId = req["headers"]["bridge-id"];
   const bridge = await db.findOne("Bridges", { id: bridgeId });
-  if (!bridge || !bridge.enabled) {
+  if (!bridge) {
     const e = new Error("BRIDGE_INVALID");
-    const payload = {
+    e.context = "MAKING_SURE_A_REQUEST_IS_FROM_ENABLED_BRIDGE";
+    e.reason = "BRIDGE_NOT_FOUND";
+    e.payload = {
       headers: req.headers,
+      query: { id: bridgeId },
     };
-    e.context = "BRIDGE_INVALID";
-    e.payload = payload;
+    throw e;
+  }
+  if (!bridge.enabled) {
+    const e = new Error("BRIDGE_INVALID");
+    e.context = "MAKING_SURE_A_REQUEST_IS_FROM_ENABLED_BRIDGE";
+    e.reason = "BRIDGE_DISABLED";
+    e.payload = {
+      headers: req.headers,
+      query: { id: bridgeId },
+    };
     throw e;
   }
   return bridge;

@@ -49,6 +49,10 @@ const responses = {
     status: 400,
     message: "Bad Request",
   },
+  CHARACTER_NOT_FOUND: {
+    status: 404,
+    message: "Character not found",
+  },
 };
 
 class MyServer {

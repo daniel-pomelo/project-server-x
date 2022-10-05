@@ -1,15 +1,17 @@
 const { getProfileUrl } = require("../../auth");
 const { timestamp } = require("../../time");
 const { assertRequestComesFromBridgeEnabled } = require("../../bridge");
+const assertCharacterExists = require("../../assertions/assertCharacterExists");
 
 const getUrlToProfile = (db) => async (req, res) => {
-  const userId = req.params.id;
+  const id = req.params.id;
+  await assertCharacterExists(db, id);
   const bridgeId = req["headers"]["bridge-id"];
   await assertRequestComesFromBridgeEnabled(db, req);
-  await db.saveUserAtBridge(userId, bridgeId, timestamp());
-  const url = await getProfileUrl(userId);
+  await db.saveUserAtBridge(id, bridgeId, timestamp());
+  const url = await getProfileUrl(id);
   res.send({
-    user_id: userId,
+    user_id: id,
     url,
   });
 };
