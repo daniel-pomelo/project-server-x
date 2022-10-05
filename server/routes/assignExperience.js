@@ -1,3 +1,4 @@
+const { forceMeterUpdate } = require("../../forceMeterUpdate");
 const { timestamp } = require("../../time");
 
 const firstLevelMaxXP = 240;
@@ -42,79 +43,81 @@ const assignExperience = (db, systemEvents) => async (req, res) => {
     []
   );
 
-  await db.saveUserExperience("UserExperience", operations);
+  // await db.saveUserExperience("UserExperience", operations);
 
   res.send({});
 
-  const record = { timestamp: timestamp() };
-  const promisesOfUserExperienceRecords = experienceToAssign.map(
-    ({ user_id, xp }) => {
-      return db.registerAssignExperience({
-        bridge_id: bridgeId,
-        ...record,
-        user_id,
-        xp,
-      });
-    }
-  );
+  // const record = { timestamp: timestamp() };
+  // const promisesOfUserExperienceRecords = experienceToAssign.map(
+  //   ({ user_id, xp }) => {
+  //     return db.registerAssignExperience({
+  //       bridge_id: bridgeId,
+  //       ...record,
+  //       user_id,
+  //       xp,
+  //     });
+  //   }
+  // );
 
-  await Promise.all(promisesOfUserExperienceRecords);
+  // await Promise.all(promisesOfUserExperienceRecords);
 
   const usersThatLevelUp = operations.filter((operation) => {
     const { userExperience, newUserExperience } = operation;
     return newUserExperience.level_value > userExperience.level_value;
   });
 
-  const userPoints = usersThatLevelUp.map((operation) => {
-    const { userExperience, newUserExperience, userId } = operation;
-    const currentLevel = newUserExperience.level_value;
-    const prevLevel = userExperience.level_value;
-    const points = (currentLevel - prevLevel) * 10;
-    return {
-      user_id: userId,
-      level_value: {
-        previous: prevLevel,
-        current: currentLevel,
-      },
-      points,
-      type: "USER_LEVEL_UP_REWARD",
-      timestamp: timestamp(),
-    };
-  });
+  // const userPoints = usersThatLevelUp.map((operation) => {
+  //   const { userExperience, newUserExperience, userId } = operation;
+  //   const currentLevel = newUserExperience.level_value;
+  //   const prevLevel = userExperience.level_value;
+  //   const points = (currentLevel - prevLevel) * 10;
+  //   return {
+  //     user_id: userId,
+  //     level_value: {
+  //       previous: prevLevel,
+  //       current: currentLevel,
+  //     },
+  //     points,
+  //     type: "USER_LEVEL_UP_REWARD",
+  //     timestamp: timestamp(),
+  //   };
+  // });
 
-  if (userPoints.length > 0) {
-    await db.saveUserPoints(userPoints);
-  }
+  // if (userPoints.length > 0) {
+  //   await db.saveUserPoints(userPoints);
+  // }
 
-  const userSkillPoints = usersThatLevelUp.map((operation) => {
-    const { userExperience, newUserExperience, userId } = operation;
-    const currentLevel = newUserExperience.level_value;
-    const prevLevel = userExperience.level_value;
-    const points = currentLevel - prevLevel;
-    return {
-      user_id: userId,
-      level_value: {
-        previous: prevLevel,
-        current: currentLevel,
-      },
-      points,
-      type: "USER_LEVEL_UP_REWARD",
-      timestamp: timestamp(),
-    };
-  });
+  // const userSkillPoints = usersThatLevelUp.map((operation) => {
+  //   const { userExperience, newUserExperience, userId } = operation;
+  //   const currentLevel = newUserExperience.level_value;
+  //   const prevLevel = userExperience.level_value;
+  //   const points = currentLevel - prevLevel;
+  //   return {
+  //     user_id: userId,
+  //     level_value: {
+  //       previous: prevLevel,
+  //       current: currentLevel,
+  //     },
+  //     points,
+  //     type: "USER_LEVEL_UP_REWARD",
+  //     timestamp: timestamp(),
+  //   };
+  // });
 
-  if (userSkillPoints.length > 0) {
-    await db.saveUserSkillPoints(userSkillPoints);
-  }
+  // if (userSkillPoints.length > 0) {
+  //   await db.saveUserSkillPoints(userSkillPoints);
+  // }
 
-  usersThatLevelUp.forEach(async (operation) => {
-    const { userExperience, newUserExperience } = operation;
-    systemEvents.notify("USER_LEVEL_UP", {
-      currentLevel: newUserExperience.level_value,
-      prevLevel: userExperience.level_value,
-      userId: newUserExperience.user_id,
-    });
-  });
+  console.log(JSON.stringify(usersThatLevelUp, null, 2));
+
+  // usersThatLevelUp.map(async (operation) => {
+  //   const { userExperience, newUserExperience } = operation;
+  //   systemEvents.notify("USER_LEVEL_UP", {
+  //     currentLevel: newUserExperience.level_value,
+  //     prevLevel: userExperience.level_value,
+  //     userId: newUserExperience.user_id,
+  //   });
+  // });
 };
 
 function reCalculate(userExperience, userId, xp) {
