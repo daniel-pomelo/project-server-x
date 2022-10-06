@@ -152,6 +152,14 @@ function adminPutClanDown(db) {
     res.send({});
   };
 }
+function declineInvitation(db) {
+  return async (req, res) => {
+    const userId = await getUserIdFromRequest(req);
+    const invitationId = req.params.invitationId;
+    await db.declineInvitation(userId, invitationId);
+    res.send({});
+  };
+}
 
 module.exports = {
   saveClan,
@@ -162,4 +170,5 @@ module.exports = {
   getUserInfo,
   deleteClan,
   adminPutClanDown,
+  declineInvitation,
 };

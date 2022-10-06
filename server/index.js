@@ -148,6 +148,7 @@ class MyServer {
 
     clans.save(app, db);
     clans.sendInvitationToMyClan(app, db);
+    clans.declineInvitation(app, db);
     clans.join(app, db);
     clans.leave(app, db);
     clans.management(app, db);

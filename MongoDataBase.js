@@ -942,6 +942,21 @@ class MongoDataBase {
     ]);
     return this.find("UserClanMembers", { clan_id: userClan.clan_id });
   }
+  async declineInvitation(userId, invitationId) {
+    await this.updateOne(
+      "UserClanInvitations",
+      {
+        _id: new ObjectId(invitationId),
+        invitado_id: userId,
+        status: "pending",
+      },
+      {
+        status: "declined",
+        declined_at: timestamp(),
+      },
+      false
+    );
+  }
 }
 
 module.exports = MongoDataBase;
