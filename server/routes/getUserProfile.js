@@ -30,7 +30,7 @@ module.exports = (db) => async (req, res) => {
   res.send({
     ...user,
     clan_invitations: clanInvitations,
-    clan_invitations_sent: clanInvitationsSent,
+    clan_invitations_sent: formatInvitationsSent(clanInvitationsSent),
     clan_membership: clanMembership,
     clan,
     meter,
@@ -38,3 +38,15 @@ module.exports = (db) => async (req, res) => {
     ...relationships,
   });
 };
+
+function formatInvitationsSent(invitations) {
+  return invitations.map((invitation) => {
+    return {
+      ...invitation,
+      status:
+        invitation.status === "declined_by_accepting_another_invitation"
+          ? "declined"
+          : invitation.status,
+    };
+  });
+}

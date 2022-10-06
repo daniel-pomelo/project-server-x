@@ -356,6 +356,20 @@ class MongoDataBase {
         status: "accepted",
       }
     );
+    const upsert = false;
+    await this.updateMany(
+      "UserClanInvitations",
+      {
+        invitado_id: userId,
+        status: "pending",
+      },
+      {
+        updated_at: timestamp(),
+        status: "declined_by_accepting_another_invitation",
+        invitation_accepted_id: invitationId,
+      },
+      upsert
+    );
     return invitation;
   }
   async joinClan(invitationId, userId, numberOfMembersToActivate) {
@@ -841,11 +855,18 @@ class MongoDataBase {
     );
   }
   async getClanInvitationsSent(userId) {
+    const userClan = await this.findOne("UserClans", {
+      user_id: userId,
+      deleted_at: null,
+    });
+    if (!userClan) {
+      return [];
+    }
     return this.client
       .db("ProjectX")
       .collection("UserClanInvitations")
       .aggregate([
-        { $match: { invitador_id: userId } },
+        { $match: { invitador_id: userId, clan_id: userClan.clan_id } },
         {
           $lookup: {
             from: "Users",
