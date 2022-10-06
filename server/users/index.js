@@ -34,4 +34,26 @@ module.exports = {
   find: (app, db) => {
     app.get("/api/players", getPlayers(db));
   },
+  deleteProgress: (app, db) => {
+    app.delete("/api/players/:playerId/progress", async (req, res) => {
+      const collections = [
+        "DisabledUsers",
+        "UserExperience",
+        "UserExperienceRecords",
+        "UserPoints",
+        "UserSkillPoints",
+        "UserSkills",
+        "UserStats",
+      ];
+      const promises = collections.map((collection) => {
+        return db.deleteMany(collection, {
+          user_id: req.params.playerId,
+        });
+      });
+
+      await Promise.all(promises).then(console.log);
+
+      res.send({});
+    });
+  },
 };

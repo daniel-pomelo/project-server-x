@@ -123,6 +123,7 @@ class MyServer {
     users.delete(app, db);
     users.toggle(app, db);
     users.find(app, db);
+    users.deleteProgress(app, db);
 
     bridges.update(app, db);
     bridges.list(app, db);

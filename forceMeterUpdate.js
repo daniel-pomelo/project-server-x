@@ -1,8 +1,8 @@
 const { default: axios } = require("axios");
 
 async function forceMeterUpdate(userId, db, context) {
+  const bridge = await db.findOne("Bridges");
   try {
-    const bridge = await db.findOne("Bridges");
     console.log(
       `Send {user-id: ${userId}} to ${bridge.id} with URL ${bridge.url}.`
     );

@@ -40,6 +40,12 @@ class MongoDataBase {
       .collection(collectionName)
       .deleteOne(criteria);
   }
+  deleteMany(collectionName, criteria) {
+    return this.client
+      .db("ProjectX")
+      .collection(collectionName)
+      .deleteMany(criteria);
+  }
   findOne(collectionName, criteria) {
     return this.client
       .db("ProjectX")
