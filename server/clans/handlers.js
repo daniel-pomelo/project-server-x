@@ -176,6 +176,11 @@ function declareWar(db) {
       await db.declareWar(userId, targetClanId);
       return res.send({});
     }
+    if (payload.type === "forge_alliance") {
+      const targetClanId = payload.target_clan_id;
+      await db.forgeAlliance(userId, targetClanId);
+      return res.send({});
+    }
     res.status(404).send({});
   };
 }

@@ -22,6 +22,7 @@ const CLANS_USER_INFO_URL = "/api/users/:userId/clans";
 const ADMIN_PUT_DOWN_CLAN_URL = "/api/me/clan";
 const DECLINE_INVITATION = "/api/invitation/:invitationId";
 const DECLARE_WAR_URL = "/api/clan/relationships";
+const FORGE_ALLIANCE_URL = "/api/clan/relationships";
 
 module.exports = {
   save(app, db) {

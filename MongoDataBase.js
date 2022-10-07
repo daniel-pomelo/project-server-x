@@ -822,6 +822,69 @@ class MongoDataBase {
       declare_by: userId,
     });
   }
+  async forgeAlliance(userId, targetClanId) {
+    const userClan = await this.findOne("UserClans", {
+      user_id: userId,
+      deleted_at: null,
+    });
+    if (!userClan) {
+      const e = new Error("BAD_REQUEST");
+      e.context = "FORGING_ALLIANCE";
+      e.reason = "USER_DOESNT_HAVE_A_CLAN";
+      e.payload = {
+        query: {
+          user_id: userId,
+          deleted_at: null,
+        },
+        params: {
+          userId,
+          targetClanId,
+        },
+      };
+      throw e;
+    }
+    const declaration = await this.findOne("ClanRelationships", {
+      clan_id: userClan.clan_id,
+      target_clan_id: targetClanId,
+      type: "forge_alliance",
+    });
+    if (declaration) {
+      const e = new Error("BAD_REQUEST");
+      e.context = "FORGING_ALLIANCE";
+      e.reason = "ALLIANCE_IS_ALREADY_FORGED";
+      e.payload = {
+        query: {
+          clan_id: userClan.clan_id,
+          target_clan_id: targetClanId,
+          type: "forge_alliance",
+        },
+        declaration,
+      };
+      throw e;
+    }
+    const targetClan = await this.findOne("Clans", {
+      _id: new ObjectId(targetClanId),
+    });
+    if (!targetClan) {
+      const e = new Error("BAD_REQUEST");
+      e.context = "FORGING_ALLIANCE";
+      e.reason = "TARGET_CLAN_DOESNT_EXIST";
+      e.payload = {
+        query: {
+          _id: targetClanId,
+        },
+        target_clan: targetClan,
+      };
+      throw e;
+    }
+    await this.save("ClanRelationships", {
+      clan_id: userClan.clan_id,
+      target_clan_id: new ObjectId(targetClanId),
+      timestamp: timestamp(),
+      type: "forge_alliance",
+      declare_by: userId,
+    });
+  }
   async getClanRelationships(userId) {
     const userClan = await this.findOne("UserClans", {
       user_id: userId,
@@ -869,15 +932,23 @@ class MongoDataBase {
     // }
 
     const enemies = [];
+    const allies = [];
 
     for (const relationship of relationships) {
       if (relationship.type === "war_declaration") {
         enemies.push(relationship);
       }
+      if (relationship.type === "forge_alliance") {
+        allies.push(relationship);
+      }
     }
 
     return {
-      allies: [],
+      allies: allies.map((relationship) => {
+        return {
+          name: relationship.target_clan[0].name,
+        };
+      }),
       enemies: enemies.map((relationship) => {
         return {
           name: relationship.target_clan[0].name,
@@ -1031,6 +1102,9 @@ class MongoDataBase {
       },
       false
     );
+  }
+  async getClanList() {
+    return this.find("Clans", { status: { $nin: ["disabled", "deleted"] } });
   }
 }
 
