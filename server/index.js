@@ -53,6 +53,10 @@ const responses = {
     status: 404,
     message: "Character not found",
   },
+  SESSION_EXPIRED: {
+    status: 401,
+    message: "Session expired.",
+  },
 };
 
 class MyServer {
@@ -155,6 +159,7 @@ class MyServer {
     clans.userInfo(app, db);
     clans.managementDeleteClan(app, db);
     clans.adminPutClanDown(app, db);
+    clans.declareWar(app, db);
 
     management.joinMembers(app, db);
     management.playersWithoutClan(app, db);

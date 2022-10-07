@@ -9,6 +9,7 @@ const {
   deleteClan,
   adminPutClanDown,
   declineInvitation,
+  declareWar,
 } = require("./handlers");
 
 const CLANS_URL = "/api/clans";
@@ -20,6 +21,7 @@ const DELETE_CLANS_MANAGEMENT_URL = "/api/management/clans/:id";
 const CLANS_USER_INFO_URL = "/api/users/:userId/clans";
 const ADMIN_PUT_DOWN_CLAN_URL = "/api/me/clan";
 const DECLINE_INVITATION = "/api/invitation/:invitationId";
+const DECLARE_WAR_URL = "/api/clan/relationships";
 
 module.exports = {
   save(app, db) {
@@ -48,5 +50,8 @@ module.exports = {
   },
   declineInvitation(app, db) {
     app.delete(DECLINE_INVITATION, asyncHandler(declineInvitation(db)));
+  },
+  declareWar(app, db) {
+    app.post(DECLARE_WAR_URL, asyncHandler(declareWar(db)));
   },
 };

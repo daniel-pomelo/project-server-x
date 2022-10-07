@@ -160,6 +160,18 @@ function declineInvitation(db) {
     res.send({});
   };
 }
+function declareWar(db) {
+  return async (req, res) => {
+    const userId = await getUserIdFromRequest(req);
+    const payload = req.body;
+    if (payload.type === "war_declaration") {
+      const targetClanId = payload.target_clan_id;
+      await db.declareWar(userId, targetClanId);
+      return res.send({});
+    }
+    res.status(404).send({});
+  };
+}
 
 module.exports = {
   saveClan,
@@ -171,4 +183,5 @@ module.exports = {
   deleteClan,
   adminPutClanDown,
   declineInvitation,
+  declareWar,
 };

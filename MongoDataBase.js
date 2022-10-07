@@ -759,8 +759,74 @@ class MongoDataBase {
       (user) => !membersIds.includes(user.id) && !userClans.includes(user.id)
     );
   }
+  async declareWar(userId, targetClanId) {
+    const userClan = await this.findOne("UserClans", {
+      user_id: userId,
+      deleted_at: null,
+    });
+    if (!userClan) {
+      const e = new Error("BAD_REQUEST");
+      e.context = "DECLARING_WAR";
+      e.reason = "USER_DOESNT_HAVE_A_CLAN";
+      e.payload = {
+        query: {
+          user_id: userId,
+          deleted_at: null,
+        },
+        params: {
+          userId,
+          targetClanId,
+        },
+      };
+      throw e;
+    }
+    const declaration = await this.findOne("ClanRelationships", {
+      clan_id: userClan.clan_id,
+      target_clan_id: targetClanId,
+      type: "war_declaration",
+    });
+    if (declaration) {
+      const e = new Error("BAD_REQUEST");
+      e.context = "DECLARING_WAR";
+      e.reason = "WAR_IS_ALREADY_DECLARED";
+      e.payload = {
+        query: {
+          clan_id: userClan.clan_id,
+          target_clan_id: targetClanId,
+          type: "war_declaration",
+        },
+        declaration,
+      };
+      throw e;
+    }
+    const targetClan = await this.findOne("Clans", {
+      _id: new ObjectId(targetClanId),
+    });
+    if (!targetClan) {
+      const e = new Error("BAD_REQUEST");
+      e.context = "DECLARING_WAR";
+      e.reason = "TARGET_CLAN_DOESNT_EXIST";
+      e.payload = {
+        query: {
+          _id: targetClanId,
+        },
+        target_clan: targetClan,
+      };
+      throw e;
+    }
+    await this.save("ClanRelationships", {
+      clan_id: userClan.clan_id,
+      target_clan_id: new ObjectId(targetClanId),
+      timestamp: timestamp(),
+      type: "war_declaration",
+      declare_by: userId,
+    });
+  }
   async getClanRelationships(userId) {
-    const userClan = await this.findOne("UserClans", { user_id: userId });
+    const userClan = await this.findOne("UserClans", {
+      user_id: userId,
+      deleted_at: null,
+    });
     if (!userClan) {
       return {
         allies: [],
@@ -771,6 +837,7 @@ class MongoDataBase {
       .db("ProjectX")
       .collection("ClanRelationships")
       .aggregate([
+        { $match: { clan_id: userClan.clan_id } },
         {
           $lookup: {
             from: "Clans",
@@ -791,18 +858,26 @@ class MongoDataBase {
         },
       ])
       .toArray();
-    const allies = relationships.filter(
-      (relationship) => relationship.type === "Ally"
-    );
-    const enemies = relationships.filter(
-      (relationship) => relationship.type === "Enemy"
-    );
+
+    // Example:
+    //
+    // {
+    //   clan_id: "...",
+    //   target_clan_id: "...",
+    //   type: "war_declaration",
+    //   timestamp: "...",
+    // }
+
+    const enemies = [];
+
+    for (const relationship of relationships) {
+      if (relationship.type === "war_declaration") {
+        enemies.push(relationship);
+      }
+    }
+
     return {
-      allies: allies.map((relationship) => {
-        return {
-          name: relationship.target_clan[0].name,
-        };
-      }),
+      allies: [],
       enemies: enemies.map((relationship) => {
         return {
           name: relationship.target_clan[0].name,

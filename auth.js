@@ -6,7 +6,7 @@ const UI_URL = process.env.URL_TO_UI;
 async function getUserIdFromToken(token) {
   const response = await axios.get(URL + "/api/token/" + token);
   if (!response.data || !response.data.userId) {
-    throw new Error("Session expired.");
+    throw new Error("SESSION_EXPIRED");
   }
   return response.data.userId;
 }
