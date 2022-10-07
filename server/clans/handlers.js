@@ -102,15 +102,21 @@ function getUserInfo(db) {
     const { userId } = req.params;
     const clan = await db.getClanOfUser(userId);
     if (clan) {
+      const { enemies } = await db.getClanRelationships(userId);
       return res.status(200).send({
         id: clan.name.toLowerCase(),
         name: clan.name,
         status: clan.status === "active" ? 1 : 0,
         can_invite: true,
         user_id: userId,
+        enemies: enemies.map((enemy) => enemy.name.toLowerCase()),
       });
     }
     const membership = await db.getClanOfJoinedMember(userId);
+    const userClan = await db.findOne("UserClans", {
+      clan_id: membership._id,
+    });
+    const { enemies } = await db.getClanRelationships(userClan.user_id);
     if (membership) {
       if (membership.status !== "active") {
         return res.status(404).send({
@@ -123,6 +129,7 @@ function getUserInfo(db) {
         status: membership.status === "active" ? 1 : 0,
         can_invite: false,
         user_id: userId,
+        enemies: enemies.map((enemy) => enemy.name.toLowerCase()),
       });
     }
     res.status(404).send({
