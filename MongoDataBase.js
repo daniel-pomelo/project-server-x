@@ -633,18 +633,13 @@ class MongoDataBase {
     const userClans = await this.userFunctionalClans(userId);
     const result = await Promise.resolve(userClans[0]).then((clan) =>
       clan
-        ? this.find(
-            "UserClanMembers",
-            {
-              clan_id: new ObjectId(clan._id),
-            },
-            {
-              sorting: "asc",
-            }
-          )
+        ? this.find("UserClanMembers", {
+            clan_id: new ObjectId(clan._id),
+            status: "joined",
+          })
             .then((memberships) =>
               Promise.all(
-                filterExMembers(memberships).map((membership) =>
+                memberships.map((membership) =>
                   this.findOne("Users", { id: membership.member_id }).then(
                     (user) => {
                       return user
