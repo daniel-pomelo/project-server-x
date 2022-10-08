@@ -8,7 +8,11 @@ module.exports = (db) => async (req, res) => {
 
   const id = invitation.invitado;
 
-  await verifyUserIsNotRegistered(db, id);
+  await Promise.all([
+    verifyUserIsNotRegistered(db, id),
+    verifyUserNameIsAvailable(db, req.body.name),
+    verifyHasOnlyLetters(req.body.name),
+  ]);
 
   await db.save("Users", User.from(id, req.body));
   await db.giveUserSkillPointTo(id);
@@ -43,5 +47,18 @@ async function verifyUserIsNotRegistered(db, id) {
   const user = await db.findOne("Users", { id });
   if (user) {
     throw new Error("USER_ALREADY_EXISTS");
+  }
+}
+async function verifyUserNameIsAvailable(db, name) {
+  const user = await db.findOne("Users", { name });
+  if (user) {
+    throw new Error(`The name "${name}" is already taken.`);
+  }
+}
+async function verifyHasOnlyLetters(name) {
+  const containsNumbers = name.match(/[\d]/);
+  const containsSpecialCharacters = name.match(/[\W]/);
+  if (containsNumbers || containsSpecialCharacters) {
+    throw new Error("Your name can only contain letters.");
   }
 }
