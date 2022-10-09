@@ -2,9 +2,11 @@ require("dotenv").config();
 const { MongoClient, ObjectId } = require("mongodb");
 const filterExMembers = require("./core/filterExMembers");
 const { timestamp } = require("./time");
-const { MONGO_DB_USERNAME, MONGO_DB_PASSWORD } = process.env;
-const uri = `mongodb+srv://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@cluster0.jvhhw.mongodb.net/ProjectX?retryWrites=true&w=majority`;
-
+const { MONGO_DB_USERNAME, MONGO_DB_PASSWORD, MONGO_DB_PROJECT_PATH } =
+  process.env;
+const DEFAULT_PROJECT_PATH = "cluster0.jvhhw.mongodb.net/ProjectX";
+const dbProjectPath = MONGO_DB_PROJECT_PATH || DEFAULT_PROJECT_PATH;
+const uri = `mongodb+srv://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@${dbProjectPath}?retryWrites=true&w=majority`;
 class MongoDataBase {
   constructor(client) {
     this.client = client;

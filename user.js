@@ -82,17 +82,6 @@ async function findAllUser(db, userIds = []) {
   return db.find("Users", criteria);
 }
 
-const statsNames = [
-  "strength",
-  "fortitude",
-  "intelligence",
-  "will",
-  "perception",
-  "agility",
-  "endurance",
-  "absorption",
-];
-
 async function reduce(stats, level_value, db) {
   const defaultStats = await db.getDefaultStats();
 
