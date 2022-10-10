@@ -64,7 +64,10 @@ class SkillsCatalog {
 
 async function getSkills(db, user, stats, level_value) {
   const skillsCatalogData = await db.find("Skills").then(SkillsCatalog.render);
-  const userSkills = await db.find("UserSkills", { user_id: user.id });
+  const userSkills = await db.find("UserSkills", {
+    user_id: user.id,
+    status: { $ne: "invalidated_by_respec" },
+  });
   const totalPoints = (level_value - 1) * 10;
 
   const skillsCatalog = skillsCatalogData;
