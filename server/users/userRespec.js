@@ -10,6 +10,7 @@ const userRespec = (db) => {
     const respec = await db.save("UserRespecs", {
       user_id: userId,
       type: "WITHDRAWAL",
+      timestamp: timestamp(),
     });
     const upsert = false;
 
