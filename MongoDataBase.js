@@ -1103,6 +1103,16 @@ class MongoDataBase {
   async getClanList() {
     return this.find("Clans", { status: { $nin: ["disabled", "deleted"] } });
   }
+  async getRespecCount(userId) {
+    const respecs = await this.find("UserRespecs", {
+      user_id: userId,
+    });
+    const rewards = respecs.filter((respec) => respec.type === "REWARD");
+    const withdrawals = respecs.filter(
+      (respec) => respec.type === "WITHDRAWAL"
+    );
+    return rewards.length - withdrawals.length;
+  }
 }
 
 module.exports = MongoDataBase;

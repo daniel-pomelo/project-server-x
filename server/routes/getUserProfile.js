@@ -20,6 +20,7 @@ module.exports = (db) => async (req, res) => {
     relationships,
     clanInvitationsSent,
     clans,
+    respecCount,
   ] = await Promise.all([
     db.getSkillsCatalog(),
     db.getUserClanDetails(userId),
@@ -28,6 +29,7 @@ module.exports = (db) => async (req, res) => {
     db.getClanRelationships(userId),
     db.getClanInvitationsSent(userId),
     db.getClanList(userId),
+    db.getRespecCount(userId),
   ]);
   res.send({
     ...user,
@@ -39,6 +41,7 @@ module.exports = (db) => async (req, res) => {
     skills_catalog: skillsCatalog,
     ...relationships,
     clans,
+    respecs: respecCount,
   });
 };
 

@@ -74,22 +74,15 @@ const userRespec = (db) => {
 };
 
 const assertHasRespecs = async (db, userId) => {
-  const respecs = await db.find("UserRespecs", {
-    user_id: userId,
-  });
-  const rewards = respecs.filter((respec) => respec.type === "REWARD");
-  const withdrawals = respecs.filter((respec) => respec.type === "WITHDRAWAL");
-  const hasRespecs = rewards.length - withdrawals.length > 0;
+  const respecsCount = await db.getRespecCount(userId);
+  const hasRespecs = respecsCount > 0;
   if (!hasRespecs) {
     const e = new Error("BAD_REQUEST");
     e.context = "USER_USING_RESPEC";
     e.reason = "HAS_NOT_RESPEC_TO_USE";
     e.payload = {
-      query: { user_id: userId },
-      result: {
-        rewards: rewards.length,
-        withdrawals: withdrawals.length,
-      },
+      userId,
+      respecsCount,
     };
     throw e;
   }
