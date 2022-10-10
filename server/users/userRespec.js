@@ -12,58 +12,62 @@ const userRespec = (db) => {
       type: "WITHDRAWAL",
       timestamp: timestamp(),
     });
-    const upsert = false;
 
-    await db.updateMany(
-      "UserPoints",
-      {
-        user_id: userId,
-        type: "USER_POINTS_WITHDRAWAL",
-      },
-      {
-        respec_updated_at: timestamp(),
-        status: "invalidated_by_respec",
-        respec_id: respec.insertedId,
-      },
-      upsert
-    );
-    await db.updateMany(
-      "UserSkillPoints",
-      {
-        user_id: userId,
-        type: "USER_POINTS_WITHDRAWAL",
-      },
-      {
-        respec_updated_at: timestamp(),
-        status: "invalidated_by_respec",
-        respec_id: respec.insertedId,
-      },
-      upsert
-    );
-    await db.updateMany(
-      "UserSkills",
-      {
-        user_id: userId,
-      },
-      {
-        respec_updated_at: timestamp(),
-        status: "invalidated_by_respec",
-        respec_id: respec.insertedId,
-      },
-      upsert
-    );
-    await db.updateMany(
-      "UserStats",
-      {
-        user_id: userId,
-      },
-      {
-        respec_updated_at: timestamp(),
-        status: "invalidated_by_respec",
-        respec_id: respec.insertedId,
-      },
-      upsert
-    );
+    const upsert = false;
+    const promises = [
+      db.updateMany(
+        "UserPoints",
+        {
+          user_id: userId,
+          type: "USER_POINTS_WITHDRAWAL",
+        },
+        {
+          respec_updated_at: timestamp(),
+          status: "invalidated_by_respec",
+          respec_id: respec.insertedId,
+        },
+        upsert
+      ),
+      db.updateMany(
+        "UserSkillPoints",
+        {
+          user_id: userId,
+          type: "USER_POINTS_WITHDRAWAL",
+        },
+        {
+          respec_updated_at: timestamp(),
+          status: "invalidated_by_respec",
+          respec_id: respec.insertedId,
+        },
+        upsert
+      ),
+      db.updateMany(
+        "UserSkills",
+        {
+          user_id: userId,
+        },
+        {
+          respec_updated_at: timestamp(),
+          status: "invalidated_by_respec",
+          respec_id: respec.insertedId,
+        },
+        upsert
+      ),
+      db.updateMany(
+        "UserStats",
+        {
+          user_id: userId,
+        },
+        {
+          respec_updated_at: timestamp(),
+          status: "invalidated_by_respec",
+          respec_id: respec.insertedId,
+        },
+        upsert
+      ),
+    ];
+
+    await Promise.all(promises);
 
     res.send({});
   };
