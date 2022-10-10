@@ -79,9 +79,8 @@ const assertHasRespecs = async (db, userId) => {
   });
   const rewards = respecs.filter((respec) => respec.type === "REWARD");
   const withdrawals = respecs.filter((respec) => respec.type === "WITHDRAWAL");
-  const hasRespecs = rewards.length - withdrawals.length;
-
-  if (hasRespecs <= 0) {
+  const hasRespecs = rewards.length - withdrawals.length > 0;
+  if (!hasRespecs) {
     const e = new Error("BAD_REQUEST");
     e.context = "USER_USING_RESPEC";
     e.reason = "HAS_NOT_RESPEC_TO_USE";
