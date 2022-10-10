@@ -4,6 +4,7 @@ const findUsers = require("../routes/findUsers");
 const getPlayers = require("../routes/getPlayers");
 const returnUserById = require("../routes/returnUserById");
 const togglePlayer = require("../routes/togglePlayer");
+const userRespec = require("./userRespec");
 
 module.exports = {
   all: (app, db) => {
@@ -55,5 +56,8 @@ module.exports = {
 
       res.send({});
     });
+  },
+  respec: (app, db) => {
+    app.post("/api/respec", asyncHandler(userRespec(db)));
   },
 };

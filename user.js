@@ -44,11 +44,20 @@ async function findUserById(db, id) {
       return experience || DEFAULT_USER_EXPERIENCE;
     });
   const stats = await db
-    .find("UserStats", { user_id: id })
+    .find("UserStats", {
+      user_id: id,
+      status: { $ne: "invalidated_by_respec" },
+    })
     .then((stats) => reduce(stats, experience.level_value, db));
   const [userPoints, skillPoints, userSkills] = await Promise.all([
-    db.find("UserPoints", { user_id: id }),
-    db.find("UserSkillPoints", { user_id: id }),
+    db.find("UserPoints", {
+      user_id: id,
+      status: { $ne: "invalidated_by_respec" },
+    }),
+    db.find("UserSkillPoints", {
+      user_id: id,
+      status: { $ne: "invalidated_by_respec" },
+    }),
     getSkills(db, user, stats, experience.level_value),
   ]).then(([userPoints, skillPoints, userSkills]) => {
     return [
@@ -107,7 +116,10 @@ async function reduce(stats, level_value, db) {
 }
 
 async function getUserStats(db, id) {
-  const stats = await db.find("UserStats", { user_id: id });
+  const stats = await db.find("UserStats", {
+    user_id: id,
+    status: { $ne: "invalidated_by_respec" },
+  });
 
   const props = {
     strength: 10,
@@ -135,7 +147,10 @@ async function getUserStats(db, id) {
 }
 
 async function findUserPointsByUserId(db, id) {
-  const records = await db.find("UserPoints", { user_id: id });
+  const records = await db.find("UserPoints", {
+    user_id: id,
+    status: { $ne: "invalidated_by_respec" },
+  });
   const balance = records.reduce((acc, record) => {
     if (record.type === "USER_POINTS_WITHDRAWAL") {
       return acc - record.points;
