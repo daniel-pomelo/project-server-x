@@ -28,7 +28,11 @@ const assignExperience = (db, systemEvents) => async (req, res) => {
       const currentUserExperience = userExperiences[userId];
       const userExperience = currentUserExperience || INITIAL_USER_EXPERIENCE;
       const isFirstAssignment = !currentUserExperience;
-      const newUserExperience = reCalculate(userExperience, userId, xp);
+      const newUserExperience = reCalculate(
+        userExperience,
+        userId,
+        getXpByUserLevel(userExperience.level_value, xp)
+      );
       return [
         ...acc,
         {
@@ -49,11 +53,14 @@ const assignExperience = (db, systemEvents) => async (req, res) => {
   const record = { timestamp: timestamp() };
   const promisesOfUserExperienceRecords = experienceToAssign.map(
     ({ user_id, xp }) => {
+      const currentUserExperience = userExperiences[user_id];
+      const userExperience = currentUserExperience || INITIAL_USER_EXPERIENCE;
       return db.registerAssignExperience({
         bridge_id: bridgeId,
         ...record,
         user_id,
-        xp,
+        original_xp: xp,
+        xp: getXpByUserLevel(userExperience.level_value, xp),
       });
     }
   );
@@ -141,6 +148,13 @@ function reCalculate(userExperience, userId, xp) {
     level_value: level,
     xp_max: calculateNextLevelXP(level),
   };
+}
+
+function getXpByUserLevel(levelValue, xp) {
+  if (levelValue >= 50) {
+    return xp / 2;
+  }
+  return xp;
 }
 
 module.exports = assignExperience;
