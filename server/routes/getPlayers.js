@@ -1,28 +1,24 @@
 const getPlayers = (db) => async (req, res) => {
   try {
-    const [users, isDisabled] = await Promise.all([
+    const [users, disabledIds] = await Promise.all([
       db.find("Users"),
-      db.find("DisabledUsers").then((documents) => {
-        const map = new Map();
-
-        documents.forEach((document) => {
-          map.set(document.user_id, true);
-        });
-
-        const isDisabled = (user) => !map.get(user.id);
-
-        return isDisabled;
-      }),
+      db
+        .find("DisabledUsers")
+        .then((users) => users.map((user) => user.user_id)),
     ]);
+
+    const isEnabled = (user) => !disabledIds.includes(user.id);
 
     const players = users.map((user) => {
       return {
         ...user,
-        enabled: isDisabled(user),
+        enabled: isEnabled(user),
       };
     });
 
-    res.send({ players });
+    res.send({
+      players,
+    });
   } catch (error) {
     console.log("get-players error: ", error);
     res.send({ error });

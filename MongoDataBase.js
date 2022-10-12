@@ -1101,7 +1101,91 @@ class MongoDataBase {
     );
   }
   async getClanList() {
-    return this.find("Clans", { status: { $nin: ["disabled", "deleted"] } });
+    const clans = await this.client
+      .db("ProjectX")
+      .collection("UserClans")
+      .aggregate([
+        { $match: { deleted_at: null } },
+        {
+          $lookup: {
+            from: "Users",
+            localField: "user_id",
+            foreignField: "id",
+            as: "admins",
+            pipeline: [
+              { $project: { newRoot: { name: "$name" } } },
+              { $replaceRoot: { newRoot: "$newRoot" } },
+            ],
+          },
+        },
+        {
+          $lookup: {
+            from: "Clans",
+            localField: "clan_id",
+            foreignField: "_id",
+            as: "clan_facts",
+            pipeline: [
+              {
+                $project: {
+                  newRoot: {
+                    name: "$name",
+                    created_at: "$created_at",
+                    description: "$description",
+                    status: "$status",
+                  },
+                },
+              },
+              { $replaceRoot: { newRoot: "$newRoot" } },
+            ],
+          },
+        },
+      ])
+      .toArray();
+    const promises = clans.map(async (clan) => {
+      const members = await this.client
+        .db("ProjectX")
+        .collection("UserClanMembers")
+        .aggregate([
+          {
+            $match: {
+              clan_id: clan.clan_id,
+              status: "joined",
+            },
+          },
+          {
+            $lookup: {
+              from: "Users",
+              localField: "member_id",
+              foreignField: "id",
+              as: "members",
+            },
+          },
+          {
+            $lookup: {
+              from: "UserExperience",
+              localField: "member_id",
+              foreignField: "user_id",
+              as: "experience",
+            },
+          },
+        ])
+        .toArray();
+      const memberLevelTotal = members.reduce((acc, member) => {
+        return acc + member.experience[0]?.level_value;
+      }, 0);
+      return {
+        ...clan,
+        members,
+        memberAverageLevel: Math.floor(
+          memberLevelTotal / (members.length === 0 ? 1 : members.length)
+        ),
+        name: clan.clan_facts[0]?.name,
+        description: clan.clan_facts[0]?.description,
+        status: clan.clan_facts[0]?.status,
+        created_at: clan.clan_facts[0]?.created_at,
+      };
+    });
+    return Promise.all(promises);
   }
   async getRespecCount(userId) {
     const respecs = await this.find("UserRespecs", {

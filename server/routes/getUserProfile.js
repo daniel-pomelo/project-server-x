@@ -29,7 +29,7 @@ module.exports = (db) => async (req, res) => {
     db.getClanMembership(userId),
     db.getClanRelationships(userId),
     db.getClanInvitationsSent(userId),
-    db.getClanList(userId),
+    db.getClanList(),
     db.getRespecCount(userId),
     db.getConquerPoints(userId),
   ]);

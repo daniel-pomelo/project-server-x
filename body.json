@@ -1,6 +1,6 @@
 {
-  "body": {
-    "bridge_url": "http://simhost-06d5a784ea6d4effa.agni.secondlife.io:12046/cap/166f928b-de9d-988b-d98f-c297f55c2aa4",
-    "reason": -1
+  "command": "CHARACTER_UPDATED",
+  "data": {
+    "user-id": "f95533d3-1f6b-4b5a-9f10-6d3c0ba1e8f4"
   }
 }
