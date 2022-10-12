@@ -1113,6 +1113,18 @@ class MongoDataBase {
     );
     return rewards.length - withdrawals.length;
   }
+  async getConquerPoints(userId) {
+    const records = await this.find("UserExperienceRecords", {
+      user_id: userId,
+      use_case: "conquer",
+    });
+    return records.map((record) => {
+      return {
+        xp: record.xp,
+        timestamp: record.timestamp,
+      };
+    });
+  }
 }
 
 module.exports = MongoDataBase;
