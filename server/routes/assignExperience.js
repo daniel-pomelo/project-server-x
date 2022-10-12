@@ -1,6 +1,7 @@
 const { timestamp } = require("../../time");
 
 const firstLevelMaxXP = 240;
+const CONQUER_ID = "conquer";
 
 function calculateNextLevelXP(level) {
   let nextLevelXP = firstLevelMaxXP;
@@ -31,7 +32,7 @@ const assignExperience = (db, systemEvents) => async (req, res) => {
       const newUserExperience = reCalculate(
         userExperience,
         userId,
-        getXpByUserLevel(userExperience.level_value, xp)
+        getXP(req, userExperience.level_value, xp)
       );
       return [
         ...acc,
@@ -60,7 +61,8 @@ const assignExperience = (db, systemEvents) => async (req, res) => {
         ...record,
         user_id,
         original_xp: xp,
-        xp: getXpByUserLevel(userExperience.level_value, xp),
+        xp: getXP(req, userExperience.level_value, xp),
+        use_case: isConquerUseCase(req) ? CONQUER_ID : undefined,
       });
     }
   );
@@ -155,6 +157,15 @@ function getXpByUserLevel(levelValue, xp) {
     return xp / 2;
   }
   return xp;
+}
+const isConquerUseCase = (req) => {
+  return req.headers["use-case"] === CONQUER_ID;
+};
+function getXP(req, levelValue, xp) {
+  if (isConquerUseCase(req)) {
+    return xp;
+  }
+  return getXpByUserLevel(levelValue, xp);
 }
 
 module.exports = assignExperience;
