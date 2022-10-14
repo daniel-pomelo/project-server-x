@@ -1,15 +1,7 @@
 const { timestamp } = require("../../time");
+const calculateNextLevelXP = require("./calculateNextLevelXP");
 
-const firstLevelMaxXP = 240;
 const CONQUER_ID = "conquer";
-
-function calculateNextLevelXP(level) {
-  let nextLevelXP = firstLevelMaxXP;
-  for (i = 1; i < level; i++) {
-    nextLevelXP += firstLevelMaxXP * 0.2;
-  }
-  return Math.round(nextLevelXP);
-}
 
 const INITIAL_USER_EXPERIENCE = {
   xp_level: 0,
