@@ -154,7 +154,7 @@ function reCalculate(userExperience, userId, xp) {
 
 function getXpByUserLevel(levelValue, xp) {
   if (levelValue >= 50) {
-    return xp / 2;
+    return xp / 10;
   }
   return xp;
 }
