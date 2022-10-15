@@ -1,6 +1,20 @@
 const MongoDataBase = require("../MongoDataBase");
-const calculateNextLevelXP = require("../server/routes/calculateNextLevelXP");
 const calculateNextLevelXPV2 = require("../server/routes/calculateNextLevelXPV2");
+
+const dataset = [];
+// let acc = 0;
+let i = 1;
+
+while (i < 99) {
+  dataset.push({
+    time: `${i} ${Math.round(calculateNextLevelXPV2(i) / 9216)}`,
+    xp: calculateNextLevelXPV2(i),
+  });
+  // acc += calculateNextLevelXPV2(i);
+  i++;
+}
+// acc += calculateNextLevelXPV2(i);
+console.log("sali: ", JSON.stringify(dataset));
 
 // show(51, calculateNextLevelXP(51));
 show(51, calculateNextLevelXPV2(51));
