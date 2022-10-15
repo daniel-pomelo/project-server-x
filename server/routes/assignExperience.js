@@ -1,7 +1,5 @@
 const { timestamp } = require("../../time");
-const calculateNextLevelXP = require("./calculateNextLevelXP");
-
-const CONQUER_ID = "conquer";
+const calculateNextLevelXPV2 = require("./calculateNextLevelXPV2");
 
 const INITIAL_USER_EXPERIENCE = {
   xp_level: 0,
@@ -21,11 +19,7 @@ const assignExperience = (db, systemEvents) => async (req, res) => {
       const currentUserExperience = userExperiences[userId];
       const userExperience = currentUserExperience || INITIAL_USER_EXPERIENCE;
       const isFirstAssignment = !currentUserExperience;
-      const newUserExperience = reCalculate(
-        userExperience,
-        userId,
-        getXP(req, userExperience.level_value, xp)
-      );
+      const newUserExperience = reCalculate(userExperience, userId, xp);
       return [
         ...acc,
         {
@@ -46,15 +40,11 @@ const assignExperience = (db, systemEvents) => async (req, res) => {
   const record = { timestamp: timestamp() };
   const promisesOfUserExperienceRecords = experienceToAssign.map(
     ({ user_id, xp }) => {
-      const currentUserExperience = userExperiences[user_id];
-      const userExperience = currentUserExperience || INITIAL_USER_EXPERIENCE;
       return db.registerAssignExperience({
         bridge_id: bridgeId,
         ...record,
         user_id,
-        original_xp: xp,
-        xp: getXP(req, userExperience.level_value, xp),
-        use_case: isConquerUseCase(req) ? CONQUER_ID : undefined,
+        xp,
       });
     }
   );
@@ -123,11 +113,11 @@ function reCalculate(userExperience, userId, xp) {
   const xpCurrentTotal = userExperience.xp_current + xp;
 
   let level = userExperience.level_value;
-  let xpByLevel = calculateNextLevelXP(level);
+  let xpByLevel = calculateNextLevelXPV2(level);
   let xpTotal = xpLevelTotal;
 
   while (xpTotal >= xpByLevel) {
-    xpByLevel = calculateNextLevelXP(level);
+    xpByLevel = calculateNextLevelXPV2(level);
     if (xpTotal - xpByLevel >= 0) {
       xpTotal -= xpByLevel;
       level += 1;
@@ -140,24 +130,8 @@ function reCalculate(userExperience, userId, xp) {
     xp_current: xpCurrentTotal,
     xp_level: xpTotal,
     level_value: level,
-    xp_max: calculateNextLevelXP(level),
+    xp_max: calculateNextLevelXPV2(level),
   };
-}
-
-function getXpByUserLevel(levelValue, xp) {
-  if (levelValue >= 50) {
-    return xp / 10;
-  }
-  return xp;
-}
-const isConquerUseCase = (req) => {
-  return req.headers["use-case"] === CONQUER_ID;
-};
-function getXP(req, levelValue, xp) {
-  if (isConquerUseCase(req)) {
-    return xp;
-  }
-  return getXpByUserLevel(levelValue, xp);
 }
 
 module.exports = assignExperience;
