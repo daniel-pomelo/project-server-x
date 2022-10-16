@@ -5,7 +5,7 @@ MongoDataBase.init().then(async (db) => {
     .db("ProjectX")
     .collection("Users")
     .aggregate([
-      { $match: { id: "4f1e1283-da0f-4051-9493-9f944c294b57" } },
+      // { $match: { id: "4f1e1283-da0f-4051-9493-9f944c294b57" } },
       {
         $lookup: {
           from: "UserExperience",
@@ -29,10 +29,9 @@ MongoDataBase.init().then(async (db) => {
     .sort((a, b) =>
       a.experience[0].level_value > b.experience[0].level_value ? -1 : 1
     )
-    .flatMap(
-      (user, index) =>
-        // (user, index) => [
-        // `#${index + 1}: ${user.name} Level: ${user.experience[0].level_value}`,
+    .map((user, index) =>
+      [
+        `#${index + 1}: ${user.name} Level: ${user.experience[0].level_value}`,
         Array.from(
           user.experience_records
             .reduce((acc, record) => {
@@ -50,17 +49,16 @@ MongoDataBase.init().then(async (db) => {
               return acc;
             }, new Map())
             .entries()
-        ).map(([time, xp]) => {
-          // return `${time} ${xp}`;
-          return { time, xp };
-        })
-      // .join("\n"),
-      // ]
-      // ].join("\n")
+        )
+          .map(([time, xp]) => {
+            return `${time} ${xp}`;
+          })
+          .join("\n"),
+      ].join("\n")
     );
 
-  console.log(JSON.stringify(output, null, 2));
-  // console.log(output.join("\n"));
+  // console.log(JSON.stringify(output, null, 2));
+  console.log(output.join("\n"));
 
   process.exit();
 });

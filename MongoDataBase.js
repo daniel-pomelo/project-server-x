@@ -321,9 +321,9 @@ class MongoDataBase {
         admins: clan.admins,
         deleted_at: clan.deleted_at,
         deleted_by: clan.deleted_by,
-        created_at: clan.clan_facts[0].created_at,
-        name: clan.clan_facts[0].name,
-        status: clan.clan_facts[0].status,
+        created_at: clan.clan_facts[0]?.created_at,
+        name: clan.clan_facts[0]?.name,
+        status: clan.clan_facts[0]?.status,
         members: clan.members
           .filter((member) => member.member.length > 0)
           .map((member) => {
@@ -1170,15 +1170,26 @@ class MongoDataBase {
           },
         ])
         .toArray();
-      const memberLevelTotal = members.reduce((acc, member) => {
-        return acc + member.experience[0]?.level_value;
+      const status = clan.clan_facts[0]?.status;
+
+      const levels = members
+        .map((member) => {
+          return member.experience[0]?.level_value || 1;
+        })
+        .filter((level) => level > 10);
+      const memberAverageLevel = levels.reduce((acc, level) => {
+        return acc + level;
       }, 0);
+      // const memberAverageLevel =
+      //   status !== "active"
+      //     ? 0
+      //     : Math.floor(
+      //         memberLevelTotal / (members.length === 0 ? 1 : members.length)
+      //       );
       return {
         ...clan,
         members,
-        memberAverageLevel: Math.floor(
-          memberLevelTotal / (members.length === 0 ? 1 : members.length)
-        ),
+        memberAverageLevel,
         name: clan.clan_facts[0]?.name,
         description: clan.clan_facts[0]?.description,
         status: clan.clan_facts[0]?.status,
