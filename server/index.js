@@ -25,6 +25,7 @@ const clans = require("./clans");
 const pages = require("./pages");
 const management = require("./management");
 const uuid = require("uuid");
+const conquer = require("./conquer");
 
 const PORT = process.env.PORT || 3001;
 
@@ -166,6 +167,8 @@ class MyServer {
     management.playersWithoutClan(app, db);
 
     pages.getClansPageInfo(app, db);
+
+    conquer.setPointAsConquered(app, db);
 
     app.use((error, req, res, next) => {
       db.registerError(error, req.id);
