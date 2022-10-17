@@ -129,6 +129,7 @@ class MyServer {
     users.find(app, db);
     users.deleteProgress(app, db);
     users.respec(app, db);
+    users.xp(app, db);
 
     bridges.update(app, db);
     bridges.list(app, db);

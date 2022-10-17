@@ -60,4 +60,71 @@ module.exports = {
   respec: (app, db) => {
     app.post("/api/respec", asyncHandler(userRespec(db)));
   },
+  xp: (app, db) => {
+    app.get(
+      "/api/users/:userId/xp",
+      asyncHandler(async (req, res) => {
+        const userId = req.params.userId;
+        const users = await db.client
+          .db("ProjectX")
+          .collection("Users")
+          .aggregate([
+            { $match: { id: userId } },
+            {
+              $lookup: {
+                from: "UserExperience",
+                localField: "id",
+                foreignField: "user_id",
+                as: "experience",
+              },
+            },
+            {
+              $lookup: {
+                from: "UserExperienceRecords",
+                localField: "id",
+                foreignField: "user_id",
+                as: "experience_records",
+              },
+            },
+          ])
+          .toArray();
+
+        console.log(JSON.stringify(userId, null, 2));
+        console.log(JSON.stringify(users, null, 2));
+
+        const output = users
+          // .sort((a, b) =>
+          //   a.experience[0].level_value > b.experience[0].level_value ? -1 : 1
+          // )
+          .flatMap((user) =>
+            Array.from(
+              user.experience_records
+                .reduce((acc, record) => {
+                  //timestamp: 2022-10-13T21:00:37.450Z
+                  const hour = record.timestamp.split("T")[1].substring(0, 2);
+                  const date = record.timestamp.split("T")[0];
+                  // const time = `${date} ${hour}hs`;
+                  const time = `${date}:${hour}`;
+                  // const time = record.timestamp;
+                  const key = time;
+                  if (acc.get(key)) {
+                    const xp = acc.get(key) + record.xp;
+                    acc.set(key, Math.round(xp));
+                  } else {
+                    acc.set(key, Math.round(record.xp));
+                  }
+                  return acc;
+                }, new Map())
+                .entries()
+            ).reduce((acc, [time, xp]) => {
+              return {
+                ...acc,
+                [time]: xp,
+              };
+            }, {})
+          );
+        res.send(output);
+      })
+    );
+  },
 };
