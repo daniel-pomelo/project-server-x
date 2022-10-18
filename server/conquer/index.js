@@ -7,6 +7,7 @@ const uuid = require("uuid");
 const { timestamp } = require("../../time");
 const assertBridgeIsEnabled = require("../routes/assertBridgeIsEnabled");
 const asyncHandler = require("../routes/asyncHandler");
+const SystemEvents = require("../SystemEvents");
 
 module.exports = {
   setPointAsConquered: (app, db) => {
@@ -20,16 +21,62 @@ module.exports = {
   createPoint: (app, db) => {
     app.post("/api/conquer-point", asyncHandler(createConquerPoint(db)));
   },
+  launchPoint: (app, db) => {
+    app.post("/api/conquer-point/launch", asyncHandler(launchConquerPoint(db)));
+  },
 };
 
-async function createConquerPoint(req, res) {
-  await db.save("ConquestPoints", {
-    id: uuid.v4(),
-    status: "active",
-    ttl: 3600,
-    timestamp: timestamp(),
-  });
-  res.send({});
+function launchConquerPoint(db) {
+  return async (req, res) => {
+    const [conquerPoint, bridge] = await Promise.all([
+      getConquestPoint(req, db),
+      db.findOne("Bridges", {
+        id: req.body.bridge_id,
+        enabled: true,
+      }),
+    ]);
+
+    if (!bridge) {
+      const e = new Error("BAD_REQUEST");
+      e.context = "LAUNCHING_CONQUERING_POINT";
+      e.reason = "Bridge to notify not found.";
+      e.payload = {
+        body: req.body,
+        headers: req.headers,
+      };
+      throw e;
+    }
+
+    const systemEvents = new SystemEvents();
+
+    const requestResult = await systemEvents.notifyConquerPointLaunched(
+      bridge,
+      conquerPoint
+    );
+
+    await db.save("ConquestPointLaunchings", {
+      body: req.body,
+      request_result: requestResult.data,
+      request_result_status: requestResult.status,
+      conquer_point: conquerPoint,
+      bridge,
+      timestamp: timestamp(),
+    });
+
+    res.send({});
+  };
+}
+
+function createConquerPoint(db) {
+  return async (req, res) => {
+    await db.save("ConquestPoints", {
+      id: uuid.v4(),
+      status: "active",
+      ttl: 3600,
+      timestamp: timestamp(),
+    });
+    res.send({});
+  };
 }
 
 function setPointAsConquered(db) {

@@ -53,6 +53,15 @@ class SystemEvents {
       console.log(error);
     }
   }
+  notifyConquerPointLaunched(bridge, conquerPoint) {
+    return axios.post(bridge.url, {
+      command: "SPAWN_CONQUER_A",
+      data: {
+        conquer_id: conquerPoint.id,
+        duration: conquerPoint.ttl,
+      },
+    });
+  }
 }
 
 module.exports = SystemEvents;
