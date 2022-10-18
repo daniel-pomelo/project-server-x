@@ -7,9 +7,26 @@ const INITIAL_USER_EXPERIENCE = {
   level_value: 1,
 };
 
+async function getExperienceToAssign(db, body) {
+  const activeConquerPoints = await db.find("ConquestPoints", {
+    status: "active",
+  });
+
+  const conquerPoints = activeConquerPoints.filter((conquerPoint) => {
+    console.log(conquerPoint);
+  });
+
+  console.log(conquerPoints);
+
+  // if () {
+
+  // }
+  return [...body];
+}
+
 const assignExperience = (db, systemEvents) => async (req, res) => {
   const bridgeId = req.headers["bridge-id"];
-  const experienceToAssign = [...req.body];
+  const experienceToAssign = getExperienceToAssign(db, req.body);
 
   const userIds = experienceToAssign.map(({ user_id }) => user_id);
   const userExperiences = await db.groupByUserId("UserExperience", userIds);

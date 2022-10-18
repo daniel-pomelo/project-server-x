@@ -168,9 +168,9 @@ class MyServer {
 
     pages.getClansPageInfo(app, db);
 
-    conquer.setPointAsConquered(app, db);
-    conquer.createPoint(app, db);
-    conquer.launchPoint(app, db);
+    conquer.conquerConquestPoint(app, db);
+    conquer.createConquestPoint(app, db);
+    conquer.launchConquestPoint(app, db);
 
     app.use((error, req, res, next) => {
       db.registerError(error, req.id);

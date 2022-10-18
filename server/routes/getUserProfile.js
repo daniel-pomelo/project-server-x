@@ -33,6 +33,11 @@ module.exports = (db) => async (req, res) => {
     db.getRespecCount(userId),
     db.getConquerPoints(userId),
   ]);
+
+  const conquests = await db.hasAConquerPoint(
+    clan?.name || clanMembership?.name
+  );
+
   res.send({
     ...user,
     clan_invitations: clanInvitations,
@@ -45,6 +50,7 @@ module.exports = (db) => async (req, res) => {
     clans,
     respecs: respecCount,
     conquers,
+    conquests,
   });
 };
 

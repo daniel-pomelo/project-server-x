@@ -1220,6 +1220,32 @@ class MongoDataBase {
       };
     });
   }
+  async hasAConquerPoint(clanName) {
+    if (!clanName) {
+      return false;
+    }
+    const conquests = await this.find("ConquestPoints", {
+      conquered_by: clanName,
+    }).then((conquests) => {
+      return conquests
+        .map((conquest) => {
+          const launched_at = new Date(conquest.launched_at);
+          const expires_at = launched_at.setSeconds(
+            launched_at.getSeconds() + conquest.ttl
+          );
+          return {
+            ...conquest,
+            isExpired: new Date().getTime() >= new Date(expires_at),
+            expires_at,
+            now: new Date().getTime(),
+          };
+        })
+        .filter((conquest) => !conquest.isExpired);
+    });
+    return conquests.map((conquest) => ({
+      expires_at: conquest.expires_at,
+    }));
+  }
 }
 
 module.exports = MongoDataBase;

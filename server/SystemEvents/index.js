@@ -53,9 +53,9 @@ class SystemEvents {
       console.log(error);
     }
   }
-  notifyConquerPointLaunched(bridge, conquerPoint) {
+  notifyConquestPointLaunched(bridge, conquerPoint) {
     return axios.post(bridge.url, {
-      command: "SPAWN_CONQUER_A",
+      command: "SPAWN_CONQUER",
       data: {
         conquer_id: conquerPoint.id,
         duration: conquerPoint.ttl,

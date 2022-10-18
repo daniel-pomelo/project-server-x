@@ -10,7 +10,8 @@ MongoDataBase.init().then(async (db) => {
     .find("DisabledUsers")
     .then((users) => users.map((disabledUser) => disabledUser.user_id));
   const respecs = await db
-    .find("Users", { id: { $nin: disabledUsersIds } })
+    // .find("Users", { id: { $nin: disabledUsersIds } })
+    .find("Users", { id: "138e87f7-33e7-4240-9e95-1f18f9ff1227" })
     .then((users) => {
       return Promise.all(
         users.map((user) => {
@@ -18,6 +19,7 @@ MongoDataBase.init().then(async (db) => {
             // if (!enabledUserIds.includes(user.id)) {
             //   return console.log(`Skipped user ${user.name}`, new Date());
             // }
+            // console.log(`Skipped user ${user.name}`, new Date());
             return db
               .save("UserRespecs", {
                 type: "REWARD",

@@ -104,12 +104,12 @@ function getUserInfo(db) {
     if (clan) {
       const { enemies } = await db.getClanRelationships(userId);
       return res.status(200).send({
-        id: clan.name.toLowerCase(),
+        id: clan.name,
         name: clan.name,
         status: clan.status === "active" ? 1 : 0,
         can_invite: true,
         user_id: userId,
-        enemies: enemies.map((enemy) => enemy.name.toLowerCase()),
+        enemies: enemies.map((enemy) => enemy.name),
       });
     }
     const membership = await db.getClanOfJoinedMember(userId);
@@ -124,12 +124,12 @@ function getUserInfo(db) {
         });
       }
       return res.status(200).send({
-        id: membership.name.toLowerCase(),
+        id: membership.name,
         name: membership.name,
         status: membership.status === "active" ? 1 : 0,
         can_invite: false,
         user_id: userId,
-        enemies: enemies.map((enemy) => enemy.name.toLowerCase()),
+        enemies: enemies.map((enemy) => enemy.name),
       });
     }
     res.status(404).send({
