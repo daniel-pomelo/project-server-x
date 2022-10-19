@@ -167,6 +167,7 @@ class MyServer {
     management.playersWithoutClan(app, db);
 
     pages.getClansPageInfo(app, db);
+    pages.getConquestPointPageInfo(app, db);
 
     conquer.conquerConquestPoint(app, db);
     conquer.createConquestPoint(app, db);
