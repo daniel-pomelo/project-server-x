@@ -1231,7 +1231,7 @@ class MongoDataBase {
         .map((conquest) => {
           const launched_at = new Date(conquest.launched_at);
           const expires_at = launched_at.setSeconds(
-            launched_at.getSeconds() + conquest.ttl
+            launched_at.getSeconds() + parseInt(conquest.ttl)
           );
           return {
             ...conquest,
@@ -1242,9 +1242,7 @@ class MongoDataBase {
         })
         .filter((conquest) => !conquest.isExpired);
     });
-    return conquests.map((conquest) => ({
-      expires_at: conquest.expires_at,
-    }));
+    return conquests;
   }
 }
 
