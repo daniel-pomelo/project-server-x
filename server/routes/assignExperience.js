@@ -26,7 +26,7 @@ async function getExperienceToAssign(db, body) {
 
 const assignExperience = (db, systemEvents) => async (req, res) => {
   const bridgeId = req.headers["bridge-id"];
-  const experienceToAssign = getExperienceToAssign(db, req.body);
+  const experienceToAssign = await getExperienceToAssign(db, req.body);
 
   const userIds = experienceToAssign.map(({ user_id }) => user_id);
   const userExperiences = await db.groupByUserId("UserExperience", userIds);
