@@ -8,20 +8,57 @@ const INITIAL_USER_EXPERIENCE = {
 };
 
 async function getExperienceToAssign(db, body) {
-  const activeConquerPoints = await db.find("ConquestPoints", {
-    status: "active",
-  });
+  return Promise.all(
+    body.map(async ({ user_id, xp }) => {
+      const [userClan = [], userClanMembers = []] = await Promise.all([
+        db
+          .findOne("UserClans", {
+            user_id,
+            deleted_at: null,
+          })
+          .then((userClan) => {
+            if (userClan) {
+              return db
+                .findOne("Clans", { _id: userClan.clan_id })
+                .then((clan) => {
+                  if (clan) {
+                    return db.hasAConquerPoint(clan.name);
+                  }
+                });
+            }
+          }),
+        db
+          .findOne("UserClanMembers", {
+            member_id: user_id,
+            status: "joined",
+          })
+          .then((userClanMember) => {
+            if (userClanMember) {
+              return db
+                .findOne("Clans", { _id: userClanMember.clan_id })
+                .then((clan) => {
+                  if (clan) {
+                    return db.hasAConquerPoint(clan.name);
+                  }
+                });
+            }
+          }),
+      ]);
 
-  const conquerPoints = activeConquerPoints.filter((conquerPoint) => {
-    console.log(conquerPoint);
-  });
-
-  console.log(conquerPoints);
-
-  // if () {
-
-  // }
-  return [...body];
+      if (userClan.length > 0 || userClanMembers.length > 0) {
+        return {
+          user_id,
+          original_xp: xp,
+          xp: xp * 2,
+        };
+      }
+      return {
+        user_id,
+        xp,
+        original_xp: xp,
+      };
+    })
+  );
 }
 
 const assignExperience = (db, systemEvents) => async (req, res) => {
@@ -56,12 +93,13 @@ const assignExperience = (db, systemEvents) => async (req, res) => {
 
   const record = { timestamp: timestamp() };
   const promisesOfUserExperienceRecords = experienceToAssign.map(
-    ({ user_id, xp }) => {
+    ({ user_id, xp, original_xp }) => {
       return db.registerAssignExperience({
         bridge_id: bridgeId,
         ...record,
         user_id,
         xp,
+        original_xp,
       });
     }
   );
