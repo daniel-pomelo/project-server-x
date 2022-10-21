@@ -1,5 +1,6 @@
 require("dotenv").config();
 const { MongoClient, ObjectId } = require("mongodb");
+const dayjs = require("dayjs");
 const filterExMembers = require("./core/filterExMembers");
 const { timestamp } = require("./time");
 const { MONGO_DB_USERNAME, MONGO_DB_PASSWORD, MONGO_DB_PROJECT_PATH } =
@@ -1229,13 +1230,16 @@ class MongoDataBase {
     }).then((conquests) => {
       return conquests
         .map((conquest) => {
-          const launched_at = new Date(conquest.launched_at);
-          const expires_at = launched_at.setSeconds(
-            launched_at.getSeconds() + parseInt(conquest.ttl)
-          );
+          const expires_at = dayjs(conquest.launched_at)
+            .add(conquest.ttl, "seconds")
+            .toDate()
+            .toISOString();
+          const hasExpired = dayjs(conquest.launched_at)
+            .add(conquest.ttl, "seconds")
+            .isBefore(dayjs());
           return {
             ...conquest,
-            isExpired: new Date().getTime() >= new Date(expires_at),
+            isExpired: hasExpired,
             expires_at,
             now: new Date().getTime(),
           };
