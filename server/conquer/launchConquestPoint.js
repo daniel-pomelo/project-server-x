@@ -35,8 +35,11 @@ function launchConquestPoint(db) {
       launched_at: timestamp(),
     });
 
+    console.log(requestResult);
+
     await db.save("ConquestPointLaunchings", {
       body: req.body,
+      request_body: requestResult.body,
       request_result: requestResult.data,
       request_result_status: requestResult.status,
       conquer_point: conquestPoint,
