@@ -1114,8 +1114,16 @@ class MongoDataBase {
             foreignField: "id",
             as: "admins",
             pipeline: [
-              { $project: { newRoot: { name: "$name" } } },
-              { $replaceRoot: { newRoot: "$newRoot" } },
+              // { $project: { newRoot: { name: "$name" } } },
+              // { $replaceRoot: { newRoot: "$newRoot" } },
+              {
+                $lookup: {
+                  from: "UserExperience",
+                  localField: "id",
+                  foreignField: "user_id",
+                  as: "experience",
+                },
+              },
             ],
           },
         },
