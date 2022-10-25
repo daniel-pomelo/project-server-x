@@ -184,6 +184,15 @@ function declareWar(db) {
     res.status(404).send({});
   };
 }
+function kickoutToClan(db) {
+  return async (req, res) => {
+    const clanMasterId = await getUserIdFromRequest(req);
+    const memberId = req.body.member_id;
+    await db.kickoutFromClan(clanMasterId, memberId);
+    await forceMeterUpdate(memberId, db, "KICKING_A_MEMBER_OUT_FROM_CLAN");
+    res.status(200).send({});
+  };
+}
 
 module.exports = {
   saveClan,
@@ -196,4 +205,5 @@ module.exports = {
   adminPutClanDown,
   declineInvitation,
   declareWar,
+  kickoutToClan,
 };

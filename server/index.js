@@ -162,6 +162,7 @@ class MyServer {
     clans.managementDeleteClan(app, db);
     clans.adminPutClanDown(app, db);
     clans.declareWar(app, db);
+    clans.kickout(app, db);
 
     management.joinMembers(app, db);
     management.playersWithoutClan(app, db);

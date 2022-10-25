@@ -647,6 +647,7 @@ class MongoDataBase {
                     (user) => {
                       return user
                         ? {
+                            id: user.id,
                             name: user.name,
                             breed: user.breed,
                             type: user.type,
@@ -745,7 +746,7 @@ class MongoDataBase {
       ),
       this.find(
         "UserClanMembers",
-        {},
+        { status: "joined" },
         {
           sorting: "desc",
         }
@@ -1075,7 +1076,7 @@ class MongoDataBase {
       ),
       this.updateMany(
         "UserClanMembers",
-        { clan_id: userClan.clan_id },
+        { clan_id: userClan.clan_id, status: "joined" },
         {
           status: "deleted",
           deleted_at: timestamp(),
@@ -1255,6 +1256,84 @@ class MongoDataBase {
         .filter((conquest) => !conquest.isExpired);
     });
     return conquests;
+  }
+  async kickoutFromClan(clanMasterId, memberIdToKick) {
+    const query = {
+      user_id: clanMasterId,
+      deleted_at: null,
+    };
+    const userClan = await this.findOne("UserClans", query);
+    if (!userClan) {
+      const e = new Error("BAD_REQUEST");
+      e.context = "KICKING_MEMBER_FROM_MY_CLAN";
+      e.reason = "MASTER_DOES_NOT_HAVE_A_CLAN";
+      e.payload = {
+        query,
+        params: {
+          master_id: clanMasterId,
+          disciple_id: memberIdToKick,
+        },
+      };
+      throw e;
+    }
+    const memberQuery = {
+      member_id: memberIdToKick,
+      status: "joined",
+      clan_id: userClan.clan_id,
+    };
+    const memberToKick = await this.findOne("UserClanMembers", memberQuery);
+    if (!memberToKick) {
+      const e = new Error("BAD_REQUEST");
+      e.context = "KICKING_MEMBER_FROM_MY_CLAN";
+      e.reason = "USER_IS_NOT_MEMBER_OF_THIS_CLAN";
+      e.payload = {
+        query: memberQuery,
+        clan: userClan,
+        result: memberToKick,
+        params: {
+          master_id: clanMasterId,
+          member: memberIdToKick,
+        },
+      };
+      throw e;
+    }
+    if (memberToKick.status !== "joined") {
+      const e = new Error("BAD_REQUEST");
+      e.context = "KICKING_MEMBER_FROM_MY_CLAN";
+      e.reason = "ONLY_CAN_KICK_MEMBER_IN_STATUS_JOINED";
+      e.payload = {
+        query: memberQuery,
+        clan: userClan,
+        result: memberToKick,
+        params: {
+          master_id: clanMasterId,
+          member: memberIdToKick,
+        },
+      };
+      throw e;
+    }
+
+    const upsert = false;
+
+    await this.updateOne(
+      "UserClanMembers",
+      {
+        _id: memberToKick._id,
+      },
+      {
+        status: "kickout",
+        kickout_at: timestamp(),
+      },
+      upsert
+    );
+
+    await this.save("UserClanMembersEvents", {
+      master_id: clanMasterId,
+      member_id: memberIdToKick,
+      fromStatus: memberToKick.status,
+      toStatus: "kickout",
+      timestamp: timestamp(),
+    });
   }
 }
 
