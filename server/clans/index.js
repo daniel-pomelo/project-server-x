@@ -10,6 +10,7 @@ const {
   adminPutClanDown,
   declineInvitation,
   declareWar,
+  kickoutToClan,
 } = require("./handlers");
 
 const CLANS_URL = "/api/clans";
@@ -22,7 +23,7 @@ const CLANS_USER_INFO_URL = "/api/users/:userId/clans";
 const ADMIN_PUT_DOWN_CLAN_URL = "/api/me/clan";
 const DECLINE_INVITATION = "/api/invitation/:invitationId";
 const DECLARE_WAR_URL = "/api/clan/relationships";
-const FORGE_ALLIANCE_URL = "/api/clan/relationships";
+const CLANS_KICKOUT_URL = "/api/clan/kickout";
 
 module.exports = {
   save(app, db) {
@@ -54,5 +55,8 @@ module.exports = {
   },
   declareWar(app, db) {
     app.post(DECLARE_WAR_URL, asyncHandler(declareWar(db)));
+  },
+  kickout(app, db) {
+    app.post(CLANS_KICKOUT_URL, asyncHandler(kickoutToClan(db)));
   },
 };

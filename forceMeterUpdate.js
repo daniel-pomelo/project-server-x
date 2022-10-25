@@ -1,6 +1,7 @@
 const { default: axios } = require("axios");
 
 async function forceMeterUpdate(userId, db, context) {
+  //TODO: Improve how bridge is found.
   const bridge = await db.findOne("Bridges");
   try {
     console.log(
