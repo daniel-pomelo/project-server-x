@@ -3,7 +3,7 @@ const { timestamp } = require("../../time");
 
 const userRespec = (db) => {
   return async (req, res) => {
-    const userId = await getUserIdFromRequest(req);
+    const userId = await getUserIdFromRequest(db, req);
 
     await assertHasRespecs(db, userId);
 

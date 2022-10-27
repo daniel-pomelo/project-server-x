@@ -6,7 +6,7 @@ const EMPTY_RESPONSE = {};
 
 const updateUserSkills = (db, systemEvents) => async (req, res) => {
   const token = req.params.token;
-  const userId = await getUserIdFromToken(token);
+  const userId = await getUserIdFromToken(db, token);
   const user = await findUserById(db, userId);
   const { skills } = req.body;
   const { skill_points } = user;

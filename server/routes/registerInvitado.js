@@ -28,7 +28,7 @@ module.exports = (db) => async (req, res) => {
 
   await db.updateInvitationTimestamp(invitation, timestamp());
 
-  const url = await getProfileUrl(id);
+  const url = await getProfileUrl(db, id);
 
   res.status(201).send({ url });
 
