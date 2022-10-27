@@ -31,7 +31,8 @@ class HitAbsorption {
 class HitSpeed {
   static calc(userStats) {
     const { strength, perception } = userStats;
-    const speed = strength / perception;
+    const divisor = perception + perception * 0.25;
+    const speed = strength / divisor;
     if (speed <= 0.25) {
       return 0.25;
     }
