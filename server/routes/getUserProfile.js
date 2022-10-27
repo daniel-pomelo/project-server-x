@@ -7,7 +7,9 @@ const meter = {
 
 module.exports = (db) => async (req, res) => {
   const token = req.params.token;
-  const userId = await getUserIdFromToken(token);
+  const userId = await getUserIdFromToken(db, token);
+  console.log("token: ", token);
+  console.log("userId: ", userId);
   const user = await findUserById(db, userId);
   if (!user) {
     return res.status(404).send({});

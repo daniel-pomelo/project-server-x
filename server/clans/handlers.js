@@ -5,7 +5,7 @@ const numberOfMembersToActivate =
 
 function saveClan(db) {
   return async (req, res) => {
-    const userId = await getUserIdFromRequest(req);
+    const userId = await getUserIdFromRequest(db, req);
     await assertUserCreateAClan(db, userId);
     const clanName = getClanName(req);
     const clanDescription = getClanDescription(req);
@@ -63,7 +63,7 @@ function getInvitadoId(req) {
 function joinToClan(db) {
   return async (req, res) => {
     const invitationId = req.params.invitationId;
-    const userId = await getUserIdFromRequest(req);
+    const userId = await getUserIdFromRequest(db, req);
     await db.joinClan(invitationId, userId, numberOfMembersToActivate);
     // const membersToNotify = await db.joinClan(
     //   invitationId,
@@ -85,7 +85,7 @@ function joinToClan(db) {
 }
 function leaveToClan(db) {
   return async (req, res) => {
-    const userId = await getUserIdFromRequest(req);
+    const userId = await getUserIdFromRequest(db, req);
     await db.leaveClan(userId);
     await forceMeterUpdate(userId, db, "MEMBER_LEAVE_CLAN");
     res.status(200).send({});
@@ -147,7 +147,7 @@ function deleteClan(db) {
 }
 function adminPutClanDown(db) {
   return async (req, res) => {
-    const userId = await getUserIdFromRequest(req);
+    const userId = await getUserIdFromRequest(db, req);
     await db.adminPutClanDown(userId);
     // const membersToNotify = await db.adminPutClanDown(userId);
     // await Promise.all(
@@ -161,7 +161,7 @@ function adminPutClanDown(db) {
 }
 function declineInvitation(db) {
   return async (req, res) => {
-    const userId = await getUserIdFromRequest(req);
+    const userId = await getUserIdFromRequest(db, req);
     const invitationId = req.params.invitationId;
     await db.declineInvitation(userId, invitationId);
     res.send({});
@@ -169,7 +169,7 @@ function declineInvitation(db) {
 }
 function declareWar(db) {
   return async (req, res) => {
-    const userId = await getUserIdFromRequest(req);
+    const userId = await getUserIdFromRequest(db, req);
     const payload = req.body;
     if (payload.type === "war_declaration") {
       const targetClanId = payload.target_clan_id;
@@ -186,7 +186,7 @@ function declareWar(db) {
 }
 function kickoutToClan(db) {
   return async (req, res) => {
-    const clanMasterId = await getUserIdFromRequest(req);
+    const clanMasterId = await getUserIdFromRequest(db, req);
     const memberId = req.body.member_id;
     await db.kickoutFromClan(clanMasterId, memberId);
     await forceMeterUpdate(memberId, db, "KICKING_A_MEMBER_OUT_FROM_CLAN");

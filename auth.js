@@ -1,26 +1,95 @@
-const axios = require("axios").default;
+const dayjs = require("dayjs");
+const { v4: uuidv4 } = require("uuid");
+const { timestamp } = require("./time");
 
-const URL = process.env.AUTH_SERVICE_URL;
 const UI_URL = process.env.URL_TO_UI;
 
-async function getUserIdFromToken(token) {
-  const response = await axios.get(URL + "/api/token/" + token);
-  if (!response.data || !response.data.userId) {
-    throw new Error("SESSION_EXPIRED");
+async function getUserIdFromToken(db, token) {
+  const session = await db.findOne("Sessions", {
+    token,
+    expired: false,
+  });
+
+  if (!session) {
+    return;
   }
-  return response.data.userId;
+
+  const hasExpired = dayjs(session.timestamp)
+    .add(7200, "seconds")
+    .isBefore(dayjs());
+
+  if (hasExpired) {
+    await db.updateOne(
+      "Sessions",
+      {
+        token,
+      },
+      {
+        expired: true,
+        marked_as_expired_at: timestamp(),
+      },
+      false
+    );
+    return;
+  }
+  console.log("Provided user-id: ", session.id);
+
+  return session.id;
 }
 
-async function getProfileUrl(userId) {
-  const response = await axios.get(URL + "/api/auth/" + userId);
-  const token = response.data.token;
+async function getProfileUrl(db, id) {
+  const session = await db.findOne("Sessions", {
+    id,
+    expired: false,
+  });
+  if (!session) {
+    const token = uuidv4();
+    await db.save("Sessions", {
+      id,
+      token,
+      timestamp: timestamp(),
+      expired: false,
+    });
+    return getURLFromToken(token);
+  } else {
+    const hasExpired = dayjs(session.timestamp)
+      .add(7200, "seconds")
+      .isBefore(dayjs());
+
+    if (hasExpired) {
+      await db.updateOne(
+        "Sessions",
+        {
+          _id: session._id,
+        },
+        {
+          expired: true,
+          marked_as_expired_at: timestamp(),
+        },
+        false
+      );
+      const token = uuidv4();
+      await db.save("Sessions", {
+        id,
+        token,
+        timestamp: timestamp(),
+        expired: false,
+      });
+      return getURLFromToken(token);
+    } else {
+      return getURLFromToken(session.token);
+    }
+  }
+}
+
+const getURLFromToken = (token) => {
   const url = UI_URL + "/auth/" + token;
   return url;
-}
+};
 
-async function getUserIdFromRequest(req) {
-  const authorization = req.headers["authorization"];
-  return getUserIdFromToken(authorization);
+async function getUserIdFromRequest(db, req) {
+  const token = req.headers["authorization"];
+  return getUserIdFromToken(db, token);
 }
 
 module.exports = {
