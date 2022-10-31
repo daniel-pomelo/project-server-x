@@ -26,6 +26,7 @@ const pages = require("./pages");
 const management = require("./management");
 const uuid = require("uuid");
 const conquer = require("./conquer");
+const sessions = require("./sessions");
 
 const PORT = process.env.PORT || 3001;
 
@@ -173,6 +174,8 @@ class MyServer {
     conquer.conquerConquestPoint(app, db);
     conquer.createConquestPoint(app, db);
     conquer.launchConquestPoint(app, db);
+
+    sessions.listActives(app, db);
 
     app.use((error, req, res, next) => {
       db.registerError(error, req.id);
