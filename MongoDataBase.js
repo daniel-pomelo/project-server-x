@@ -654,6 +654,7 @@ class MongoDataBase {
                             level_name: user.level_name,
                             level_value: user.level_value,
                             status: membership.status,
+                            role: membership.role,
                           }
                         : false;
                     }
@@ -1332,6 +1333,43 @@ class MongoDataBase {
       member_id: memberIdToKick,
       fromStatus: memberToKick.status,
       toStatus: "kickout",
+      timestamp: timestamp(),
+    });
+  }
+
+  async setRoleToMember(clanMasterId, memberIdToKick, roleName) {
+    const query = {
+      user_id: clanMasterId,
+      deleted_at: null,
+    };
+    const userClan = await this.findOne("UserClans", query);
+
+    const memberQuery = {
+      member_id: memberIdToKick,
+      status: "joined",
+      clan_id: new ObjectId(userClan.clan_id),
+    };
+
+    const memberToKick = await this.findOne("UserClanMembers", memberQuery);
+
+    const upsert = false;
+
+    await this.updateOne(
+      "UserClanMembers",
+      {
+        _id: memberToKick._id,
+      },
+      {
+        role: roleName,
+      },
+      upsert
+    );
+
+    await this.save("UserClanMembersEvents", {
+      master_id: clanMasterId,
+      member_id: memberIdToKick,
+      fromRole: memberToKick.role,
+      toRole: roleName,
       timestamp: timestamp(),
     });
   }

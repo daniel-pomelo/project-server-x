@@ -193,6 +193,16 @@ function kickoutToClan(db) {
     res.status(200).send({});
   };
 }
+function setRoleToMember(db) {
+  return async (req, res) => {
+    const clanMasterId = await getUserIdFromRequest(db, req);
+    console.log("clanMasterId: ", clanMasterId);
+    const memberId = req.body.member_id;
+    const roleName = req.body.role;
+    await db.setRoleToMember(clanMasterId, memberId, roleName);
+    res.status(200).send({});
+  };
+}
 
 module.exports = {
   saveClan,
@@ -206,4 +216,5 @@ module.exports = {
   declineInvitation,
   declareWar,
   kickoutToClan,
+  setRoleToMember,
 };

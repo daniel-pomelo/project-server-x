@@ -11,6 +11,7 @@ const {
   declineInvitation,
   declareWar,
   kickoutToClan,
+  setRoleToMember,
 } = require("./handlers");
 
 const CLANS_URL = "/api/clans";
@@ -24,6 +25,7 @@ const ADMIN_PUT_DOWN_CLAN_URL = "/api/me/clan";
 const DECLINE_INVITATION = "/api/invitation/:invitationId";
 const DECLARE_WAR_URL = "/api/clan/relationships";
 const CLANS_KICKOUT_URL = "/api/clan/kickout";
+const CLANS_SET_ROLE_URL = "/api/clan/role";
 
 module.exports = {
   save(app, db) {
@@ -58,5 +60,8 @@ module.exports = {
   },
   kickout(app, db) {
     app.post(CLANS_KICKOUT_URL, asyncHandler(kickoutToClan(db)));
+  },
+  setRoleToMember(app, db) {
+    app.post(CLANS_SET_ROLE_URL, asyncHandler(setRoleToMember(db)));
   },
 };
