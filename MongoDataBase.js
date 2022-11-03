@@ -654,6 +654,7 @@ class MongoDataBase {
                             level_name: user.level_name,
                             level_value: user.level_value,
                             status: membership.status,
+                            role: membership.role,
                           }
                         : false;
                     }
@@ -1297,21 +1298,6 @@ class MongoDataBase {
       };
       throw e;
     }
-    if (memberToKick.status !== "joined") {
-      const e = new Error("BAD_REQUEST");
-      e.context = "KICKING_MEMBER_FROM_MY_CLAN";
-      e.reason = "ONLY_CAN_KICK_MEMBER_IN_STATUS_JOINED";
-      e.payload = {
-        query: memberQuery,
-        clan: userClan,
-        result: memberToKick,
-        params: {
-          master_id: clanMasterId,
-          member: memberIdToKick,
-        },
-      };
-      throw e;
-    }
 
     const upsert = false;
 
@@ -1332,6 +1318,72 @@ class MongoDataBase {
       member_id: memberIdToKick,
       fromStatus: memberToKick.status,
       toStatus: "kickout",
+      timestamp: timestamp(),
+    });
+  }
+
+  async setRoleToMember(clanMasterId, memberIdToSetRole, roleName) {
+    const query = {
+      user_id: clanMasterId,
+      deleted_at: null,
+    };
+    const userClan = await this.findOne("UserClans", query);
+    if (!userClan) {
+      const e = new Error("BAD_REQUEST");
+      e.context = "SETTING_ROLE_TO_MEMBER_OF_MY_CLAN";
+      e.reason = "MASTER_DOES_NOT_HAVE_A_CLAN";
+      e.payload = {
+        query,
+        params: {
+          master_id: clanMasterId,
+          disciple_id: memberIdToSetRole,
+          role: roleName,
+        },
+      };
+      throw e;
+    }
+    const memberQuery = {
+      member_id: memberIdToSetRole,
+      status: "joined",
+      clan_id: new ObjectId(userClan.clan_id),
+    };
+
+    const memberToSetRole = await this.findOne("UserClanMembers", memberQuery);
+
+    if (!memberToSetRole) {
+      const e = new Error("BAD_REQUEST");
+      e.context = "SETTING_ROLE_TO_MEMBER_OF_MY_CLAN";
+      e.reason = "USER_IS_NOT_MEMBER_OF_THIS_CLAN";
+      e.payload = {
+        query: memberQuery,
+        clan: userClan,
+        result: memberToSetRole,
+        params: {
+          master_id: clanMasterId,
+          member: memberIdToSetRole,
+        },
+      };
+      throw e;
+    }
+
+    const upsert = false;
+
+    await this.updateOne(
+      "UserClanMembers",
+      {
+        _id: memberToSetRole._id,
+      },
+      {
+        role: roleName,
+      },
+      upsert
+    );
+
+    await this.save("UserClanMembersEvents", {
+      master_id: clanMasterId,
+      member_id: memberIdToSetRole,
+      fromRole: memberToSetRole.role,
+      toRole: roleName,
       timestamp: timestamp(),
     });
   }

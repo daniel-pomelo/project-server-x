@@ -163,6 +163,7 @@ class MyServer {
     clans.adminPutClanDown(app, db);
     clans.declareWar(app, db);
     clans.kickout(app, db);
+    clans.setRoleToMember(app, db);
 
     management.joinMembers(app, db);
     management.playersWithoutClan(app, db);

@@ -11,7 +11,7 @@ async function getUserIdFromToken(db, token) {
   });
 
   if (!session) {
-    return;
+    throw new Error("SESSION_EXPIRED");
   }
 
   const hasExpired = dayjs(session.timestamp)
@@ -32,6 +32,7 @@ async function getUserIdFromToken(db, token) {
     );
     return;
   }
+
   console.log("Provided user-id: ", session.id);
 
   return session.id;
