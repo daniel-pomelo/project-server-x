@@ -1298,21 +1298,6 @@ class MongoDataBase {
       };
       throw e;
     }
-    if (memberToKick.status !== "joined") {
-      const e = new Error("BAD_REQUEST");
-      e.context = "KICKING_MEMBER_FROM_MY_CLAN";
-      e.reason = "ONLY_CAN_KICK_MEMBER_IN_STATUS_JOINED";
-      e.payload = {
-        query: memberQuery,
-        clan: userClan,
-        result: memberToKick,
-        params: {
-          master_id: clanMasterId,
-          member: memberIdToKick,
-        },
-      };
-      throw e;
-    }
 
     const upsert = false;
 
@@ -1337,27 +1322,56 @@ class MongoDataBase {
     });
   }
 
-  async setRoleToMember(clanMasterId, memberIdToKick, roleName) {
+  async setRoleToMember(clanMasterId, memberIdToSetRole, roleName) {
     const query = {
       user_id: clanMasterId,
       deleted_at: null,
     };
     const userClan = await this.findOne("UserClans", query);
-
+    if (!userClan) {
+      const e = new Error("BAD_REQUEST");
+      e.context = "SETTING_ROLE_TO_MEMBER_OF_MY_CLAN";
+      e.reason = "MASTER_DOES_NOT_HAVE_A_CLAN";
+      e.payload = {
+        query,
+        params: {
+          master_id: clanMasterId,
+          disciple_id: memberIdToSetRole,
+          role: roleName,
+        },
+      };
+      throw e;
+    }
     const memberQuery = {
-      member_id: memberIdToKick,
+      member_id: memberIdToSetRole,
       status: "joined",
       clan_id: new ObjectId(userClan.clan_id),
     };
 
-    const memberToKick = await this.findOne("UserClanMembers", memberQuery);
+    const memberToSetRole = await this.findOne("UserClanMembers", memberQuery);
+
+    if (!memberToSetRole) {
+      const e = new Error("BAD_REQUEST");
+      e.context = "SETTING_ROLE_TO_MEMBER_OF_MY_CLAN";
+      e.reason = "USER_IS_NOT_MEMBER_OF_THIS_CLAN";
+      e.payload = {
+        query: memberQuery,
+        clan: userClan,
+        result: memberToSetRole,
+        params: {
+          master_id: clanMasterId,
+          member: memberIdToSetRole,
+        },
+      };
+      throw e;
+    }
 
     const upsert = false;
 
     await this.updateOne(
       "UserClanMembers",
       {
-        _id: memberToKick._id,
+        _id: memberToSetRole._id,
       },
       {
         role: roleName,
@@ -1367,8 +1381,8 @@ class MongoDataBase {
 
     await this.save("UserClanMembersEvents", {
       master_id: clanMasterId,
-      member_id: memberIdToKick,
-      fromRole: memberToKick.role,
+      member_id: memberIdToSetRole,
+      fromRole: memberToSetRole.role,
       toRole: roleName,
       timestamp: timestamp(),
     });
