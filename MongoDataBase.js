@@ -1202,7 +1202,9 @@ class MongoDataBase {
         created_at: clan.clan_facts[0]?.created_at,
       };
     });
-    return Promise.all(promises);
+    return Promise.all(promises).then((clans) => {
+      return clans.filter((clan) => clan.status !== "disabled");
+    });
   }
   async getRespecCount(userId) {
     const respecs = await this.find("UserRespecs", {

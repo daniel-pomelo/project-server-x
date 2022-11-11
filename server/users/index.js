@@ -5,6 +5,7 @@ const getPlayers = require("../routes/getPlayers");
 const returnUserById = require("../routes/returnUserById");
 const togglePlayer = require("../routes/togglePlayer");
 const userRespec = require("./userRespec");
+const updateIdentity = require("./updateIdentity");
 
 module.exports = {
   all: (app, db) => {
@@ -59,5 +60,8 @@ module.exports = {
   },
   respec: (app, db) => {
     app.post("/api/respec", asyncHandler(userRespec(db)));
+  },
+  updateIdentity: (app, db) => {
+    app.post("/api/identity", asyncHandler(updateIdentity(db)));
   },
 };
