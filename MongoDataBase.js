@@ -1116,8 +1116,6 @@ class MongoDataBase {
             foreignField: "id",
             as: "admins",
             pipeline: [
-              // { $project: { newRoot: { name: "$name" } } },
-              // { $replaceRoot: { newRoot: "$newRoot" } },
               {
                 $lookup: {
                   from: "UserExperience",
@@ -1181,8 +1179,6 @@ class MongoDataBase {
           },
         ])
         .toArray();
-      const status = clan.clan_facts[0]?.status;
-
       const levels = members
         .map((member) => {
           return member.experience[0]?.level_value || 1;
@@ -1191,14 +1187,13 @@ class MongoDataBase {
       const memberAverageLevel = levels.reduce((acc, level) => {
         return acc + level;
       }, 0);
-      // const memberAverageLevel =
-      //   status !== "active"
-      //     ? 0
-      //     : Math.floor(
-      //         memberLevelTotal / (members.length === 0 ? 1 : members.length)
-      //       );
+
+      const conquests = await this.find("Conquests", {
+        clan_id: clan.clan_facts[0]?.name,
+      });
       return {
         ...clan,
+        conquests,
         members,
         memberAverageLevel,
         name: clan.clan_facts[0]?.name,
