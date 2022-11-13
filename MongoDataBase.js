@@ -466,26 +466,6 @@ class MongoDataBase {
       timestamp,
     });
   }
-  async findUserBridge(userId) {
-    const criteria = {
-      user_id: userId,
-    };
-    const userBridge = await this.findNewest("UserBridges", criteria);
-    if (userBridge) {
-      return this.findOne("Bridges", { id: userBridge.bridge_id });
-    }
-    const bridges = await this.find("Bridges");
-    if (bridges.length === 1) {
-      return bridges[0];
-    }
-    await this.save("Alerts", {
-      timestamp: timestamp(),
-      context: "Failure at finding bridge to update user info",
-      payload: {
-        user_id: userId,
-      },
-    });
-  }
   async saveUserAtBridge(userId, bridgeId, timestamp) {
     const data = {
       user_id: userId,
