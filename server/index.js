@@ -125,6 +125,7 @@ class MyServer {
 
     users.all(app, db);
     users.single(app, db);
+    users.details(app, db);
     users.delete(app, db);
     users.toggle(app, db);
     users.find(app, db);

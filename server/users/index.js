@@ -6,6 +6,7 @@ const returnUserById = require("../routes/returnUserById");
 const togglePlayer = require("../routes/togglePlayer");
 const userRespec = require("./userRespec");
 const updateIdentity = require("./updateIdentity");
+const { findUserById } = require("../../user");
 
 module.exports = {
   all: (app, db) => {
@@ -20,6 +21,16 @@ module.exports = {
       "/api/users/:id",
       asyncHandler(assertBridgeIsEnabled(db)),
       asyncHandler(returnUserById(db))
+    );
+  },
+  details: (app, db) => {
+    app.get(
+      "/api/details/:id",
+      asyncHandler(async (req, res) => {
+        const userId = req.params.id;
+        const profile = await findUserById(db, userId);
+        res.send(profile);
+      })
     );
   },
   delete: (app, db) => {
