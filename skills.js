@@ -5,6 +5,7 @@ const getSkillLabel = (skill) =>
 const skillMapper = (userSkill, skillsCatalog, totalPoints, stats) => {
   const skill = skillsCatalog.getSkill(userSkill);
   const name = getSkillLabel(skill);
+  skill.name = name;
   const scaledSkill = {
     ...skill,
     ...scale(skill, "health_self"),
@@ -94,7 +95,7 @@ function scale(skill, propName) {
 }
 
 const skillFactor = 20;
-const intelligenceFactor = 10;
+const intelligenceFactor = 20;
 
 function scaleByIntelligence(skill, propName, intelligence) {
   const baseSkillValuePercentage = (skill[propName] / 100) * skillFactor;
@@ -107,4 +108,5 @@ function scaleByIntelligence(skill, propName, intelligence) {
 
 module.exports = {
   getSkills,
+  skillMapper,
 };
