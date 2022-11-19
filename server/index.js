@@ -26,6 +26,8 @@ const pages = require("./pages");
 const management = require("./management");
 const uuid = require("uuid");
 const conquer = require("./conquer");
+const http = require("http");
+const { Server } = require("socket.io");
 
 const PORT = process.env.PORT || 3001;
 
@@ -61,14 +63,25 @@ const responses = {
 };
 
 class MyServer {
-  constructor(app) {
+  constructor(app, server) {
     this.app = app;
+    this.server = server;
   }
   static start() {
     const app = express();
-
-    app.use(express.static("public"));
+    const server = http.createServer(app);
+    const io = new Server(server, {
+      cors: {
+        origin: process.env.URL_TO_UI,
+        methods: ["GET", "POST"],
+      },
+    });
+    io.on("connection", (socket) => {
+      console.log("a user connected");
+      socket.emit("hello", { name: "pepillo" });
+    });
     app.use(cors());
+    app.use(express.static("public"));
     app.use(
       express.urlencoded({
         extended: true,
@@ -78,7 +91,7 @@ class MyServer {
     app.set("views", path.resolve(path.join(__dirname, "..", "view")));
     app.set("view engine", "ejs");
 
-    return new MyServer(app);
+    return new MyServer(app, server);
   }
   setDB(db, systemEvents, tokens, UI_URL) {
     const app = this.app;
@@ -186,7 +199,7 @@ class MyServer {
     });
   }
   listen() {
-    this.server = this.app.listen(PORT, () => {
+    this.server.listen(PORT, () => {
       console.log("Server is running at port " + PORT);
     });
   }
