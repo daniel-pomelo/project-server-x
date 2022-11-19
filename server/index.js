@@ -26,6 +26,7 @@ const pages = require("./pages");
 const management = require("./management");
 const uuid = require("uuid");
 const conquer = require("./conquer");
+const calcStats = require("./calcStats");
 
 const PORT = process.env.PORT || 3001;
 
@@ -108,6 +109,7 @@ class MyServer {
       asyncHandler(assignPointsToStats(db, systemEvents))
     );
     //SKILLS
+    app.post("/api/calc", asyncHandler(calcStats(db)));
     app.get("/api/skills", asyncHandler(getSkills(db)));
     app.post("/api/skills", asyncHandler(saveSkills(db)));
     app.delete("/api/skills/:id", asyncHandler(deleteSkill(db)));
