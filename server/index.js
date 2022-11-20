@@ -28,6 +28,7 @@ const uuid = require("uuid");
 const conquer = require("./conquer");
 const http = require("http");
 const { Server } = require("socket.io");
+const getAvatarURL = require("./users/getAvatarURL");
 
 const PORT = process.env.PORT || 3001;
 
@@ -62,6 +63,8 @@ const responses = {
   },
 };
 
+const connectedUsers = new Map();
+
 class MyServer {
   constructor(app, server) {
     this.app = app;
@@ -70,16 +73,6 @@ class MyServer {
   static start() {
     const app = express();
     const server = http.createServer(app);
-    const io = new Server(server, {
-      cors: {
-        origin: process.env.URL_TO_UI,
-        methods: ["GET", "POST"],
-      },
-    });
-    io.on("connection", (socket) => {
-      console.log("a user connected");
-      socket.emit("hello", { name: "pepillo" });
-    });
     app.use(cors());
     app.use(express.static("public"));
     app.use(
@@ -95,6 +88,37 @@ class MyServer {
   }
   setDB(db, systemEvents, tokens, UI_URL) {
     const app = this.app;
+
+    const io = new Server(this.server, {
+      cors: {
+        origin: process.env.URL_TO_UI,
+        methods: ["GET", "POST"],
+      },
+    });
+    let socketClient;
+    io.on("connection", (socket) => {
+      socketClient = socket;
+      socket.on("connection", async (data) => {
+        Array.from(connectedUsers.entries()).forEach(([id, user]) => {
+          if (user.id === data.id) {
+            connectedUsers.delete(id);
+          }
+        });
+        connectedUsers.set(socket.id, {
+          id: data.id,
+          name: data.name,
+          avatar: await getAvatarURL(data.id),
+        });
+        const users = Array.from(connectedUsers.values());
+        socket.broadcast.emit("connected_users", { users });
+        socket.emit("connected_users", { users });
+      });
+      socket.on("disconnect", () => {
+        connectedUsers.delete(socket.id);
+        const users = Array.from(connectedUsers.values());
+        socket.broadcast.emit("connected_users", { users });
+      });
+    });
 
     app.use((req, res, next) => {
       const id = uuid.v4();
@@ -114,6 +138,11 @@ class MyServer {
     app.use((req, res, next) => {
       console.log("Request-Id: ", req.id);
       next();
+    });
+
+    app.post("/api/conquest-point/update", (req, res) => {
+      socketClient.emit("conquest_point:state_change", { status: "launched" });
+      res.send("hola");
     });
 
     app.post(

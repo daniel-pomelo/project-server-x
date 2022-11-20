@@ -11,7 +11,7 @@ MongoDataBase.init().then(async (db) => {
     .then((users) => users.map((disabledUser) => disabledUser.user_id));
   const respecs = await db
     // .find("Users", { id: { $nin: disabledUsersIds } })
-    .find("Users", { id: "138e87f7-33e7-4240-9e95-1f18f9ff1227" })
+    .find("Users")
     .then((users) => {
       return Promise.all(
         users.map((user) => {
