@@ -54,6 +54,11 @@ class SystemEvents {
     }
   }
   notifyConquestPointLaunched(bridge, conquerPoint) {
+    console.log(
+      `Sending command SPAWN_CONQUER ${conquerPoint.id} and ${
+        conquerPoint.ttl
+      } to ${bridge.id} with url ${bridge.url} at ${new Date()}`
+    );
     return axios.post(bridge.url, {
       command: "SPAWN_CONQUER",
       data: {

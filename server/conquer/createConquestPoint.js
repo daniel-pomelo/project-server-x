@@ -1,5 +1,4 @@
-const uuid = require("uuid");
-const { timestamp } = require("../../time");
+const reserveConquestPoint = require("../../reserveConquestPoint");
 
 //Request:
 //<Body>
@@ -8,13 +7,7 @@ const { timestamp } = require("../../time");
 function createConquestPoint(db) {
   return async (req, res) => {
     const { ttl = 3600 } = req.body;
-    const data = {
-      id: uuid.v4(),
-      status: "inactive",
-      ttl,
-      timestamp: timestamp(),
-    };
-    await db.save("ConquestPoints", data);
+    await reserveConquestPoint(db, { ttl });
     res.send({});
   };
 }
