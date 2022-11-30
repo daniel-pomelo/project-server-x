@@ -18,6 +18,8 @@ MongoDataBase.init().then(async (db) => {
       $gte: new Date(),
     },
   });
+  console.log("now: ", new Date());
+  console.log(JSON.stringify(schedules, null, 2));
   schedules.forEach((schedule) => {
     scheduler.scheduleJob(new Date(schedule.timestamp), () => {
       console.log("The world is going to end today.");
