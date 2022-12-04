@@ -95,7 +95,7 @@ function scale(skill, propName) {
 }
 
 const skillFactor = 20;
-const intelligenceFactor = 10;
+const intelligenceFactor = 15;
 
 function scaleByIntelligence(skill, propName, intelligence) {
   const baseSkillValuePercentage = (skill[propName] / 100) * skillFactor;
