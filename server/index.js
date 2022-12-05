@@ -29,6 +29,7 @@ const conquer = require("./conquer");
 const http = require("http");
 const { Server } = require("socket.io");
 const getAvatarURL = require("./users/getAvatarURL");
+const dayjs = require("dayjs");
 
 const PORT = process.env.PORT || 3001;
 
@@ -112,6 +113,30 @@ class MyServer {
         const users = Array.from(connectedUsers.values());
         socket.broadcast.emit("connected_users", { users });
         socket.emit("connected_users", { users });
+        const schedules = await db.find("ConquestPointSchedules", {
+          timestamp: {
+            $gte: new Date(),
+          },
+        });
+        if (schedules[0] && schedules[0].timestamp) {
+          socket.emit("next_conquest_point", schedules[0]);
+        }
+        const lastConquestPoint = await db.findOne(
+          "ConquestPoints",
+          {},
+          {
+            sort: {
+              launched_at: -1,
+            },
+          }
+        );
+        const isExpired = dayjs(lastConquestPoint.launched_at)
+          .add(lastConquestPoint.ttl, "seconds")
+          .isBefore(dayjs());
+        socket.emit("last_conquest_point", {
+          ...lastConquestPoint,
+          is_expired: isExpired,
+        });
       });
       socket.on("disconnect", () => {
         connectedUsers.delete(socket.id);

@@ -49,11 +49,11 @@ class MongoDataBase {
       .collection(collectionName)
       .deleteMany(criteria);
   }
-  findOne(collectionName, criteria) {
+  findOne(collectionName, criteria, options = {}) {
     return this.client
       .db("ProjectX")
       .collection(collectionName)
-      .findOne(criteria);
+      .findOne(criteria, options);
   }
   findAll(collectionName) {
     return this.client

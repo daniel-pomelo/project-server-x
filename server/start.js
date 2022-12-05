@@ -48,6 +48,10 @@ MongoDataBase.init().then(async (db) => {
         bridge,
         timestamp: timestamp(),
       });
+
+      // await db.save("ConquestPointSchedules", {
+      //   timestamp: now,
+      // });
     });
   });
 });
