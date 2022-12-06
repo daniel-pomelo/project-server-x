@@ -1,4 +1,5 @@
 const { getUserIdFromToken } = require("../../auth");
+const { forceMeterUpdate } = require("../../forceMeterUpdate");
 const { timestamp } = require("../../time");
 const { findUserById } = require("../../user");
 
