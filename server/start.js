@@ -29,7 +29,9 @@ MongoDataBase.init().then(async (db) => {
   console.log(`Found bridge ${bridge.id} to spawn conquest points.`);
   schedules.forEach((schedule) => {
     scheduler.scheduleJob(new Date(schedule.timestamp), async () => {
-      const conquestPoint = await reserveConquestPoint(db, { ttl: 3600 });
+      const conquestPoint = await reserveConquestPoint(db, {
+        ttl: parseInt(schedule.ttl) || 3600,
+      });
       const requestResult = await systemEvents.notifyConquestPointLaunched(
         bridge,
         conquestPoint
