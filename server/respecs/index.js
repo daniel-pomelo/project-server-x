@@ -1,3 +1,4 @@
+const { timestamp } = require("../../time");
 const asyncHandler = require("../routes/asyncHandler");
 
 module.exports = {
@@ -6,14 +7,9 @@ module.exports = {
       "/api/purchase/respec",
       asyncHandler(async (req, res) => {
         const { user_id, bridge_id } = getParams(req);
-        await Promise.all([
-          assertUserExists(user_id, db),
-          assertBridgeExists(bridge_id, db),
-        ]);
-        await db.save("UserRespecs", {
-          type: "REWARD",
-          user_id,
-        });
+        await assertParamsAreValid(db, user_id, bridge_id);
+        await giveRespec(user_id);
+        await recordRespecPurchase(db, user_id, bridge_id);
         res.send({
           user_id,
         });
@@ -21,7 +17,23 @@ module.exports = {
     );
   },
 };
-
+const recordRespecPurchase = (db, user_id, bridge_id) => {
+  db.save("RespecPurchases", {
+    user_id,
+    bridge_id,
+    timestamp: timestamp(),
+  });
+};
+const assertParamsAreValid = (db, user_id, bridge_id) =>
+  Promise.all([
+    assertUserExists(user_id, db),
+    assertBridgeExists(bridge_id, db),
+  ]);
+const giveRespec = (user_id) =>
+  db.save("UserRespecs", {
+    type: "REWARD",
+    user_id,
+  });
 const assertUserExists = async (userId, db) => {
   const [user, isDisabled] = await Promise.all([
     db.findOne("Users", { id: userId }),
