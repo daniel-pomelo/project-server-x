@@ -8,11 +8,24 @@ module.exports = {
       asyncHandler(async (req, res) => {
         const { user_id, bridge_id } = getParams(req);
         await assertParamsAreValid(db, user_id, bridge_id);
-        await giveRespec(user_id);
+        await giveRespec(db, user_id);
         await recordRespecPurchase(db, user_id, bridge_id);
         res.send({
           user_id,
         });
+      })
+    );
+  },
+  gift: (app, db) => {
+    app.post(
+      "/api/gift/respec",
+      asyncHandler(async (req, res) => {
+        const { user_id, quantity } = req.body;
+        await assertGiftParamsAreValid(db, user_id, quantity);
+        await Promise.all(
+          Array.from({ length: quantity }).map(() => giveRespec(db, user_id))
+        );
+        res.send({});
       })
     );
   },
@@ -24,12 +37,25 @@ const recordRespecPurchase = (db, user_id, bridge_id) => {
     timestamp: timestamp(),
   });
 };
+const assertGiftParamsAreValid = (db, user_id, quantity) => {
+  if (!quantity) {
+    const e = new Error("BAD_REQUEST");
+    e.context = "GIFTING_RESPECT";
+    e.reason = "MISSING_QUANTITY";
+    e.payload = {
+      user_id,
+      quantity,
+    };
+    throw e;
+  }
+  return assertUserExists(user_id, db);
+};
 const assertParamsAreValid = (db, user_id, bridge_id) =>
   Promise.all([
     assertUserExists(user_id, db),
     assertBridgeExists(bridge_id, db),
   ]);
-const giveRespec = (user_id) =>
+const giveRespec = (db, user_id) =>
   db.save("UserRespecs", {
     type: "REWARD",
     user_id,

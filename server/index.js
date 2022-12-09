@@ -246,6 +246,7 @@ class MyServer {
     conquer.launchConquestPoint(app, db);
 
     respecs.buy(app, db);
+    respecs.gift(app, db);
 
     app.use((error, req, res, next) => {
       db.registerError(error, req.id);
