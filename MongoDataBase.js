@@ -3,11 +3,13 @@ const { MongoClient, ObjectId } = require("mongodb");
 const dayjs = require("dayjs");
 const filterExMembers = require("./core/filterExMembers");
 const { timestamp } = require("./time");
-const { MONGO_DB_USERNAME, MONGO_DB_PASSWORD, MONGO_DB_PROJECT_PATH } =
-  process.env;
-const DEFAULT_PROJECT_PATH = "cluster0.jvhhw.mongodb.net/ProjectX";
-const dbProjectPath = MONGO_DB_PROJECT_PATH || DEFAULT_PROJECT_PATH;
-const uri = `mongodb+srv://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@${dbProjectPath}`;
+// const { MONGO_DB_USERNAME, MONGO_DB_PASSWORD, MONGO_DB_PROJECT_PATH } =
+//   process.env;
+// const DEFAULT_PROJECT_PATH = "cluster0.jvhhw.mongodb.net/ProjectX";
+// const dbProjectPath = MONGO_DB_PROJECT_PATH || DEFAULT_PROJECT_PATH;
+// const uri = `mongodb+srv://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@${dbProjectPath}`;
+const uri = process.env.MONGODB_URI;
+console.log(uri);
 class MongoDataBase {
   constructor(client) {
     this.client = client;
