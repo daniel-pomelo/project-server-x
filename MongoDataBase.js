@@ -7,7 +7,7 @@ const { MONGO_DB_USERNAME, MONGO_DB_PASSWORD, MONGO_DB_PROJECT_PATH } =
   process.env;
 const DEFAULT_PROJECT_PATH = "cluster0.jvhhw.mongodb.net/ProjectX";
 const dbProjectPath = MONGO_DB_PROJECT_PATH || DEFAULT_PROJECT_PATH;
-const uri = `mongodb+srv://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@${dbProjectPath}?retryWrites=true&w=majority&directConnection=true`;
+const uri = `mongodb+srv://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@${dbProjectPath}`;
 class MongoDataBase {
   constructor(client) {
     this.client = client;
